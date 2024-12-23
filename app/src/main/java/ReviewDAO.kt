@@ -1,0 +1,15 @@
+package com.example.room_setup_composables
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface ReviewDao {
+    @Insert
+    suspend fun insert(review: Review)
+
+    @Query("SELECT * FROM reviews_table WHERE storeId = :storeId")
+    fun getReviewsForStore(storeId: Int): Flow<List<Review>>
+}
