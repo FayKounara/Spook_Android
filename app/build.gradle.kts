@@ -53,6 +53,9 @@ android {
 
 dependencies {
 
+    val nav_version = "2.8.5"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -70,7 +73,9 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.5.1")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-
+    implementation ("androidx.navigation:navigation-compose:2.6.1")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation ("androidx.activity:activity-ktx:1.8.0")
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
