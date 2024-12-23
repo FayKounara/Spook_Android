@@ -37,8 +37,8 @@ class DatabaseTest {
     @Test
     fun testDatabaseOperations() = runBlocking {
         // Insert sample users
-        val user1 = User(username = "JohnDoe", password = "password123", bookings = emptyList())
-        val user2 = User(username = "JaneSmith", password = "pass456", bookings = emptyList())
+        val user1 = User(username = "JohnDoe", password = "password123")//, bookings = emptyList())
+        val user2 = User(username = "JaneSmith", password = "pass456")//, bookings = emptyList())
         userDao.insert(user1)
         userDao.insert(user2)
 
