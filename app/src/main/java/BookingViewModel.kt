@@ -92,6 +92,13 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun deleteBooking(booking: Booking) {
+        viewModelScope.launch(Dispatchers.IO) {
+            bookingDao.delete(booking)
+            fetchAllBookings()
+        }
+    }
+
     fun insertStore(store: Store) {
         viewModelScope.launch(Dispatchers.IO) {
             storeDao.insert(store)

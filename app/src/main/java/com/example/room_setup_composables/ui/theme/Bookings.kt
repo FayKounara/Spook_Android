@@ -34,7 +34,165 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.NavController
+import androidx.navigation.NavHost
 
+
+@Composable
+fun Navigation(viewModel: BookingViewModel) {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = Screen.Bookings.route) {
+        composable(route = Screen.Bookings.route) {
+            BookingsScreen(navController, viewModel)
+        }
+        composable(
+            route = Screen.Reviews.route + "/{name}",
+            arguments = listOf(
+                navArgument("name") {
+                    type = NavType.StringType
+                    defaultValue = "John"
+                    nullable = true
+                }
+            )
+        ) { entry ->
+            ReviewScreen(navController, name = entry.arguments?.getString("name"))
+        }
+    }
+}
+
+@Composable
+fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
+    var customerName by remember { mutableStateOf("") }
+    var reservationDate by remember { mutableStateOf("") }
+    var reservationHours by remember { mutableStateOf("") }
+    var storeId by remember { mutableStateOf("") }
+    val bookings by viewModel.allBookings.collectAsState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        TextField(
+            value = customerName,
+            onValueChange = { customerName = it },
+            label = { Text("Enter Customer Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = reservationDate,
+            onValueChange = { reservationDate = it },
+            label = { Text("Enter Reservation Date") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = reservationHours,
+            onValueChange = { reservationHours = it },
+            label = { Text("Enter Reservation Hours") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        TextField(
+            value = storeId,
+            onValueChange = { storeId = it },
+            label = { Text("Enter Store ID") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {
+                if (customerName.isNotEmpty() && reservationDate.isNotEmpty() &&
+                    reservationHours.isNotEmpty() && storeId.isNotEmpty()
+                ) {
+                    viewModel.insertBooking(
+                        Booking(
+                            date = reservationDate,
+                            hours = reservationHours,
+                            storeId = storeId.toInt(),
+                            userId = customerName.hashCode() // Replace with real user ID logic
+                        )
+                    )
+                    customerName = ""
+                    reservationDate = ""
+                    reservationHours = ""
+                    storeId = ""
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Add Booking")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Divider()
+        LazyColumn {
+            items(bookings) { booking ->
+                BookingItem(navController, booking, onDelete = { viewModel.deleteBooking(booking) })
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        ReviewNavigation(navController)
+    }
+}
+
+@Composable
+fun ReviewNavigation(navController: NavController) {
+    var text by remember { mutableStateOf("") }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 50.dp)
+    ) {
+        TextField(
+            value = text,
+            onValueChange = { text = it },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = {
+            navController.navigate(Screen.Reviews.withArgs(text))
+        }) {
+            Text(text = "To Reviews")
+        }
+    }
+}
+
+@Composable
+fun BookingItem(navController: NavController, booking: Booking, onDelete: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(text = "Name: ${booking.userId}") // Replace with logic to fetch name from userId
+                Text(text = "Date: ${booking.date}")
+                Text(text = "Hours: ${booking.hours}")
+                Text(text = "Store ID: ${booking.storeId}")
+            }
+            IconButton(onClick = { onDelete() }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Booking"
+                )
+            }
+        }
+    }
+}
+
+
+
+
+
+/*
 @Composable
 fun Navigation(viewModel: BookingViewModel) {
     val navController = rememberNavController()
@@ -88,8 +246,8 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
                 if (customerName.isNotEmpty() && reservationDate.isNotEmpty()) {
                     viewModel.insertBooking(
                         Booking(
-                            customerName = customerName,
-                            reservationDate = reservationDate
+                            userId = customerName,
+                            date = reservationDate
                         )
                     )
                     customerName = ""
@@ -167,4 +325,4 @@ fun BookingItem(navController: NavController, booking: Booking, onDelete: () -> 
             }
         }
     }
-}
+}*/
