@@ -24,7 +24,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,14 +38,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.room_setup_composables.ui.theme.Screen
 
 
 // Dummy data and composable functions for demo purposes
 val sampleOffers = listOf(
-    Offer(0,"Pizza","Pizza Margarita", 15.99, 12.99,0),
-    Offer(1,"Burger","Double Smashed Burger",10.99, 8.99, 1 ),
-    Offer(3,"Pasta", "Bolognese",13.99, 10.99,2 )
+    Offer(0,"Pizza","Pizza Margarita", 15.99, 12.99,"a", 0),
+    Offer(1,"Burger","Double Smashed Burger",10.99, 8.99, "b", 1),
+    Offer(3,"Pasta", "Bolognese",13.99, 10.99,"c", 2)
 )
 
 val sampleRestaurants = listOf(
@@ -49,8 +60,34 @@ val sampleRestaurants = listOf(
     Store(2, "Beach Avenue","","","","")
 )
 
+
 @Composable
-fun Homepage(name: String, modifier: Modifier = Modifier) {
+fun HomePageNavigation(viewModel: BookingViewModel) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Screen.HomePage.route) {
+        composable(route = Screen.HomePage.route) {
+            Homepage(navController, "John");
+        }
+        composable(
+            route = Screen.Bookings.route + "/{name}",
+            arguments = listOf(
+                navArgument("name") {
+                    type = NavType.StringType
+                    defaultValue = "John"
+                    nullable = true
+                }
+            )
+        ) { entry ->
+            val name = entry.arguments?.getString("name") ?: "John"
+            BookingNavigation(viewModel, name)
+        }
+    }
+}
+
+
+@Composable
+fun Homepage(navController: NavController, name: String, modifier: Modifier = Modifier) {
     // Scrollable container
     Box(
         modifier = modifier // Χρήση του modifier που περνάει από την κλήση
@@ -136,6 +173,8 @@ fun Homepage(name: String, modifier: Modifier = Modifier) {
                             onBookClick = {
                                 // Ενέργεια για το κουμπί "Book"
                                 println("Booked table at ${store.name}")
+//                                Navigate to book page
+                                navController.navigate(Screen.Bookings.withArgs("John"))
                             }
                         )
                     }

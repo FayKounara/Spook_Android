@@ -13,8 +13,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             RoomDatabaseSetupTheme {
-                Navigation(viewModel)
+                HomePageNavigation(viewModel);
             }
         }
     }
 }
+
+

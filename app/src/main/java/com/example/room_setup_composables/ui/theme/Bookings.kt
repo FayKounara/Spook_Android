@@ -31,14 +31,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.NavController
-import androidx.navigation.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.example.room_setup_composables.ui.theme.Screen
 
 
 @Composable
-fun Navigation(viewModel: BookingViewModel) {
+fun BookingNavigation(viewModel: BookingViewModel, name: String) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Bookings.route) {
         composable(route = Screen.Bookings.route) {
@@ -131,12 +131,12 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        ReviewNavigation(navController)
+        ToReviewPage(navController)
     }
 }
 
 @Composable
-fun ReviewNavigation(navController: NavController) {
+fun ToReviewPage(navController: NavController) {
     var text by remember { mutableStateOf("") }
     Column(
         verticalArrangement = Arrangement.Center,
@@ -266,12 +266,12 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        ReviewNavigation(navController)
+        ToReviewPage(navController)
     }
 }
 
 @Composable
-fun ReviewNavigation(navController: NavController) {
+fun ToReviewPage(navController: NavController) {
     var text by remember {
         mutableStateOf("")
     }
