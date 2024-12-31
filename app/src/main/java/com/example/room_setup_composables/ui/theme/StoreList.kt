@@ -4,29 +4,64 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+
 import androidx.compose.ui.unit.dp
-import com.example.room_database_setup.R
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.room_setup_composables.BookingNavigation
+import com.example.room_setup_composables.BookingViewModel
 import com.example.room_setup_composables.Store
 import com.example.room_setup_composables.StoreViewModel
+import com.example.room_setup_composables.ui.theme.Screen
 
 @Composable
-fun  StoreList(viewModel: StoreViewModel, filtername: String) {
+fun StoreNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, filtername: String) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Screen.Stores.route) {
+        composable(route = Screen.Stores.route) {
+            StoreList(navController, storeViewModel, filtername);
+        }
+        composable(
+            route = Screen.Bookings.route + "/{name}",
+            arguments = listOf(
+                navArgument("name") {
+                    type = NavType.StringType
+                    defaultValue = "John"
+                    nullable = true
+                }
+            )
+        ) { entry ->
+            val name = entry.arguments?.getString("name") ?: "John"
+            BookingNavigation(bookingViewModel, name)
+        }
+    }
+}
+
+
+@Composable
+fun  StoreList(navController:NavController ,viewModel: StoreViewModel, filtername: String) {
     // Collect the list of stores as state
     val stores by viewModel.allStores.collectAsState(initial = emptyList())
 
     // Filter the stores to get the store with the given name (filtername)
     val filteredStores = stores.filter { it.name == filtername }
 
+    ToBookPage(navController)
     // If there are stores with the same name, group by the name and combine the time slots
     if (filteredStores.isNotEmpty()) {
         // Assuming we want to show only one card per store (grouped by name)
@@ -34,12 +69,12 @@ fun  StoreList(viewModel: StoreViewModel, filtername: String) {
         val allAvailableHours = filteredStores.flatMap { it.avHours.split(",") }.distinct()
 
         // Display one card for the store and all its available time slots
-        StoreCard(store, allAvailableHours)
+        StoreCard(navController, store, allAvailableHours)
     }
 }
 
 @Composable
-fun StoreCard(store: Store, availableHours: List<String>) {
+fun StoreCard(navController:NavController, store: Store, availableHours: List<String>) {
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
         shape = RoundedCornerShape(16.dp), // Rounded corners for the card
@@ -64,15 +99,15 @@ fun StoreCard(store: Store, availableHours: List<String>) {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                // Restaurant Image (Placeholder image for now)
-                Image(
-                    painter = painterResource(id = R.drawable.restaurant_image), // Replace with actual image resource
-                    contentDescription = "Restaurant Image",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp) // Adjust height as needed
-                        .padding(bottom = 8.dp)
-                )
+//                // Restaurant Image (Placeholder image for now)
+//                Image(
+//                    painter = painterResource(id = R.drawable.restaurant_image), // Replace with actual image resource
+//                    contentDescription = "Restaurant Image",
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(200.dp) // Adjust height as needed
+//                        .padding(bottom = 8.dp)
+//                )
             }
 
             // Restaurant Information (e.g., Info, Location)
@@ -124,6 +159,29 @@ fun StoreCard(store: Store, availableHours: List<String>) {
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ToBookPage(navController: NavController) {
+    var text by remember { mutableStateOf("") }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 50.dp)
+    ) {
+        TextField(
+            value = text,
+            onValueChange = { text = it },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = {
+            navController.navigate(Screen.Bookings.withArgs(text))
+        }) {
+            Text(text = "Book Now")
         }
     }
 }

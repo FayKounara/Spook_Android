@@ -44,6 +44,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
 import com.example.room_setup_composables.ui.theme.Screen
 
 
@@ -62,7 +63,7 @@ val sampleRestaurants = listOf(
 
 
 @Composable
-fun HomePageNavigation(viewModel: BookingViewModel) {
+fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.HomePage.route) {
@@ -70,7 +71,7 @@ fun HomePageNavigation(viewModel: BookingViewModel) {
             Homepage(navController, "John");
         }
         composable(
-            route = Screen.Bookings.route + "/{name}",
+            route = Screen.Stores.route + "/{name}",
             arguments = listOf(
                 navArgument("name") {
                     type = NavType.StringType
@@ -79,8 +80,8 @@ fun HomePageNavigation(viewModel: BookingViewModel) {
                 }
             )
         ) { entry ->
-            val name = entry.arguments?.getString("name") ?: "John"
-            BookingNavigation(viewModel, name)
+            val name = entry.arguments?.getString("name") ?: "Juicy Grill"
+            StoreNavigation(storeViewModel, bookingViewModel, "Juicy Grill")
         }
     }
 }
@@ -174,7 +175,7 @@ fun Homepage(navController: NavController, name: String, modifier: Modifier = Mo
                                 // Ενέργεια για το κουμπί "Book"
                                 println("Booked table at ${store.name}")
 //                                Navigate to book page
-                                navController.navigate(Screen.Bookings.withArgs("John"))
+                                navController.navigate(Screen.Stores.withArgs("Juicy Grill"))
                             }
                         )
                     }
