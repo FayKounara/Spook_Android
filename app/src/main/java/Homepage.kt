@@ -1,6 +1,8 @@
 package com.example.room_setup_composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,15 +17,23 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,7 +48,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
 import com.example.room_setup_composables.ui.theme.Screen
-
 
 
 // Dummy data and composable functions for demo purposes
@@ -81,12 +90,17 @@ fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: Booking
 
 
 @Composable
-fun Homepage(navController: NavController, name: String,storeViewModel: StoreViewModel, modifier: Modifier = Modifier) {
-    // Scrollable container
+fun Homepage(navController: NavController, name: String, storeViewModel: StoreViewModel, modifier: Modifier = Modifier) {
     val stores by storeViewModel.allStores.collectAsState(initial = emptyList())
+    var selectedDay by remember { mutableStateOf("Monday") }
+
+    // Φιλτράρισμα με βάση την επιλεγμένη ημέρα
+    val filteredStores = stores.filter { store ->
+        store.avDays.split(",").contains(selectedDay)
+    }
 
     Box(
-        modifier = modifier // Χρήση του modifier που περνάει από την κλήση
+        modifier = modifier
             .fillMaxSize()
             .background(color = Color(0xFFF1F3F4))
             .padding(16.dp)
@@ -108,13 +122,6 @@ fun Homepage(navController: NavController, name: String,storeViewModel: StoreVie
                     ),
                     modifier = Modifier.weight(1f)
                 )
-                //Image (
-                //    painter = painterResource(id = R.drawable.profile_placeholder),
-                //    contentDescription = "Profile Image",
-                //    modifier = Modifier
-                //        .size(40.dp)
-                //        .clip(androidx.compose.foundation.shape.CircleShape)
-                //)
             }
 
             // Search Bar
@@ -148,28 +155,45 @@ fun Homepage(navController: NavController, name: String,storeViewModel: StoreVie
                 }
             }
 
-            // Explore Restaurants Section
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                // Επικεφαλίδα
                 Text(
                     text = "Explore Our Restaurants",
                     style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 )
-                Text(
-                    text = "Today's Availability",
-                    color = Color.Gray,
-                    style = TextStyle(fontSize = 14.sp)
-                )
+
+                // "Available on" και Επιλογέας Ημέρας σε Row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+
+                ) {
+                    Text(
+                        text = "Available on $selectedDay",
+                        color = Color.Gray,
+                        style = TextStyle(fontSize = 14.sp) ,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+
+                    DaySelector(
+                        selectedDay = selectedDay,
+                        onDaySelected = { day -> selectedDay = day },
+                        modifier = Modifier
+                            .width(120.dp) // Περιορισμός του μήκους σε 100dp
+                    )
+                }
+
+                // Λίστα Εστιατορίων
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(stores) { store ->
+                    items(filteredStores) { store ->
                         RestaurantCard(
                             store = store,
                             onBookClick = {
-                                // Ενέργεια για το κουμπί "Book"
                                 println("Booked table at ${store.name}")
-//                                Navigate to book page
                                 navController.navigate(Screen.Stores.withArgs("Juicy Grill"))
                             }
                         )
@@ -181,11 +205,12 @@ fun Homepage(navController: NavController, name: String,storeViewModel: StoreVie
 }
 
 
+
 @Composable
 fun FoodCard(foodItem: Offer) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White // Καθορίζει το φόντο της κάρτας
         ),
@@ -253,7 +278,7 @@ fun FoodCard(foodItem: Offer) {
 fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
+        shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -316,3 +341,56 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
         }
     }
 }
+
+@Composable
+fun DaySelector(selectedDay: String, onDaySelected: (String) -> Unit, modifier: Modifier = Modifier) {
+    val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier
+            .clickable { expanded = true }
+            .padding(horizontal = 16.dp, vertical = 8.dp) // Προσαρμοσμένο padding για καλύτερη εμφάνιση
+            .width(150.dp) // Περισσότερος χώρος για το DaySelector
+            .drawBehind {
+                // Υπογράμμιση
+                drawLine(
+                    color = Color(0xFFFFA726),
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = 2f
+                )
+            }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.fillMaxWidth() // Επιτρέπει καλύτερη διάταξη
+        ) {
+            Text(
+                text = selectedDay,
+                color = Color.Black,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(start = 12.dp)
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(Color.White)
+        ) {
+            daysOfWeek.forEach { day ->
+                DropdownMenuItem(
+                    text = { Text(day) },
+                    onClick = {
+                        onDaySelected(day)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
