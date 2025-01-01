@@ -12,4 +12,7 @@ interface StoreDao {
 
     @Query("SELECT * FROM store_table")
     fun getAllStores(): Flow<List<Store>>
+
+    @Query("DELETE FROM store_table")
+    suspend fun deleteAllStores()
 }
