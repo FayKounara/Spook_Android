@@ -9,13 +9,13 @@ import com.example.room_setup_composables.ui.theme.RoomDatabaseSetupTheme
 class MainActivity : ComponentActivity() {
     private val bookingViewModel: BookingViewModel by viewModels()
     private val storeViewModel: StoreViewModel by viewModels {
-        StoreViewModelFactory(AppDatabase.getDatabase(applicationContext).storeDao())
+        StoreViewModel.StoreViewModelFactory(AppDatabase.getDatabase(applicationContext).storeDao())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        storeViewModel.resetAndInsertMockStores()
+        //storeViewModel.resetAndInsertMockStores()
 
         setContent {
             RoomDatabaseSetupTheme {

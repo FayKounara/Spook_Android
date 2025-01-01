@@ -62,6 +62,8 @@ fun BookingNavigation(viewModel: BookingViewModel, name: String) {
 @Composable
 fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
     var customerName by remember { mutableStateOf("") }
+    var userId by remember { mutableStateOf("") }
+
     var reservationDate by remember { mutableStateOf("") }
     var reservationHours by remember { mutableStateOf("") }
     var storeId by remember { mutableStateOf("") }
@@ -110,7 +112,7 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
                             date = reservationDate,
                             hours = reservationHours,
                             storeId = storeId.toInt(),
-                            userId = customerName.hashCode() // Replace with real user ID logic
+                            userId = customerName.toInt() // Replace with real user ID logic
                         )
                     )
                     customerName = ""

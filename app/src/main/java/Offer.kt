@@ -18,6 +18,6 @@ data class Offer(
     val description: String,
     val orgPrice: Double,
     val discountPrice: Double,
-    //val image: String,
+    val image: String,
     val storeId: Int
 )

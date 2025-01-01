@@ -1,6 +1,7 @@
 package com.example.room_setup_composables
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +60,7 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
         fetchAllBookings()
         fetchAllStores()
         fetchAllUsers()
+        //insertDummyUsers()
     }
 
     private fun fetchAllBookings() {
@@ -110,6 +112,20 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch(Dispatchers.IO) {
             userDao.insert(user)
             fetchAllUsers()
+        }
+    }
+
+    fun insertDummyUsers() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val users = listOf(
+                User(userId = 1, username = "Alice", password = "123"),
+                User(userId = 2, username = "Bob", password = "123"),
+                User(userId = 3, username = "Charlie", password = "123")
+            )
+            for (user in users) {
+                userDao.insert(user)
+            }
+            Log.d("BookingViewModel", "Dummy users inserted")
         }
     }
 }
