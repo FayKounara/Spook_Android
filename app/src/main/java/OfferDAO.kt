@@ -13,4 +13,7 @@ interface OfferDao {
 
     @Query("SELECT * FROM offers_table WHERE storeId = :storeId")
     fun getOffersForStore(storeId: Int): Flow<List<Offer>>
+
+    @Query("DELETE FROM offers_table")
+    suspend fun deleteAllOffers()
 }
