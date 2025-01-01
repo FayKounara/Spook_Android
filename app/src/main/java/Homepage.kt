@@ -1,10 +1,5 @@
 package com.example.room_setup_composables
 
-
-//import android.os.Bundle
-//import androidx.activity.ComponentActivity
-//import androidx.activity.compose.setContent
-//import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +20,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,25 +30,61 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
+import com.example.room_setup_composables.ui.theme.Screen
 
 
 
 // Dummy data and composable functions for demo purposes
 val sampleOffers = listOf(
-    Offer(0,"Pizza","Pizza Margarita", 15.99, 12.99,0),
-    Offer(1,"Burger","Double Smashed Burger",10.99, 8.99, 1 ),
-    Offer(3,"Pasta", "Bolognese",13.99, 10.99,2 )
+    Offer(0,"Pizza","Pizza Margarita", 15.99, 12.99,"a", 0),
+    Offer(1,"Burger","Double Smashed Burger",10.99, 8.99, "b", 1),
+    Offer(3,"Pasta", "Bolognese",13.99, 10.99,"c", 2)
 )
 
-val sampleRestaurants = listOf(
+/*val sampleRestaurants = listOf(
     Store(0, "Downtown Square","","","",""),
     Store(1, "Elm Street","","","",""),
     Store(2, "Beach Avenue","","","","")
-)
+)*/
+
 
 @Composable
-fun Homepage(name: String, modifier: Modifier = Modifier) {
+fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Screen.HomePage.route) {
+        composable(route = Screen.HomePage.route) {
+            Homepage(navController, "John", storeViewModel = storeViewModel)
+        }
+        composable(
+            route = Screen.Stores.route + "/{name}",
+            arguments = listOf(
+                navArgument("name") {
+                    type = NavType.StringType
+                    defaultValue = "John"
+                    nullable = true
+                }
+            )
+        ) { entry ->
+            val name = entry.arguments?.getString("name") ?: "Juicy Grill"
+            StoreNavigation(storeViewModel, bookingViewModel, name)
+        }
+    }
+}
+
+
+@Composable
+fun Homepage(navController: NavController, name: String,storeViewModel: StoreViewModel, modifier: Modifier = Modifier) {
     // Scrollable container
+    val stores by storeViewModel.allStores.collectAsState(initial = emptyList())
+
     Box(
         modifier = modifier // Χρήση του modifier που περνάει από την κλήση
             .fillMaxSize()
@@ -130,12 +163,14 @@ fun Homepage(name: String, modifier: Modifier = Modifier) {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(sampleRestaurants) { store ->
+                    items(stores) { store ->
                         RestaurantCard(
                             store = store,
                             onBookClick = {
                                 // Ενέργεια για το κουμπί "Book"
                                 println("Booked table at ${store.name}")
+//                                Navigate to book page
+                                navController.navigate(Screen.Stores.withArgs("Juicy Grill"))
                             }
                         )
                     }
