@@ -74,10 +74,10 @@ fun  StoreList(navController:NavController ,viewModel: StoreViewModel, filternam
 }
 
 @Composable
-fun StoreCard(navController:NavController, store: Store, availableHours: List<String>) {
+fun StoreCard(navController: NavController, store: Store, availableHours: List<String>) {
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
-        shape = RoundedCornerShape(16.dp), // Rounded corners for the card
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
@@ -86,31 +86,12 @@ fun StoreCard(navController:NavController, store: Store, availableHours: List<St
             modifier = Modifier
                 .padding(16.dp)
         ) {
-            // Restaurant Name and Image (displayed only once)
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            ) {
-                // Restaurant Name
-                Text(
-                    text = store.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-//                // Restaurant Image (Placeholder image for now)
-//                Image(
-//                    painter = painterResource(id = R.drawable.restaurant_image), // Replace with actual image resource
-//                    contentDescription = "Restaurant Image",
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(200.dp) // Adjust height as needed
-//                        .padding(bottom = 8.dp)
-//                )
-            }
-
-            // Restaurant Information (e.g., Info, Location)
+            // Εμφάνιση των βασικών πληροφοριών
+            Text(
+                text = store.name,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
             Text(
                 text = "Info: ${store.info}",
                 style = MaterialTheme.typography.bodyMedium,
@@ -122,33 +103,33 @@ fun StoreCard(navController:NavController, store: Store, availableHours: List<St
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Available Hours Header (Only once for the restaurant)
+            // Διαθέσιμες Ώρες (Availability)
             Text(
                 text = "Available Hours:",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Display all available hours (separate clickable boxes for each hour)
+            // Διαδραστικές ώρες
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp) // Space out the boxes
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 availableHours.forEach { hour ->
                     Box(
                         modifier = Modifier
                             .padding(4.dp)
-                            .height(40.dp) // Control height of each hour box
-                            .weight(1f) // This ensures the boxes stretch equally across the available space
+                            .height(40.dp)
+                            .weight(1f)
                             .background(
                                 MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .clickable {
-                                // Handle the click event for each hour here
-                                println("Clicked on hour: $hour")
+                                // Πλοήγηση στο Bookings με την επιλεγμένη ώρα
+                                navController.navigate(Screen.Bookings.withArgs(hour.trim()))
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -162,6 +143,7 @@ fun StoreCard(navController:NavController, store: Store, availableHours: List<St
         }
     }
 }
+
 
 @Composable
 fun ToBookPage(navController: NavController) {
