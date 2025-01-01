@@ -344,7 +344,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
 
 @Composable
 fun DaySelector(selectedDay: String, onDaySelected: (String) -> Unit, modifier: Modifier = Modifier) {
-    val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    val daysOfWeek = listOf("Mon-Sun", "Mon-Sat", "Mon-Fri", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     var expanded by remember { mutableStateOf(false) }
 
     Box(
