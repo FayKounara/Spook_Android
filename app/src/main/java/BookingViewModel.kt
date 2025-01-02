@@ -60,7 +60,7 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
         fetchAllBookings()
         fetchAllStores()
         fetchAllUsers()
-        //insertDummyUsers()
+//        insertDummyUsers()
     }
 
     private fun fetchAllBookings() {

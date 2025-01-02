@@ -38,7 +38,7 @@ import com.example.room_setup_composables.ui.theme.Screen
 
 
 @Composable
-fun BookingNavigation(viewModel: BookingViewModel, name: String) {
+fun BookingNavigation(viewModel: BookingViewModel, reviewViewModel:ReviewViewModel, name: String) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Bookings.route) {
         composable(route = Screen.Bookings.route) {
@@ -54,7 +54,7 @@ fun BookingNavigation(viewModel: BookingViewModel, name: String) {
                 }
             )
         ) { entry ->
-            ReviewScreen(navController, name = entry.arguments?.getString("name"))
+            ReviewScreen(navController, reviewViewModel, storeId = 3)
         }
     }
 }

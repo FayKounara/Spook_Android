@@ -16,10 +16,10 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
     //al stores as flow
     val allStores: Flow<List<Store>> = storeDao.getAllStores()
 
-    init {
-        //insertDummyStores()
-        //insertDummyOffers()
-    }
+//    init {
+//        insertDummyStores()
+//        insertDummyOffers()
+//    }
 
     // Insert a new store into the database
     fun insertStore(store: Store) {

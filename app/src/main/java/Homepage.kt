@@ -65,7 +65,7 @@ val sampleOffers = listOf(
 
 
 @Composable
-fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel) {
+fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.HomePage.route) {
@@ -83,7 +83,7 @@ fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: Booking
             )
         ) { entry ->
             val name = entry.arguments?.getString("name") ?: "Juicy Grill"
-            StoreNavigation(storeViewModel, bookingViewModel, name)
+            StoreNavigation(storeViewModel, bookingViewModel, reviewViewModel, name)
         }
     }
 }
@@ -137,6 +137,12 @@ fun Homepage(navController: NavController, name: String, storeViewModel: StoreVi
                     modifier = Modifier.padding(4.dp)
                 )
             }
+
+//            Button(onClick = {
+//                navController.navigate(Screen.Stores.withArgs("Juicy Grill"))
+//            }) {
+//                Text(text = "To Reviews")
+//            }
 
             // Today's Offers Section
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

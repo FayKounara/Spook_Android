@@ -11,6 +11,9 @@ class MainActivity : ComponentActivity() {
     private val storeViewModel: StoreViewModel by viewModels {
         StoreViewModel.StoreViewModelFactory(AppDatabase.getDatabase(applicationContext).storeDao(), AppDatabase.getDatabase(applicationContext).offerDao())
     }
+    private val reviewViewModel: ReviewViewModel by viewModels {
+        ReviewViewModel.ReviewViewModelFactory(AppDatabase.getDatabase(applicationContext).reviewDao())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             RoomDatabaseSetupTheme {
-                HomePageNavigation(storeViewModel, bookingViewModel);
+                HomePageNavigation(storeViewModel, bookingViewModel, reviewViewModel);
             }
         }
     }

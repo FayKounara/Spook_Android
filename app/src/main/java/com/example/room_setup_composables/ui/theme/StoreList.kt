@@ -24,12 +24,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.room_setup_composables.BookingNavigation
 import com.example.room_setup_composables.BookingViewModel
+import com.example.room_setup_composables.ReviewViewModel
 import com.example.room_setup_composables.Store
 import com.example.room_setup_composables.StoreViewModel
 import com.example.room_setup_composables.ui.theme.Screen
 
 @Composable
-fun StoreNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, filtername: String) {
+fun StoreNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, filtername: String) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
@@ -47,7 +48,7 @@ fun StoreNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingVie
             )
         ) { entry ->
             val name = entry.arguments?.getString("name") ?: "John"
-            BookingNavigation(bookingViewModel, name)
+            BookingNavigation(bookingViewModel, reviewViewModel, name)
         }
     }
 }
