@@ -83,7 +83,21 @@ fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: Booking
             )
         ) { entry ->
             val name = entry.arguments?.getString("name") ?: "Juicy Grill"
-            StoreNavigation(storeViewModel, bookingViewModel, reviewViewModel, name)
+            StoreNavigation(storeViewModel, bookingViewModel, name)
+        }
+
+        composable(
+            route = Screen.Reviews.route + "/{storeId}",
+            arguments = listOf(
+                navArgument("storeId") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                    nullable = false
+                }
+            )
+        ) { entry ->
+            val storeId = entry.arguments?.getInt("storeId") ?: 1
+            ReviewScreen(navController, reviewViewModel, storeId = storeId)
         }
     }
 }
@@ -198,10 +212,15 @@ fun Homepage(navController: NavController, name: String, storeViewModel: StoreVi
                     items(filteredStores) { store ->
                         RestaurantCard(
                             store = store,
+
                             onBookClick = {
-                                println("Booked table at ${store.name}")
                                 navController.navigate(Screen.Stores.withArgs("Juicy Grill"))
+                            },
+
+                            onReviewClick = {
+                                navController.navigate(Screen.Reviews.withArgs(store.storeId.toString()))
                             }
+
                         )
                     }
                 }
@@ -281,7 +300,7 @@ fun FoodCard(foodItem: Offer) {
 
 
 @Composable
-fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
+fun RestaurantCard(store: Store, onBookClick: () -> Unit, onReviewClick: () -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         shape = RoundedCornerShape(4.dp),
@@ -330,6 +349,19 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+            }
+
+            // Κουμπί "See Reviews"
+            Button(
+                onClick = onReviewClick,
+                modifier = Modifier
+                    .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFFA726),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = "See Reviews")
             }
 
             // Κουμπί "Book"
