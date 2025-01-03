@@ -30,7 +30,7 @@ import com.example.room_setup_composables.StoreViewModel
 import com.example.room_setup_composables.ui.theme.Screen
 
 @Composable
-fun StoreNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, filtername: String) {
+fun StoreNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, filtername: String) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
@@ -48,7 +48,7 @@ fun StoreNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingVie
             )
         ) { entry ->
             val name = entry.arguments?.getString("name") ?: "John"
-            BookingNavigation(bookingViewModel, reviewViewModel, name)
+            BookingNavigation(bookingViewModel, name)
         }
     }
 }

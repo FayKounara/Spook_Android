@@ -38,23 +38,11 @@ import com.example.room_setup_composables.ui.theme.Screen
 
 
 @Composable
-fun BookingNavigation(viewModel: BookingViewModel, reviewViewModel:ReviewViewModel, name: String) {
+fun BookingNavigation(viewModel: BookingViewModel, name: String) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Bookings.route) {
         composable(route = Screen.Bookings.route) {
             BookingsScreen(navController, viewModel)
-        }
-        composable(
-            route = Screen.Reviews.route + "/{name}",
-            arguments = listOf(
-                navArgument("name") {
-                    type = NavType.StringType
-                    defaultValue = "John"
-                    nullable = true
-                }
-            )
-        ) { entry ->
-            ReviewScreen(navController, reviewViewModel, storeId = 3)
         }
     }
 }
@@ -136,32 +124,31 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        ToReviewPage(navController)
     }
 }
 
-@Composable
-fun ToReviewPage(navController: NavController) {
-    var text by remember { mutableStateOf("") }
-    Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 50.dp)
-    ) {
-        TextField(
-            value = text,
-            onValueChange = { text = it },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = {
-            navController.navigate(Screen.Reviews.withArgs(text))
-        }) {
-            Text(text = "To Reviews")
-        }
-    }
-}
+//@Composable
+//fun ToReviewPage(navController: NavController) {
+//    var text by remember { mutableStateOf("") }
+//    Column(
+//        verticalArrangement = Arrangement.Center,
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 50.dp)
+//    ) {
+//        TextField(
+//            value = text,
+//            onValueChange = { text = it },
+//            modifier = Modifier.fillMaxWidth()
+//        )
+//        Spacer(modifier = Modifier.height(8.dp))
+//        Button(onClick = {
+//            navController.navigate(Screen.Reviews.withArgs(text))
+//        }) {
+//            Text(text = "To Reviews")
+//        }
+//    }
+//}
 
 @Composable
 fun BookingItem(navController: NavController, booking: Booking, onDelete: () -> Unit) {
@@ -192,142 +179,3 @@ fun BookingItem(navController: NavController, booking: Booking, onDelete: () -> 
         }
     }
 }
-
-
-
-
-
-/*
-@Composable
-fun Navigation(viewModel: BookingViewModel) {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.Bookings.route) {
-        composable(route = Screen.Bookings.route) {
-            BookingsScreen(navController, viewModel)
-        }
-        composable(
-            route = Screen.Reviews.route + "/{name}",
-            arguments = listOf(
-                navArgument("name") {
-                    type= NavType.StringType
-                    defaultValue= "John"
-                    nullable=true
-                }
-            )
-        ) { entry ->
-            ReviewScreen(navController, name = entry.arguments?.getString("name"))
-        }
-    }
-}
-
-@Composable
-fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
-    var customerName by remember { mutableStateOf("") }
-    var reservationDate by remember { mutableStateOf("") }
-    //val bookings by viewModel.allBookings.observeAsState(emptyList())
-    val bookings by viewModel.allBookings.collectAsState()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        TextField(
-            value = customerName,
-            onValueChange = { customerName = it },
-            label = { Text("Enter Customer Name") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
-            value = reservationDate,
-            onValueChange = { reservationDate = it },
-            label = { Text("Enter Reservation Date") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = {
-                if (customerName.isNotEmpty() && reservationDate.isNotEmpty()) {
-                    viewModel.insertBooking(
-                        Booking(
-                            userId = customerName,
-                            date = reservationDate
-                        )
-                    )
-                    customerName = ""
-                    reservationDate = ""
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Add Booking")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Divider()
-        LazyColumn {
-            items(bookings) { booking ->
-                BookingItem(navController, booking, onDelete = { viewModel.deleteBooking(booking) })
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        ToReviewPage(navController)
-    }
-}
-
-@Composable
-fun ToReviewPage(navController: NavController) {
-    var text by remember {
-        mutableStateOf("")
-    }
-    Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 50.dp)
-    ) {
-        TextField(
-            value = text,
-            onValueChange = {
-                text = it
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = {
-            navController.navigate(Screen.Reviews.withArgs(text))
-        }
-        ) {
-            Text(text = "To Reviews")
-        }
-    }
-}
-
-@Composable
-fun BookingItem(navController: NavController, booking: Booking, onDelete: () -> Unit) {
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                Text(text = "Name: ${booking.customerName}")
-                Text(text = "Date: ${booking.reservationDate}")
-            }
-            IconButton(onClick = { onDelete() }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete Booking"
-                )
-            }
-        }
-    }
-}*/
