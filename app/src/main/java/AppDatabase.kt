@@ -29,7 +29,7 @@ abstract class BookingDatabase : RoomDatabase() {
 
 @Database(
     entities = [Booking::class, Store::class, User::class, Review::class, Offer::class],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

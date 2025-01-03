@@ -37,8 +37,13 @@ class DatabaseTest {
     @Test
     fun testDatabaseOperations() = runBlocking {
         // Insert sample users
-        val user1 = User(username = "JohnDoe", password = "password123")//, bookings = emptyList())
-        val user2 = User(username = "JaneSmith", password = "pass456")//, bookings = emptyList())
+        val user1 = User(
+            username = "JohnDoe",
+            password = "password123",
+            phoneNumber = "",
+            email = ""
+        )//, bookings = emptyList())
+        val user2 = User(username = "JaneSmith", password = "pass456", phoneNumber = "", email = "")//, bookings = emptyList())
         userDao.insert(user1)
         userDao.insert(user2)
 
@@ -49,8 +54,24 @@ class DatabaseTest {
         storeDao.insert(store2)
 
         // Insert sample bookings
-        val booking1 = Booking(date = "2024-06-30", hours = "12:00-14:00", storeId = 1, userId = 1)
-        val booking2 = Booking(date = "2024-07-01", hours = "14:00-16:00", storeId = 2, userId = 2)
+        val booking1 = Booking(
+            date = "2024-06-30",
+            hours = "12:00-14:00",
+            storeId = 1,
+            userId = 1,
+            phoneNumber = "",
+            persons = "2",
+            occasion = ""
+        )
+        val booking2 = Booking(
+            date = "2024-07-01",
+            hours = "14:00-16:00",
+            storeId = 2,
+            userId = 2,
+            phoneNumber = "",
+            persons = "2",
+            occasion = ""
+        )
         bookingDao.insert(booking1)
         bookingDao.insert(booking2)
 

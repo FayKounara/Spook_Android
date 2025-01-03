@@ -112,7 +112,10 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
                             date = reservationDate,
                             hours = reservationHours,
                             storeId = storeId.toInt(),
-                            userId = customerName.toInt() // Replace with real user ID logic
+                            userId = customerName.toInt(),
+                            phoneNumber = "",
+                            persons = 2,
+                            occasion = "" // Replace with real user ID logic
                         )
                     )
                     customerName = ""

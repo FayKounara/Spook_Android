@@ -65,7 +65,12 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     }
                 )
                 Button(
-                    onClick = { viewModel.insertUser(User(username = username, password = password)) },
+                    onClick = { viewModel.insertUser(User(
+                        username = username,
+                        password = password,
+                        phoneNumber = "",
+                        email = ""
+                    )) },
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text("Insert User")
@@ -90,7 +95,14 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     }
                 )
                 Button(
-                    onClick = { viewModel.insertStore(Store(name = storeName, info = storeInfo, avDays = "", avHours = "", location = "")) },
+                    onClick = { viewModel.insertStore(Store(
+                        name = storeName,
+                        info = storeInfo,
+                        avDays = " ",
+                        avHours = " ",
+                        location = " ",
+                        availability = 10
+                    )) },
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text("Insert Store")
@@ -115,7 +127,15 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     }
                 )
                 Button(
-                    onClick = { viewModel.insertBooking(Booking(date = bookingDate, hours = bookingHours, storeId = 0, userId = 0)) },
+                    onClick = { viewModel.insertBooking(Booking(
+                        date = bookingDate,
+                        hours = bookingHours,
+                        storeId = 0,
+                        userId = 0,
+                        phoneNumber = " ",
+                        persons = 2,
+                        occasion = " "
+                    )) },
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text("Insert Booking")

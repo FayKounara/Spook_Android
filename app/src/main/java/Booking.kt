@@ -20,5 +20,9 @@ data class Booking(
     val date: String,
     val hours: String,
     val storeId: Int,
-    val userId: Int
+    val userId: Int,
+    val phoneNumber: String,
+    val persons: Int,
+    val occasion: String
+
 )

@@ -118,9 +118,15 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
     fun insertDummyUsers() {
         viewModelScope.launch(Dispatchers.IO) {
             val users = listOf(
-                User(userId = 1, username = "Alice", password = "123"),
-                User(userId = 2, username = "Bob", password = "123"),
-                User(userId = 3, username = "Charlie", password = "123")
+                User(userId = 1, username = "Alice", password = "123", phoneNumber = "", email = ""),
+                User(userId = 2, username = "Bob", password = "123", phoneNumber = "", email = ""),
+                User(
+                    userId = 3,
+                    username = "Charlie",
+                    password = "123",
+                    phoneNumber = "",
+                    email = ""
+                )
             )
             for (user in users) {
                 userDao.insert(user)

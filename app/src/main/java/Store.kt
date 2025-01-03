@@ -1,7 +1,6 @@
 package com.example.room_setup_composables
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "store_table")
@@ -13,4 +12,5 @@ data class Store(
     val avDays: String,
     val avHours: String,
     val location: String,
+    val availability: Int
 )

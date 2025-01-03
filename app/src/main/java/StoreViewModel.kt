@@ -50,21 +50,24 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
                     info = "Special Burgers and snacks",
                     avDays = "Mon-Sun",
                     avHours = "8:00 AM - 8:00 PM",
-                    location = "Kolokotroni 12"
+                    location = "Kolokotroni 12",
+                    availability = 10
                 ),
                 Store(
                     name = "Juicy Pizza Holargos",
                     info = "Special Pizzas and Burgers",
                     avDays = "Mon-Fri",
                     avHours = "9:00 AM - 6:00 PM",
-                    location = "Leoforos Kifisias 22"
+                    location = "Leoforos Kifisias 22",
+                    availability = 10
                 ),
                 Store(
                     name = "Juicy Pasta Exarchia ",
                     info = "Special Pasta and Pizza",
                     avDays = "Mon-Sat",
                     avHours = "10:00 AM - 7:00 PM",
-                    location = "Ippokratous  5"
+                    location = "Ippokratous  5",
+                    availability = 10
                 )
 
             )
