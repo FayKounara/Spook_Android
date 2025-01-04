@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,8 +34,14 @@ import com.example.room_setup_composables.ui.theme.Screen
 
 
 @Composable
-fun AuthNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
+fun AuthNavigation(viewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
+
     val navController = rememberNavController()
+    val users by viewModel.allUsers.collectAsState(initial = emptyList())
+    // Filter the users to get current user
+//    val currentUser = users.filter { it.username == username } --> Place after user log's in
+//    also get userId from currentUser and pass it to homepage
+
     NavHost(navController = navController, startDestination = Screen.AuthPage.route) {
         composable(route = Screen.AuthPage.route) {
             AuthScreen(
@@ -55,17 +62,18 @@ fun AuthNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingView
             )
         }
         composable(
-            route = Screen.Bookings.route + "/{name}",
+            route = Screen.HomePage.route + "/{id}",
             arguments = listOf(
-                navArgument("name") {
+                navArgument("id") {
                     type = NavType.StringType
-                    defaultValue = "John"
+                    defaultValue = "123"
                     nullable = true
                 }
             )
         ) { entry ->
-            val name = entry.arguments?.getString("name") ?: "John"
+            val userId = entry.arguments?.getString("id") ?: "123"
             HomePageNavigation(storeViewModel, bookingViewModel, reviewViewModel)
+//            HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
         }
     }
 }
