@@ -28,6 +28,8 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
         fetchAllBookings()
         fetchAllStores()
         fetchAllUsers()
+       // deleteAllBookings()
+
 //        insertDummyUsers()
     }
 
@@ -36,6 +38,11 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
             bookingDao.getAllBookings().collect { bookings ->
                 _allBookings.value = bookings
             }
+        }
+    }
+    private fun deleteAllBookings() {
+        viewModelScope.launch(Dispatchers.IO) {
+            bookingDao.deleteAllBookings()
         }
     }
 

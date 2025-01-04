@@ -11,9 +11,18 @@ class ReviewViewModel(private val reviewDao: ReviewDao) : ViewModel() {
     //all reviews as flow
     val allReviews: Flow<List<Review>> = reviewDao.getReviews()
 
+//    init {
+//        deleteAllReviews()
+//    }
     fun insertReview(review: Review) {
         viewModelScope.launch {
             reviewDao.insert(review)
+        }
+    }
+
+    fun deleteAllReviews() {
+        viewModelScope.launch {
+            reviewDao.deleteAllReviews()
         }
     }
 

@@ -15,4 +15,7 @@ interface BookingDao {
 
     @Query("SELECT * FROM booking_table")
     fun getAllBookings(): Flow<List<Booking>>
+
+    @Query("DELETE FROM booking_table")
+    fun deleteAllBookings()
 }

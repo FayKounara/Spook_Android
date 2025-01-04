@@ -12,4 +12,8 @@ interface ReviewDao {
 
     @Query("SELECT * FROM reviews_table")
     fun getReviews(): Flow<List<Review>>
+
+    @Query("DELETE FROM reviews_table")
+    suspend fun deleteAllReviews()
+
 }
