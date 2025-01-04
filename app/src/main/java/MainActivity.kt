@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             RoomDatabaseSetupTheme {
-                HomePageNavigation(storeViewModel, bookingViewModel, reviewViewModel);
+                AuthNavigation(storeViewModel, bookingViewModel, reviewViewModel);
             }
         }
     }

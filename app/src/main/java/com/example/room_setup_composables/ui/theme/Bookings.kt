@@ -127,29 +127,6 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel) {
     }
 }
 
-//@Composable
-//fun ToReviewPage(navController: NavController) {
-//    var text by remember { mutableStateOf("") }
-//    Column(
-//        verticalArrangement = Arrangement.Center,
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(horizontal = 50.dp)
-//    ) {
-//        TextField(
-//            value = text,
-//            onValueChange = { text = it },
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//        Spacer(modifier = Modifier.height(8.dp))
-//        Button(onClick = {
-//            navController.navigate(Screen.Reviews.withArgs(text))
-//        }) {
-//            Text(text = "To Reviews")
-//        }
-//    }
-//}
-
 @Composable
 fun BookingItem(navController: NavController, booking: Booking, onDelete: () -> Unit) {
     Card(
