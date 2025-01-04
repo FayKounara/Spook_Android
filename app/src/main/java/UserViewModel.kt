@@ -6,22 +6,23 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class ReviewViewModel(private val reviewDao: ReviewDao) : ViewModel() {
+class UserViewModel(private val userDao: UserDao) : ViewModel() {
 
-    //all reviews as flow
-    val allReviews: Flow<List<Review>> = reviewDao.getReviews()
+    //all users as flow
+    val allUsers: Flow<List<User>> = userDao.getAllUsers()
 
-    fun insertReview(review: Review) {
+    fun insertUser(user: User) {
         viewModelScope.launch {
-            reviewDao.insert(review)
+            userDao.insert(user)
         }
     }
 
-    class ReviewViewModelFactory(private val reviewDao: ReviewDao) : ViewModelProvider.Factory {
+    // Factory for creating StoreViewModel with StoreDao
+    class UserViewModelFactory(private val userDao: UserDao) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(ReviewViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
-                return ReviewViewModel(reviewDao) as T
+                return UserViewModel(userDao) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
