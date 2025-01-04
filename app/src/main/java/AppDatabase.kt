@@ -31,15 +31,12 @@ abstract class BookingDatabase : RoomDatabase() {
 
 val MIGRATION_2_3 = object : Migration(2, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        // Add new columns to the "booking_table"
         db.execSQL("ALTER TABLE booking_table ADD COLUMN phoneNumber TEXT")
         db.execSQL("ALTER TABLE booking_table ADD COLUMN persons INTEGER NOT NULL DEFAULT 0")
         db.execSQL("ALTER TABLE booking_table ADD COLUMN occasion TEXT NOT NULL DEFAULT ''")
 
-        // Add new column to the "store_table"
         db.execSQL("ALTER TABLE store_table ADD COLUMN availability INTEGER NOT NULL DEFAULT 0")
 
-        // Add new columns to the "users_table"
         db.execSQL("ALTER TABLE users_table ADD COLUMN phoneNumber TEXT NOT NULL DEFAULT ''")
         db.execSQL("ALTER TABLE users_table ADD COLUMN email TEXT NOT NULL DEFAULT ''")
     }

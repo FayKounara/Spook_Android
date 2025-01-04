@@ -22,7 +22,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             RoomDatabaseSetupTheme {
-                AuthNavigation(storeViewModel, bookingViewModel, reviewViewModel);
+                //AuthNavigation(storeViewModel, bookingViewModel, reviewViewModel);
+                HomePageNavigation(storeViewModel, bookingViewModel, reviewViewModel);
             }
         }
     }

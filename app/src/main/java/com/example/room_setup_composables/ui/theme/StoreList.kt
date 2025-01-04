@@ -1,5 +1,6 @@
 package com.example.room_setup_composables.com.example.room_setup_composables.ui.theme
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -129,8 +130,10 @@ fun StoreCard(navController: NavController, store: Store, availableHours: List<S
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .clickable {
+                                Log.d("NavigationDebug", "Navigating with hour=$hour and storeId=${store.storeId}")
+
                                 // Πλοήγηση στο Bookings με την επιλεγμένη ώρα
-                                navController.navigate(Screen.Bookings.withArgs(hour.trim()))
+                                navController.navigate(Screen.Bookings.withArgs(hour.trim(), store.storeId.toString()))
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -162,7 +165,7 @@ fun ToBookPage(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = {
-            navController.navigate(Screen.Bookings.withArgs(text))
+            navController.navigate(Screen.Bookings.withArgs())
         }) {
             Text(text = "Book Now")
         }
