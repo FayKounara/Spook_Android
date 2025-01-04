@@ -16,10 +16,10 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
     //al stores as flow
     val allStores: Flow<List<Store>> = storeDao.getAllStores()
 
-//    init {
-//        insertDummyStores()
-//        insertDummyOffers()
-//    }
+    init {
+         // insertDummyStores()
+        //  insertDummyOffers()
+    }
 
     // Insert a new store into the database
     fun insertStore(store: Store) {
@@ -44,11 +44,13 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
 
     fun insertDummyStores() {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.d("StoreViewModel", "Before deleting stores")
+            Log.d("StoreViewModel", "Dummy stores deleted")
             val stores = listOf(
                 Store(
                     name = "Juicy Grill",
                     info = "Special Burgers and snacks",
-                    avDays = "Mon-Sun",
+                    avDays = "Sunday",
                     avHours = "8:00 AM - 8:00 PM",
                     location = "Kolokotroni 12",
                     availability = 10
@@ -56,7 +58,7 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
                 Store(
                     name = "Juicy Pizza Holargos",
                     info = "Special Pizzas and Burgers",
-                    avDays = "Mon-Fri",
+                    avDays = "Monday",
                     avHours = "9:00 AM - 6:00 PM",
                     location = "Leoforos Kifisias 22",
                     availability = 10
@@ -64,7 +66,7 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
                 Store(
                     name = "Juicy Pasta Exarchia ",
                     info = "Special Pasta and Pizza",
-                    avDays = "Mon-Sat",
+                    avDays = "Sunday",
                     avHours = "10:00 AM - 7:00 PM",
                     location = "Ippokratous  5",
                     availability = 10
@@ -94,9 +96,9 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
         viewModelScope.launch(Dispatchers.IO) {
             //offerDao.deleteAllOffers()
             val offers = listOf(
-                Offer( name = "Pizza", description = "Pizza Margarita", orgPrice = 15.99, discountPrice = 12.99, image = "a", storeId = 58),
-                Offer( name = "Burger", description = "Double Smashed Burger", orgPrice = 10.99, discountPrice = 8.99, image = "b", storeId = 59),
-                Offer( name = "Pasta", description = "Bolognese", orgPrice = 13.99, discountPrice = 10.99, image = "c", storeId = 60)
+                Offer( name = "Pizza", description = "Pizza Margarita", orgPrice = 15.99, discountPrice = 12.99, image = "a", storeId = 1),
+                Offer( name = "Burger", description = "Double Smashed Burger", orgPrice = 10.99, discountPrice = 8.99, image = "b", storeId = 2),
+                Offer( name = "Pasta", description = "Bolognese", orgPrice = 13.99, discountPrice = 10.99, image = "c", storeId = 3)
             )
             for (offer in offers) {
                 offerDao.insert(offer)
