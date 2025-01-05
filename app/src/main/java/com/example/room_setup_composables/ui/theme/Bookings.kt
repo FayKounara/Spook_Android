@@ -46,19 +46,19 @@ fun BookingNavigation(viewModel: BookingViewModel, name: String) {
         {entry ->
             val hour = entry.arguments?.getString("hour") ?: ""
             val storeId = entry.arguments?.getInt("storeId") ?: ""
-            BookingsScreen(navController, viewModel, storeId.toString())
+            BookingsScreen(navController, viewModel, hour.toString(),  storeId.toString())
 
         }
     }
 }
 
 @Composable
-fun BookingsScreen(navController: NavController, viewModel: BookingViewModel, storeId: String) {
+fun BookingsScreen(navController: NavController, viewModel: BookingViewModel, hour:String, storeId: String) {
     var customerName by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf("") }
     var enteredStoreId by remember { mutableStateOf(storeId) }
     var reservationDate by remember { mutableStateOf("") }
-    var reservationHours by remember { mutableStateOf("") }
+    var hour by remember { mutableStateOf(hour) }
     var storeId by remember { mutableStateOf("") }
     val bookings by viewModel.allBookings.collectAsState()
 
@@ -82,8 +82,8 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel, st
         )
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
-            value = reservationHours,
-            onValueChange = { reservationHours = it },
+            value = hour,
+            onValueChange = { hour = it },
             label = { Text("Enter Reservation Hours") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -99,12 +99,12 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel, st
         Button(
             onClick = {
                 if (customerName.isNotEmpty() && reservationDate.isNotEmpty() &&
-                    reservationHours.isNotEmpty() && enteredStoreId.isNotEmpty()
+                    hour.isNotEmpty() && enteredStoreId.isNotEmpty()
                 ) {
                     viewModel.insertBooking(
                         Booking(
                             date = reservationDate,
-                            hours = reservationHours,
+                            hours = hour,
                             storeId = enteredStoreId.toInt(),
                             userId = customerName.toInt(),
                             phoneNumber = "",
@@ -114,7 +114,7 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel, st
                     )
                     customerName = ""
                     reservationDate = ""
-                    reservationHours = ""
+                    hour = ""
                     enteredStoreId = ""
                 }
             },
