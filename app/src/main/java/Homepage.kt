@@ -7,6 +7,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -92,7 +95,6 @@ fun Homepage(
         (isDayMatch && isPersonsMatch)
     }
 
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -108,6 +110,18 @@ fun Homepage(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
+                // Εικονίδιο Προφίλ
+                Icon(
+                    imageVector = Icons.Default.Person, // Χρησιμοποίησε ένα προκαθορισμένο εικονίδιο ή αντικατέστησέ το με το δικό σου
+                    contentDescription = "Profile Icon",
+                    modifier = Modifier
+                        .size(40.dp) // Μέγεθος του εικονιδίου
+                        .clickable {
+                            navController.navigate("profile") // Ενέργεια που γίνεται όταν πατηθεί το εικονίδιο
+                        }
+                        .padding(8.dp) // Κενό γύρω από το εικονίδιο
+                )
+
                 Text(
                     text = "Welcome back, $name!",
                     style = TextStyle(
@@ -118,8 +132,8 @@ fun Homepage(
                 )
             }
 
-
             Spacer(modifier = Modifier.height(20.dp))
+
             // Today's Offers Section
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Text(
@@ -153,7 +167,6 @@ fun Homepage(
                         )
                     }
                 }
-
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -168,27 +181,26 @@ fun Homepage(
 
                 // "Available on" και Επιλογέας Ημέρας
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {
-                    /*Text(
-                        text = "Available on $selectedDay for $selectedPersons persons",
-                        color = Color.Gray,
-                        style = TextStyle(fontSize = 14.sp),
-                        modifier = Modifier.padding(end = 12.dp)
-                    )*/
-
+                    // Επιλογέας ατόμων
                     PersonsSelector(
                         selectedPersons = selectedPersons,
                         onPersonsSelected = { persons -> selectedPersons = persons },
-                        modifier = Modifier.width(100.dp)
+                        modifier = Modifier.width(60.dp)
                     )
 
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    // Επιλογέας ημέρας
                     DaySelector(
                         selectedDay = selectedDay,
                         onDaySelected = { day -> selectedDay = day },
-                        modifier = Modifier.width(100.dp)
+                        modifier = Modifier.width(120.dp)
                     )
                 }
 
@@ -213,6 +225,7 @@ fun Homepage(
         }
     }
 }
+
 
 
 @Composable
@@ -249,6 +262,7 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
         }
     }
 }
+
 
 
 @Composable
@@ -361,8 +375,8 @@ fun PersonsSelector(selectedPersons: String, onPersonsSelected: (String) -> Unit
     Box(
         modifier = modifier
             .clickable { expanded = true }
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-            .width(120.dp)
+            .padding(horizontal = 4.dp, vertical = 4.dp) // Μικρότερο padding
+            .width(80.dp) // Μειωμένο πλάτος
             .drawBehind {
                 drawLine(
                     color = Color(0xFFFFA726),
@@ -391,5 +405,7 @@ fun PersonsSelector(selectedPersons: String, onPersonsSelected: (String) -> Unit
         }
     }
 }
+
+
 
 
