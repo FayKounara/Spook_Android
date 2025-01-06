@@ -59,7 +59,7 @@ fun HomePageNavigation(
             )
         ) { entry ->
             val name = entry.arguments?.getString("name") ?: "Juicy Grill"
-            StoreNavigation(storeViewModel, bookingViewModel, name)
+            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, name)
         }
 
         // For navigation to reviews

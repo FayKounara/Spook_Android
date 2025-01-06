@@ -1,7 +1,6 @@
 package com.example.room_setup_composables.com.example.room_setup_composables.ui.theme
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -23,15 +21,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.room_setup_composables.BookingNavigation
 import com.example.room_setup_composables.BookingViewModel
-import com.example.room_setup_composables.ReviewViewModel
+import com.example.room_setup_composables.BookingsScreen
 import com.example.room_setup_composables.Store
 import com.example.room_setup_composables.StoreViewModel
+import com.example.room_setup_composables.UserViewModel
 import com.example.room_setup_composables.ui.theme.Screen
 
 @Composable
-fun StoreNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, filtername: String) {
+fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, filtername: String) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
@@ -39,17 +37,23 @@ fun StoreNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingVie
             StoreList(navController, storeViewModel, filtername);
         }
         composable(
-            route = Screen.Bookings.route + "/{name}",
+            route = Screen.Bookings.route + "/{hour}/{storeId}",
             arguments = listOf(
-                navArgument("name") {
+                navArgument("hour") {  // Expecting hour argument
                     type = NavType.StringType
-                    defaultValue = "John"
-                    nullable = true
+                    defaultValue = "0"  // Example default value
+                    nullable = false
+                },
+                navArgument("storeId") {  // Expecting storeId argument
+                    type = NavType.StringType
+                    defaultValue = "1"  // Example default value
+                    nullable = false
                 }
             )
         ) { entry ->
-            val name = entry.arguments?.getString("name") ?: "John"
-            BookingNavigation(bookingViewModel, name)
+            val hour = entry.arguments?.getString("hour") ?: "0"
+            val storeId = entry.arguments?.getString("storeId") ?: "1"
+            BookingsScreen(userId, userViewModel, navController, bookingViewModel, hour, storeId.toString())
         }
     }
 }
