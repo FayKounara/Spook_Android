@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import com.example.room_setup_composables.ui.theme.RoomDatabaseSetupTheme
+//import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 class MainActivity : ComponentActivity() {
     private val bookingViewModel: BookingViewModel by viewModels()
@@ -26,6 +27,7 @@ class MainActivity : ComponentActivity() {
         //storeViewModel.resetAndInsertMockStores()
 
         setContent {
+
             RoomDatabaseSetupTheme {
                 AuthNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
                 //HomePageNavigation(userId = 1, storeViewModel, bookingViewModel, reviewViewModel)

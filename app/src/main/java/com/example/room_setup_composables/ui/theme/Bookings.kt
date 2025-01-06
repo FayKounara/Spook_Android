@@ -59,6 +59,7 @@ fun BookingsScreen(navController: NavController, viewModel: BookingViewModel, ho
     var enteredStoreId by remember { mutableStateOf(storeId) }
     var reservationDate by remember { mutableStateOf("") }
     var hour by remember { mutableStateOf(hour) }
+    var storeId by remember { mutableStateOf("") }
     val bookings by viewModel.allBookings.collectAsState()
 
     Column(

@@ -33,8 +33,8 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
 
 
     init {
-//        insertDummyStores()
-//        insertDummyOffers()
+//       insertDummyOffers()
+//       insertDummyStores()
     }
 
     // Insert a new store into the database
@@ -60,65 +60,55 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
 
     fun insertDummyStores() {
         viewModelScope.launch(Dispatchers.IO) {
-            //storeDao.deleteAllStores()
-            val stores = listOf(
-                Store(
-                    name = "Juicy Grill",
-                    info = "Special Burgers and snacks",
-                    avDays = "Sunday",
-                    avHours = "8:00 AM - 8:00 PM",
-                    location = "Kolokotroni 12",
-                    availability = 10
-                ),
-                Store(
-                    name = "Juicy Pizza Holargos",
-                    info = "Special Pizzas and Burgers",
-                    avDays = "Monday",
-                    avHours = "9:00 AM - 6:00 PM",
-                    location = "Leoforos Kifisias 22",
-                    availability = 10
-                ),
-                Store(
-                    name = "Juicy Pasta Exarchia ",
-                    info = "Special Pasta and Pizza",
-                    avDays = "Sunday",
-                    avHours = "10:00 AM - 7:00 PM",
-                    location = "Ippokratous  5",
-                    availability = 10
-                )
-
-            )
-
-            for (store in stores) {
-                storeDao.insert(store)
-            }
-            Log.d("StoreViewModel", "Dummy stores inserted")
+            storeDao.deleteAllStores()
+//            val stores = listOf(
+//                Store(
+//                    name = "Juicy Grill",
+//                    info = "Special Burgers and snacks",
+//                    avDays = "Sunday",
+//                    avHours = "8:00 AM - 8:00 PM",
+//                    location = "Kolokotroni 12",
+//                    availability = 10
+//                ),
+//                Store(
+//                    name = "Juicy Pizza Holargos",
+//                    info = "Special Pizzas and Burgers",
+//                    avDays = "Monday",
+//                    avHours = "9:00 AM - 6:00 PM",
+//                    location = "Leoforos Kifisias 22",
+//                    availability = 10
+//                ),
+//                Store(
+//                    name = "Juicy Pasta Exarchia ",
+//                    info = "Special Pasta and Pizza",
+//                    avDays = "Sunday",
+//                    avHours = "10:00 AM - 7:00 PM",
+//                    location = "Ippokratous  5",
+//                    availability = 10
+//                )
+//
+//            )
+//
+//            for (store in stores) {
+//                storeDao.insert(store)
+//            }
+              Log.d("delete", "Dummy stores deleted")
         }
-        /*data class Offer(
-    @PrimaryKey(autoGenerate = true)
-    val offId: Int = 0,
-    val name: String,
-    val description: String,
-    val orgPrice: Double,
-    val discountPrice: Double,
-    val image: String,
-    val storeId: Int
-)*/
 
     }
 
     fun insertDummyOffers() {
         viewModelScope.launch(Dispatchers.IO) {
-           // offerDao.deleteAllOffers()
-            val offers = listOf(
-                Offer( name = "Pizza", description = "Pizza Margarita", orgPrice = 15.99, discountPrice = 12.99, image = "a", storeId = 10),
-                Offer( name = "Burger", description = "Double Smashed Burger", orgPrice = 10.99, discountPrice = 8.99, image = "b", storeId = 11),
-                Offer( name = "Pasta", description = "Bolognese", orgPrice = 13.99, discountPrice = 10.99, image = "c", storeId = 12)
-            )
-            for (offer in offers) {
-                offerDao.insert(offer)
-            }
-            Log.d("StoreViewModel", "Dummy offers inserted")
+            offerDao.deleteAllOffers()
+//            val offers = listOf(
+//                Offer( name = "Pizza", description = "Pizza Margarita", orgPrice = 15.99, discountPrice = 12.99, image = "a", storeId = 10),
+//                Offer( name = "Burger", description = "Double Smashed Burger", orgPrice = 10.99, discountPrice = 8.99, image = "b", storeId = 11),
+//                Offer( name = "Pasta", description = "Bolognese", orgPrice = 13.99, discountPrice = 10.99, image = "c", storeId = 12)
+//            )
+//            for (offer in offers) {
+//                offerDao.insert(offer)
+//            }
+//            Log.d("StoreViewModel", "Dummy offers inserted")
         }
     }
 
