@@ -118,8 +118,10 @@ fun Homepage(
                 )
             }
 
+
+            Spacer(modifier = Modifier.height(20.dp))
             // Today's Offers Section
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Text(
                     text = "Today's Offers",
                     style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -154,8 +156,10 @@ fun Homepage(
 
             }
 
+            Spacer(modifier = Modifier.height(20.dp))
+
             // Explore Restaurants Section
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 // Header
                 Text(
                     text = "Explore Our Restaurants",
@@ -180,8 +184,6 @@ fun Homepage(
                         onPersonsSelected = { persons -> selectedPersons = persons },
                         modifier = Modifier.width(100.dp)
                     )
-
-                    Spacer(modifier = Modifier.width(4.dp))
 
                     DaySelector(
                         selectedDay = selectedDay,
@@ -274,7 +276,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit, onReviewClick: () -> U
                     containerColor = Color(0xFFFFA726), // Πορτοκαλί φόντο
                     contentColor = Color.White         // Λευκό κείμενο
                 )
-            )  { Text("See Reviews") }
+            )  { Text("Reviews") }
             Button(onClick = onBookClick,
                 modifier = Modifier
                     .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp),
@@ -306,7 +308,7 @@ fun DaySelector(selectedDay: String, onDaySelected: (String) -> Unit, modifier: 
                     color = Color(0xFFFFA726),
                     start = Offset(0f, size.height),
                     end = Offset(size.width, size.height),
-                    strokeWidth = 2f
+                    strokeWidth = 3f
                 )
             }
     ) {
