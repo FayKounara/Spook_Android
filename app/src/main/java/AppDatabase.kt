@@ -1,10 +1,15 @@
 package com.example.room_setup_composables
 
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 /*@Database(entities = [Booking::class], version = 1, exportSchema = false)
 abstract class BookingDatabase : RoomDatabase() {
@@ -65,6 +70,63 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
+                    .addCallback(object : Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            Log.d("AppDatabase",
+                                       "innnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn."
+                                   )
+                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Grill', 'Special Burgers and snacks', 'Sunday', '8:00 AM - 8:00 PM', 'Kolokotroni 12', 1);")
+                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pizza Holargos', 'Special Pizzas and Burgers', 'Monday', '9:00 AM - 6:00 PM', 'Leoforos Kifisias 22', 2);")
+                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pasta Exarchia', 'Special Pasta and Pizza', 'Sunday', '10:00 AM - 7:00 PM', 'Ippokratous 5', 3);")
+
+
+
+//                            CoroutineScope(Dispatchers.IO).launch {
+//                                val storedao = getDatabase(context).storeDao()
+//                                val stores = listOf(
+//                                    Store(
+//                                        name = "Juicy Grill",
+//                                        info = "Special Burgers and snacks",
+//                                        avDays = "Sunday",
+//                                        avHours = "8:00 AM - 8:00 PM",
+//                                        location = "Kolokotroni 12",
+//                                        availability = 1
+//                                    ),
+//                                    Store(
+//                                        name = "Juicy Pizza Holargos",
+//                                        info = "Special Pizzas and Burgers",
+//                                        avDays = "Monday",
+//                                        avHours = "9:00 AM - 6:00 PM",
+//                                        location = "Leoforos Kifisias 22",
+//                                        availability = 2
+//                                    ),
+//                                    Store(
+//                                        name = "Juicy Pasta Exarchia ",
+//                                        info = "Special Pasta and Pizza",
+//                                        avDays = "Sunday",
+//                                        avHours = "10:00 AM - 7:00 PM",
+//                                        location = "Ippokratous  5",
+//                                        availability = 3
+//                                    )
+//
+//                                )
+//                                val database = INSTANCE
+//                                database?.let {
+//                                    val storeDao = it.storeDao()
+//                                    for (store in stores) {
+//                                        storeDao.insert(store)
+//                                    }
+//                                    Log.d(
+//                                        "AppDatabase",
+//                                        "prepopulate stores inserted successfully."
+//                                    )
+//                                }
+//
+//
+//                            }
+                        }
+                    })
                     .addMigrations(MIGRATION_2_3)
                     .build()
                 INSTANCE = instance
