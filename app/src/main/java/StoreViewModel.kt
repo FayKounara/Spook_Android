@@ -1,6 +1,7 @@
 package com.example.room_setup_composables
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
@@ -9,16 +10,31 @@ import com.example.room_setup_composables.StoreDao
 import com.example.room_setup_composables.Store
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class StoreViewModel(private val storeDao: StoreDao, private val offerDao: OfferDao) : ViewModel() {
 
     //al stores as flow
     val allStores: Flow<List<Store>> = storeDao.getAllStores()
+    val allOffers: Flow<List<Offer>> = offerDao.getAllOffers()
+
+    suspend fun getStoreById(storeId: Int): Store? {
+        return allStores.firstOrNull()?.find { it.storeId == storeId }
+    }
+
+    val offersWithStoreLocation: Flow<List<Pair<Offer, String>>> = allOffers.combine(allStores) { offers, stores ->
+        offers.map { offer ->
+            val store = stores.find { it.storeId == offer.storeId }
+            Pair(offer, store?.location ?: "Unknown Location") // Επιστρέφει τοποθεσία του καταστήματος
+        }
+    }
+
 
     init {
-        //insertDummyStores()
-        //insertDummyOffers()
+        insertDummyStores()
+        insertDummyOffers()
     }
 
     // Insert a new store into the database
@@ -44,6 +60,7 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
 
     fun insertDummyStores() {
         viewModelScope.launch(Dispatchers.IO) {
+            //storeDao.deleteAllStores()
             val stores = listOf(
                 Store(
                     name = "Juicy Grill",
@@ -71,7 +88,7 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
                 )
 
             )
-            //storeDao.deleteAllStores()
+
             for (store in stores) {
                 storeDao.insert(store)
             }
@@ -92,7 +109,7 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
 
     fun insertDummyOffers() {
         viewModelScope.launch(Dispatchers.IO) {
-            //offerDao.deleteAllOffers()
+           // offerDao.deleteAllOffers()
             val offers = listOf(
                 Offer( name = "Pizza", description = "Pizza Margarita", orgPrice = 15.99, discountPrice = 12.99, image = "a", storeId = 10),
                 Offer( name = "Burger", description = "Double Smashed Burger", orgPrice = 10.99, discountPrice = 8.99, image = "b", storeId = 11),
