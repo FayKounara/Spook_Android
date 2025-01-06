@@ -36,6 +36,8 @@ import com.example.room_setup_composables.com.example.room_setup_composables.ui.
 
 @Composable
 fun HomePageNavigation(
+    userId: Int,
+    userViewModel:UserViewModel,
     storeViewModel: StoreViewModel,
     bookingViewModel: BookingViewModel,
     reviewViewModel: ReviewViewModel
@@ -44,7 +46,7 @@ fun HomePageNavigation(
 
     NavHost(navController = navController, startDestination = Screen.HomePage.route) {
         composable(route = Screen.HomePage.route) {
-            Homepage(navController, "John", storeViewModel = storeViewModel)
+            Homepage(navController, userId, storeViewModel = storeViewModel)
         }
         composable(
             route = Screen.Stores.route + "/{name}",
@@ -59,6 +61,8 @@ fun HomePageNavigation(
             val name = entry.arguments?.getString("name") ?: "Juicy Grill"
             StoreNavigation(storeViewModel, bookingViewModel, name)
         }
+
+        // For navigation to reviews
         composable(
             route = Screen.Reviews.route + "/{storeId}",
             arguments = listOf(
@@ -72,13 +76,28 @@ fun HomePageNavigation(
             val storeId = entry.arguments?.getInt("storeId") ?: 1
             ReviewScreen(navController, reviewViewModel, storeId = storeId)
         }
+
+        // For navigation to profile
+        composable(
+            route = Screen.ProfileScreen.route + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                    nullable = false
+                }
+            )
+        ) { entry ->
+            val currentUserId = entry.arguments?.getInt("userId") ?: 1
+            ProfileScreen(navController, currentUserId)
+        }
     }
 }
 
 @Composable
 fun Homepage(
     navController: NavController,
-    name: String,
+    userId: Int,
     storeViewModel: StoreViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -117,13 +136,13 @@ fun Homepage(
                     modifier = Modifier
                         .size(40.dp) // Μέγεθος του εικονιδίου
                         .clickable {
-                            navController.navigate("profile") // Ενέργεια που γίνεται όταν πατηθεί το εικονίδιο
+                            navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) // Ενέργεια που γίνεται όταν πατηθεί το εικονίδιο
                         }
                         .padding(8.dp) // Κενό γύρω από το εικονίδιο
                 )
 
                 Text(
-                    text = "Welcome back, $name!",
+                    text = "Welcome back, $userId!",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold

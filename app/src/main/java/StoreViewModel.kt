@@ -33,8 +33,8 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
 
 
     init {
-        insertDummyStores()
-        insertDummyOffers()
+//        insertDummyStores()
+//        insertDummyOffers()
     }
 
     // Insert a new store into the database

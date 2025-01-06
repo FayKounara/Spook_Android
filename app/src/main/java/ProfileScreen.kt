@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +28,7 @@ import androidx.navigation.compose.rememberNavController
 data class BookingsHistory(val storeId: Int, val storeName: String, val date: String, val location: String)
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(navController: NavController, userId: Int) {
     val bookingsHistory = listOf(
         BookingsHistory(storeId = 1, storeName = "Ambrosia Hotel & Restaurant", date = "2025-01-01", location = "Kazi Deiry, Taiger Pass, Chittagong"),
         BookingsHistory(storeId = 2, storeName = "Tava Restaurant", date = "2025-01-02", location = "Zakir Hossain Rd, Chittagong"),
@@ -55,7 +57,7 @@ fun ProfileScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        LogoutButton()
+        LogoutButton(navController)
     }
 
 }
@@ -193,7 +195,7 @@ fun BookingItem(
 }
 
 @Composable
-fun LogoutButton() {
+fun LogoutButton(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -212,5 +214,25 @@ fun LogoutButton() {
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+    GoBack(navController)
+}
+
+
+@Composable
+fun GoBack(navController: NavController) {
+// Go Back button at the bottom of the screen
+    IconButton(
+        onClick = { navController.popBackStack() },
+        modifier = Modifier
+            .padding(16.dp) // Padding for the button
+    ) {
+        Icon(
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "Go Back",
+            modifier = Modifier
+                .background(Color(0xFF007066), RoundedCornerShape(50))
+                .padding(12.dp)
+        )
     }
 }

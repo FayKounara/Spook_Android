@@ -20,7 +20,7 @@ class UserViewModel(private val userDao: UserDao) : ViewModel() {
     // Factory for creating StoreViewModel with StoreDao
     class UserViewModelFactory(private val userDao: UserDao) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(ReviewViewModel::class.java)) {
+            if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
                 return UserViewModel(userDao) as T
             }

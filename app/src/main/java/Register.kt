@@ -1,11 +1,10 @@
 package com.example.room_setup_composables
 
-import androidx.compose.foundation.layout.Arrangement
+import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -17,14 +16,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import kotlinx.coroutines.delay
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,26 +36,28 @@ import com.example.room_setup_composables.ui.theme.Screen
 
 
 @Composable
-fun AuthNavigation(viewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
+fun AuthNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
 
     val navController = rememberNavController()
-    val users by viewModel.allUsers.collectAsState(initial = emptyList())
-    // Filter the users to get current user
-//    val currentUser = users.filter { it.username == username } --> Place after user log's in
-//    also get userId from currentUser and pass it to homepage
+    val users by userViewModel.allUsers.collectAsState(initial = emptyList())
 
     NavHost(navController = navController, startDestination = Screen.AuthPage.route) {
         composable(route = Screen.AuthPage.route) {
+            val context = LocalContext.current
             AuthScreen(
-                onLoginClick = { username, password, rememberMe ->
-                    // Add actual login logic or navigation (call homepage)
-                    println("Username: $username, Password: $password, Remember Me: $rememberMe")
-                },
-                onForgotPasswordClick = {
-                    // Handle forgot password logic here
-                    // For example:
-                    println("Forgot Password clicked")
-                    // Navigate to a forgot password screen
+                navController,
+                onLoginClick = { username, password ->
+                    // Check if user exists
+                    val userId = users
+                        .filter { it.username == username && it.password == password }
+                        .map { it.userId }
+                        .firstOrNull()
+
+                    if (userId == null) {
+                        Toast.makeText(context, "Incorrect Credentials, please try again", Toast.LENGTH_LONG).show()
+                    } else {
+                        navController.navigate(Screen.HomePage.withArgs(userId.toString()))
+                    }
                 },
                 onSignUpClick = {
                     // Navigate to a sign-up screen
@@ -66,33 +70,32 @@ fun AuthNavigation(viewModel:UserViewModel ,storeViewModel: StoreViewModel, book
             arguments = listOf(
                 navArgument("id") {
                     type = NavType.StringType
-                    defaultValue = "123"
+                    defaultValue = "1"
                     nullable = true
                 }
             )
         ) { entry ->
-            val userId = entry.arguments?.getString("id") ?: "123"
-            HomePageNavigation(storeViewModel, bookingViewModel, reviewViewModel)
-//            HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
+            val userId = entry.arguments?.getString("id") ?: "1"
+            HomePageNavigation(userId = userId.toInt(), userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
         }
     }
 }
 
 @Composable
 fun AuthScreen(
-    onLoginClick: (username: String, password: String, rememberMe: Boolean) -> Unit,
-    onForgotPasswordClick: () -> Unit,
+    navController: NavController,
+    onLoginClick: (username: String, password: String) -> Unit,
     onSignUpClick: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var rememberMe by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .background(Color(0xFF121212)), // Dark background
+            .background(Color(0xFFFFFFFF)), // White background
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(40.dp))
@@ -109,7 +112,7 @@ fun AuthScreen(
             onValueChange = { username = it },
             label = { Text("Username") },
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -121,45 +124,20 @@ fun AuthScreen(
             label = { Text("Password") },
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Remember Me Checkbox and Forgot Password
-        Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = rememberMe,
-                    onCheckedChange = { rememberMe = it },
-                    colors = CheckboxDefaults.colors(
-                        checkmarkColor = Color.White,
-                        uncheckedColor = Color.Gray,
-                        checkedColor = Color.Red
-                    )
-                )
-                Text("Remember me", color = Color.White)
-            }
-
-            TextButton(onClick = onForgotPasswordClick) {
-                Text(
-                    text = "Forgot Password?",
-                    color = Color.Red
-                )
-            }
-        }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Login Button
         Button(
-            onClick = { onLoginClick(username, password, rememberMe) },
+            onClick = {
+                if (username.isEmpty() || password.isEmpty()) {
+                    showError = true // Trigger error state
+                } else {
+                    onLoginClick(username, password)
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Login", color = Color.White)
@@ -173,6 +151,27 @@ fun AuthScreen(
             Spacer(modifier = Modifier.width(4.dp))
             TextButton(onClick = onSignUpClick) {
                 Text(text = "Sign Up", color = Color.Red)
+            }
+        }
+
+        // For testing only
+        Button(
+            onClick = {
+                // Navigate to Profile screen with userId as argument
+                navController.navigate(Screen.HomePage.withArgs("1"))
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "For testing: Go to HomePage", color = Color.White)
+        }
+
+
+
+        if (showError) {
+            Text(text = "Username and password are required", color = Color.Red)
+            LaunchedEffect(Unit) {
+                delay(3000) // Delay for 2 seconds before hiding error message
+                showError = false
             }
         }
     }
