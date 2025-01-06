@@ -251,40 +251,61 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
 }
 
 
-
 @Composable
-fun RestaurantCard(store: Store, onBookClick: () -> Unit, onReviewClick: () -> Unit) {
+fun RestaurantCard(store: Store, onBookClick: () -> Unit, onReviewClick: (Int) -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(10.dp),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier.fillMaxWidth().padding(8.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.padding(8.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            // Πληροφορίες καταστήματος και αστεράκια
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp) // Κενό μεταξύ στοιχείων
+            ) {
+                // Όνομα καταστήματος
                 Text(text = store.name, fontWeight = FontWeight.Bold)
+
+                // Αστεράκια
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    repeat(5) { index ->
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Star ${index + 1}",
+                            tint = Color(0xFFFFA726), // Πορτοκαλί χρώμα
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clickable { onReviewClick(index + 1) } // Αποστολή βαθμολογίας
+                        )
+                    }
+                }
+                // Τοποθεσία (προαιρετικό)
                 Text(text = store.location, color = Color.Gray)
             }
-            Button(onClick = onReviewClick,
+
+            // Κουμπί κράτησης
+            Button(
+                onClick = onBookClick,
                 modifier = Modifier
                     .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFFA726), // Πορτοκαλί φόντο
                     contentColor = Color.White         // Λευκό κείμενο
                 )
-            )  { Text("Reviews") }
-            Button(onClick = onBookClick,
-                modifier = Modifier
-                    .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFA726), // Πορτοκαλί φόντο
-                    contentColor = Color.White         // Λευκό κείμενο
-                )
-            )  { Text("Book") }
+            ) {
+                Text("Book")
+            }
         }
     }
 }
