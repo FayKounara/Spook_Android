@@ -1,35 +1,14 @@
 package com.example.room_setup_composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -37,6 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,26 +26,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
+import kotlinx.coroutines.launch
 import com.example.room_setup_composables.ui.theme.Screen
-
-
-// Dummy data and composable functions for demo purposes
-val sampleOffers = listOf(
-    Offer(0,"Pizza","Pizza Margarita", 15.99, 12.99,"a", 0),
-    Offer(1,"Burger","Double Smashed Burger",10.99, 8.99, "b", 1),
-    Offer(3,"Pasta", "Bolognese",13.99, 10.99,"c", 2)
-)
-
-/*val sampleRestaurants = listOf(
-    Store(0, "Downtown Square","","","",""),
-    Store(1, "Elm Street","","","",""),
-    Store(2, "Beach Avenue","","","","")
-)*/
+import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
 
 
 @Composable
-fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
+fun HomePageNavigation(
+    storeViewModel: StoreViewModel,
+    bookingViewModel: BookingViewModel,
+    reviewViewModel: ReviewViewModel
+) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.HomePage.route) {
@@ -77,7 +48,7 @@ fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: Booking
             arguments = listOf(
                 navArgument("name") {
                     type = NavType.StringType
-                    defaultValue = "John"
+                    defaultValue = "Juicy Grill"
                     nullable = true
                 }
             )
@@ -85,7 +56,6 @@ fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: Booking
             val name = entry.arguments?.getString("name") ?: "Juicy Grill"
             StoreNavigation(storeViewModel, bookingViewModel, name)
         }
-
         composable(
             route = Screen.Reviews.route + "/{storeId}",
             arguments = listOf(
@@ -102,16 +72,26 @@ fun HomePageNavigation(storeViewModel: StoreViewModel, bookingViewModel: Booking
     }
 }
 
-
 @Composable
-fun Homepage(navController: NavController, name: String, storeViewModel: StoreViewModel, modifier: Modifier = Modifier) {
+fun Homepage(
+    navController: NavController,
+    name: String,
+    storeViewModel: StoreViewModel,
+    modifier: Modifier = Modifier
+) {
     val stores by storeViewModel.allStores.collectAsState(initial = emptyList())
+    val offers by storeViewModel.allOffers.collectAsState(initial = emptyList())
     var selectedDay by remember { mutableStateOf("Monday") }
+    var selectedPersons by remember { mutableStateOf("2") }
+    val coroutineScope = rememberCoroutineScope()
 
-    // Φιλτράρισμα με βάση την επιλεγμένη ημέρα
+    // Φιλτράρισμα καταστημάτων με βάση την επιλεγμένη ημέρα
     val filteredStores = stores.filter { store ->
-        store.avDays.split(",").contains(selectedDay)
+        val isDayMatch = store.avDays.split(",").contains(selectedDay)
+        val isPersonsMatch = (store.availability >= (selectedPersons.toIntOrNull() ?: 0))
+        (isDayMatch && isPersonsMatch)
     }
+
 
     Box(
         modifier = modifier
@@ -129,7 +109,7 @@ fun Homepage(navController: NavController, name: String, storeViewModel: StoreVi
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Welcome back $name!",
+                    text = "Welcome back, $name!",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
@@ -138,69 +118,75 @@ fun Homepage(navController: NavController, name: String, storeViewModel: StoreVi
                 )
             }
 
-            // Search Bar
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color(0xFFE8E8E8))
-                    .padding(8.dp)
-            ) {
-                Text(
-                    text = "Search your today's table",
-                    color = Color.Gray,
-                    modifier = Modifier.padding(4.dp)
-                )
-            }
-
-//            Button(onClick = {
-//                navController.navigate(Screen.Stores.withArgs("Juicy Grill"))
-//            }) {
-//                Text(text = "To Reviews")
-//            }
-
             // Today's Offers Section
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Today's Offers!",
+                    text = "Today's Offers",
                     style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 )
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Dummy data for today's offers
-                    items(sampleOffers) { item ->
-                        FoodCard(foodItem = item)
+                    items(offers) { offer ->
+                        var storeName by remember { mutableStateOf("Loading...") }
+
+                        // Φόρτωσε το όνομα του μαγαζιού σε coroutine
+                        LaunchedEffect(offer.storeId) {
+                            val store = storeViewModel.getStoreById(offer.storeId)
+                            storeName = store?.name ?: "Unknown Store"
+                        }
+
+                        FoodCard(
+                            foodItem = offer,
+                            storeName = storeName,
+                            onCardClick = {
+                                coroutineScope.launch {
+                                    val store = storeViewModel.getStoreById(offer.storeId)
+                                    store?.let {
+                                        navController.navigate(Screen.Stores.withArgs(it.name))
+                                    }
+                                }
+                            }
+                        )
                     }
                 }
+
             }
 
+            // Explore Restaurants Section
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                // Επικεφαλίδα
+                // Header
                 Text(
                     text = "Explore Our Restaurants",
                     style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 )
 
-                // "Available on" και Επιλογέας Ημέρας σε Row
+                // "Available on" και Επιλογέας Ημέρας
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Text(
-                        text = "Available on $selectedDay",
+                    /*Text(
+                        text = "Available on $selectedDay for $selectedPersons persons",
                         color = Color.Gray,
-                        style = TextStyle(fontSize = 14.sp) ,
+                        style = TextStyle(fontSize = 14.sp),
                         modifier = Modifier.padding(end = 12.dp)
+                    )*/
+
+                    PersonsSelector(
+                        selectedPersons = selectedPersons,
+                        onPersonsSelected = { persons -> selectedPersons = persons },
+                        modifier = Modifier.width(100.dp)
                     )
+
+                    Spacer(modifier = Modifier.width(4.dp))
 
                     DaySelector(
                         selectedDay = selectedDay,
                         onDaySelected = { day -> selectedDay = day },
-                        modifier = Modifier
-                            .width(120.dp) // Περιορισμός του μήκους σε 100dp
+                        modifier = Modifier.width(100.dp)
                     )
                 }
 
@@ -212,15 +198,12 @@ fun Homepage(navController: NavController, name: String, storeViewModel: StoreVi
                     items(filteredStores) { store ->
                         RestaurantCard(
                             store = store,
-
                             onBookClick = {
-                                navController.navigate(Screen.Stores.withArgs("Juicy Grill"))
+                                navController.navigate(Screen.Stores.withArgs(store.name))
                             },
-
                             onReviewClick = {
                                 navController.navigate(Screen.Reviews.withArgs(store.storeId.toString()))
                             }
-
                         )
                     }
                 }
@@ -228,170 +211,97 @@ fun Homepage(navController: NavController, name: String, storeViewModel: StoreVi
         }
     }
 }
-
 
 
 @Composable
-fun FoodCard(foodItem: Offer) {
+fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+        elevation = CardDefaults.cardElevation(5.dp),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White // Καθορίζει το φόντο της κάρτας
-        ),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
             .width(200.dp)
-            .padding(end = 16.dp)
+            .clickable { onCardClick() }
     ) {
-        Column {
-            //Image(
-            //  painter = painterResource(id = foodItem.imageResId),
-            //   contentDescription = "Food Item",
-            //   modifier = Modifier
-            //        .fillMaxWidth()
-            //        .height(120.dp),
-            //  contentScale = androidx.compose.ui.layout.ContentScale.Crop
-            //)
-            Column(
-                modifier = Modifier
-                    .padding(8.dp), // Απόσταση γύρω από το κείμενο
-                verticalArrangement = Arrangement.spacedBy(6.dp), // Απόσταση μεταξύ των στοιχείων
-                horizontalAlignment = Alignment.Start // Ευθυγράμμιση στην αριστερή πλευρά
-            ) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(text = foodItem.name, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Προβολή του ονόματος του μαγαζιού
+            Text(
+                text = "Find it at $storeName",
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+
+            Row {
                 Text(
-                    text = foodItem.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    text = "${foodItem.orgPrice}",
+                    textDecoration = TextDecoration.LineThrough,
+                    color = Color.Gray
                 )
-                Spacer(modifier = Modifier.height(1.dp)) // Κενό ανάμεσα στο όνομα και την τιμή/τοποθεσία
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp) // Μικρότερη απόσταση μεταξύ τιμής και τοποθεσίας
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = foodItem.orgPrice.toString(),//**************************
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Light,
-                                color = Color.Gray,
-                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough // Διαγράμμιση αρχικής τιμής
-                            ),
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
-                        Text(
-                            text = foodItem.discountPrice.toString(),//*****************
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFFFFA726) // Πορτοκαλί χρώμα
-                            )
-                        )
-                    }
-                    Text(
-                        text = foodItem.storeId.toString(),//********************
-                        style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Light)
-                    )
-                }
+                Spacer(Modifier.width(4.dp))
+                Text(text = "${foodItem.discountPrice}",fontWeight = FontWeight.Bold, color = Color(0xFFFFA726))
             }
         }
     }
 }
+
 
 
 @Composable
 fun RestaurantCard(store: Store, onBookClick: () -> Unit, onReviewClick: () -> Unit) {
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        elevation = CardDefaults.cardElevation(10.dp),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier.fillMaxWidth().padding(8.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(8.dp)
         ) {
-            // Εικόνα Εστιατορίου
-            //Image(
-            //   painter = painterResource(id = store.imageResId),
-            //  contentDescription = "Restaurant Image",
-            //modifier = Modifier
-            //  .size(80.dp)
-            //.clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp)),
-            // contentScale = androidx.compose.ui.layout.ContentScale.Crop
-            //)
-
-            // Στήλη για Όνομα και Τοποθεσία
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 8.dp)
-            ) {
-                Text(
-                    text = store.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = store.location,
-                    fontSize = 12.sp,
-                    color = Color.Gray,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = store.name, fontWeight = FontWeight.Bold)
+                Text(text = store.location, color = Color.Gray)
             }
-
-            // Κουμπί "See Reviews"
-            Button(
-                onClick = onReviewClick,
+            Button(onClick = onReviewClick,
                 modifier = Modifier
                     .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFA726),
-                    contentColor = Color.White
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFFA726), // Πορτοκαλί φόντο
+                    contentColor = Color.White         // Λευκό κείμενο
                 )
-            ) {
-                Text(text = "See Reviews")
-            }
-
-            // Κουμπί "Book"
-            Button(
-                onClick = onBookClick,
+            )  { Text("See Reviews") }
+            Button(onClick = onBookClick,
                 modifier = Modifier
                     .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFA726),
-                    contentColor = Color.White
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFFA726), // Πορτοκαλί φόντο
+                    contentColor = Color.White         // Λευκό κείμενο
                 )
-            ) {
-                Text(text = "Book")
-            }
+            )  { Text("Book") }
         }
     }
 }
 
+
 @Composable
 fun DaySelector(selectedDay: String, onDaySelected: (String) -> Unit, modifier: Modifier = Modifier) {
-    val daysOfWeek = listOf("Mon-Sun", "Mon-Sat", "Mon-Fri", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    val daysOfWeek = listOf(
+        "Mon-Sun", "Mon-Sat", "Mon-Fri", "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday", "Sunday"
+    )
     var expanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
             .clickable { expanded = true }
-            .padding(horizontal = 16.dp, vertical = 8.dp) // Προσαρμοσμένο padding για καλύτερη εμφάνιση
-            .width(150.dp) // Περισσότερος χώρος για το DaySelector
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .width(150.dp)
             .drawBehind {
-                // Υπογράμμιση
                 drawLine(
                     color = Color(0xFFFFA726),
                     start = Offset(0f, size.height),
@@ -400,35 +310,63 @@ fun DaySelector(selectedDay: String, onDaySelected: (String) -> Unit, modifier: 
                 )
             }
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth() // Επιτρέπει καλύτερη διάταξη
-        ) {
-            Text(
-                text = selectedDay,
-                color = Color.Black,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(start = 12.dp)
-            )
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color.White)
-        ) {
+        Text(
+            text = selectedDay,
+            color = Color.Black,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             daysOfWeek.forEach { day ->
                 DropdownMenuItem(
-                    text = { Text(day) },
                     onClick = {
-                        onDaySelected(day)
                         expanded = false
-                    }
+                        onDaySelected(day)
+                    },
+                    text = { Text(text = day) }
                 )
             }
         }
     }
 }
+
+@Composable
+fun PersonsSelector(selectedPersons: String, onPersonsSelected: (String) -> Unit, modifier: Modifier = Modifier) {
+    val personOptions = listOf("2", "4", "6", "8")
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier
+            .clickable { expanded = true }
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .width(120.dp)
+            .drawBehind {
+                drawLine(
+                    color = Color(0xFFFFA726),
+                    start = Offset(0f, size.height),
+                    end = Offset(size.width, size.height),
+                    strokeWidth = 2f
+                )
+            }
+    ) {
+        Text(
+            text = "$selectedPersons Pax",
+            color = Color.Black,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            personOptions.forEach { option ->
+                DropdownMenuItem(
+                    onClick = {
+                        expanded = false
+                        onPersonsSelected(option)
+                    },
+                    text = { Text(text = "$option Pax") }
+                )
+            }
+        }
+    }
+}
+
 
