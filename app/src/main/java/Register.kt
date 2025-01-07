@@ -143,7 +143,7 @@ fun AuthScreen(
             )
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         // Login Button
         Button(
@@ -171,7 +171,7 @@ fun AuthScreen(
             Text(text = "Don't have an Account?", color = Color.Gray)
             Spacer(modifier = Modifier.width(4.dp))
             TextButton(onClick = onSignUpClick) {
-                Text(text = "Sign Up", color = Color(0xFFFFA726))
+                Text(text = "Sign Up", fontWeight = FontWeight.Bold,color = Color(0xFFFFA726))
             }
         }
 
@@ -196,7 +196,8 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Username and password are required",
-                color = Color.Red,
+                color = Color(0xFFFD6924),
+                fontWeight = FontWeight.Bold,
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
             )
             LaunchedEffect(Unit) {
