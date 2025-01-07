@@ -18,7 +18,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import kotlinx.coroutines.delay
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -81,6 +84,7 @@ fun AuthNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, 
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthScreen(
     navController: NavController,
@@ -94,14 +98,18 @@ fun AuthScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-            .background(Color(0xFFFFFFFF)), // White background
+            .background(Color(0xFFF1F3F4)) // Light background color
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(40.dp))
 
+        // Title
         Text(
-            text = "Login"
+            text = "Welcome Back!",
+            style = androidx.compose.material3.MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color =Color(0xFFFFA726)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -110,9 +118,13 @@ fun AuthScreen(
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
-            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+            label = { Text("Username", color = Color(0xFF616161)) },
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFFFFA726)) },
             modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFFFA726),
+                unfocusedBorderColor = Color(0xFFBDBDBD),
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -121,10 +133,14 @@ fun AuthScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
-            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+            label = { Text("Password", color = Color(0xFF616161)) },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFFFFA726)) },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFFFA726),
+                unfocusedBorderColor = Color(0xFFBDBDBD),
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -138,37 +154,51 @@ fun AuthScreen(
                     onLoginClick(username, password)
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
         ) {
             Text(text = "Login", color = Color.White)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Sign-Up Text
-        Row {
+        // Sign-Up Row
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(text = "Don't have an Account?", color = Color.Gray)
             Spacer(modifier = Modifier.width(4.dp))
             TextButton(onClick = onSignUpClick) {
-                Text(text = "Sign Up", color = Color.Red)
+                Text(text = "Sign Up", color = Color(0xFFFFA726))
             }
         }
 
-        // For testing only
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Testing Button
         Button(
             onClick = {
                 // Navigate to Profile screen with userId as argument
                 navController.navigate(Screen.HomePage.withArgs("1"))
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
         ) {
             Text(text = "For testing: Go to HomePage", color = Color.White)
         }
 
-
-
+        // Error Message
         if (showError) {
-            Text(text = "Username and password are required", color = Color.Red)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Username and password are required",
+                color = Color.Red,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            )
             LaunchedEffect(Unit) {
                 delay(3000) // Delay for 2 seconds before hiding error message
                 showError = false
