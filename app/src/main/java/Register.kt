@@ -18,6 +18,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import kotlinx.coroutines.delay
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -143,7 +145,7 @@ fun AuthScreen(
             )
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(26.dp))
 
         // Login Button
         Button(
@@ -155,14 +157,27 @@ fun AuthScreen(
                 }
             },
             modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
+                .width(200.dp)
+                .padding(vertical = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
         ) {
-            Text(text = "Login", color = Color.White)
+            Text(text = "Login", color = Color.White, fontSize = 16.sp,fontWeight = FontWeight.Bold)
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        if (showError) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Username and password are required",
+                color = Color(0xFFFD6924),
+                fontWeight = FontWeight.Bold,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            )
+            LaunchedEffect(Unit) {
+                delay(3000) // Delay for 2 seconds before hiding error message
+                showError = false
+            }
+        }
+        
 
         // Sign-Up Row
         Row(
@@ -184,27 +199,14 @@ fun AuthScreen(
                 navController.navigate(Screen.HomePage.withArgs("1"))
             },
             modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
-        ) {
+                .width(200.dp)
+                .padding(vertical = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))        ) {
             Text(text = "For testing: Go to HomePage", color = Color.White)
         }
 
         // Error Message
-        if (showError) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Username and password are required",
-                color = Color(0xFFFD6924),
-                fontWeight = FontWeight.Bold,
-                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
-            )
-            LaunchedEffect(Unit) {
-                delay(3000) // Delay for 2 seconds before hiding error message
-                showError = false
-            }
-        }
+
     }
 }
 
