@@ -61,34 +61,6 @@ fun ReviewScreen(navController: NavController, viewModel: ReviewViewModel, store
             // Header with Store Title
             ReviewHeader()
 
-            // List of Reviews
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                if (specificStoreReviews.isEmpty()) {
-                    item {
-                        Text(
-                            text = "No reviews yet",
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.Gray
-                            ),
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
-                    }
-                } else {
-                    items(specificStoreReviews) { review ->
-                        ReviewCard(
-                            reviewText = review.revText,
-                            reviewStars = review.stars.toString(),
-                            reviewerName = "User ${review.userId}"
-                        )
-                    }
-                }
-            }
-
             // Submit Review Section
             SubmitReview { reviewText, selectedStars ->
                 viewModel.insertReview(
@@ -101,6 +73,46 @@ fun ReviewScreen(navController: NavController, viewModel: ReviewViewModel, store
                     )
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // List of Reviews
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize() // Εξασφάλιση ότι γεμίζει όλο το διαθέσιμο χώρο
+            ) {
+                if (specificStoreReviews.isEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillParentMaxSize(), // Εξασφαλίζει ότι παίρνει όλο τον χώρο
+                            contentAlignment = Alignment.Center // Κεντρική τοποθέτηση περιεχομένου
+                        ) {
+                            Text(
+                                text = "No reviews yet",
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.Gray
+                                )
+                            )
+                        }
+                    }
+                } else {
+                    items(specificStoreReviews) { review ->
+                        ReviewCard(
+                            reviewText = review.revText,
+                            reviewStars = review.stars.toString(),
+                            reviewerName = "User ${review.userId}"
+                        )
+                    }
+                }
+            }
+
+
+            PassedArgument(storeId.toString())
 
             // Back Button
             IconButton(
@@ -234,15 +246,10 @@ fun SubmitReview(onReviewSubmit: (String, Int) -> Unit) {
 
 @Composable
 fun PassedArgument(name: String?) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 8.dp)
-    ) {
+
         Text(
-            text = "Hello, $name",
+            text = "Hi again, $name",
             style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
         )
-    }
+
 }
