@@ -40,6 +40,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.Button
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextFieldDefaults
 
 
 @Composable
@@ -59,7 +63,10 @@ fun ReviewScreen(navController: NavController, viewModel: ReviewViewModel, store
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // Header with Store Title
+            Spacer(modifier = Modifier.height(8.dp))
             ReviewHeader()
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Submit Review Section
             SubmitReview { reviewText, selectedStars ->
@@ -187,6 +194,7 @@ fun ReviewCard(reviewText: String, reviewStars: String, reviewerName: String) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubmitReview(onReviewSubmit: (String, Int) -> Unit) {
     var reviewText by remember { mutableStateOf("") }
@@ -195,26 +203,53 @@ fun SubmitReview(onReviewSubmit: (String, Int) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(12.dp))
-            .padding(16.dp)
+            .background(Color.White, RoundedCornerShape(16.dp))
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextField(
-            value = reviewText,
-            onValueChange = { reviewText = it },
-            label = { Text("Write your review") },
-            modifier = Modifier.fillMaxWidth(),
-            textStyle = TextStyle(fontSize = 16.sp)
+        // Header Text
+        Text(
+            text = "Leave your review",
+            style = TextStyle(
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            ),
+            modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        // Review Text Field
+        OutlinedTextField(
+            value = reviewText,
+            onValueChange = { reviewText = it },
+            label = { Text("Write your review here...") },
+            textStyle = TextStyle(fontSize = 16.sp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFFFFA726),
+                unfocusedBorderColor = Color(0xFFBDBDBD),
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFF8F9FA), shape = RoundedCornerShape(8.dp))
+                .padding(bottom = 16.dp)
+        )
 
-        // Star Rating Selection
+
+        // Star Rating Section
+        Text(
+            text = "Rate your experience:",
+            style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 16.dp)
         ) {
             repeat(5) { index ->
-                IconButton(onClick = { selectedStars = index + 1 }) {
+                IconButton(
+                    onClick = { selectedStars = index + 1 }
+                ) {
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = "Star ${index + 1}",
@@ -224,24 +259,30 @@ fun SubmitReview(onReviewSubmit: (String, Int) -> Unit) {
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
+        // Submit Button
         Button(
             onClick = {
-                onReviewSubmit(reviewText, selectedStars)
-                reviewText = ""
-                selectedStars = 0
+                if (reviewText.isNotBlank() && selectedStars > 0) {
+                    onReviewSubmit(reviewText, selectedStars)
+                    reviewText = ""
+                    selectedStars = 0
+                }
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726)) // Orange Button
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
         ) {
             Text(
                 text = "Submit Review",
-                style = TextStyle(color = Color.White, fontSize = 16.sp)
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
             )
         }
     }
 }
+
 
 
 @Composable
