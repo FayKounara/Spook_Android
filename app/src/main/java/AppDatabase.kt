@@ -78,6 +78,7 @@ abstract class AppDatabase : RoomDatabase() {
                                    )
                             db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Grill', 'Special Burgers and snacks', 'Sunday', '8:00 AM - 8:00 PM', 'Kolokotroni 12', 1);")
                             db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pizza', 'Special Pizzas and Burgers', 'Monday', '9:00 AM - 6:00 PM', 'Leoforos Kifisias 22', 2);")
+                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pizza', 'Special Pizzas and Burgers', 'Monday', '9:00 AM - 6:00 PM', 'Leoforos Kifisias 22', 3);")
                             db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pasta', 'Special Pasta and Pizza', 'Sunday', '10:00 AM - 7:00 PM', 'Ippokratous 5', 3);")
 
                             db.execSQL("INSERT INTO offers_table (name, description, orgPrice, discountPrice, image, storeId) \n" +
