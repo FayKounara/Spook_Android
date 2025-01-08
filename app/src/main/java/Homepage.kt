@@ -156,7 +156,7 @@ fun Homepage(
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             // Today's Offers Section
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -250,6 +250,13 @@ fun Homepage(
 
 @Composable
 fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
+    val foodImage = when {
+        foodItem.name.contains("Pizza", ignoreCase = true) -> R.drawable.pizzaphoto
+        foodItem.name.contains("Burger", ignoreCase = true) -> R.drawable.burgerphoto
+        foodItem.name.contains("Pasta", ignoreCase = true) -> R.drawable.pastaphoto
+        else -> R.drawable.burgerphoto // Προεπιλεγμένη εικόνα
+    }
+
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
         shape = RoundedCornerShape(4.dp),
@@ -263,7 +270,7 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
     ) {
         Column {
             Image(
-                painter = painterResource(id = R.drawable.burgerphoto),
+                painter = painterResource(id = foodImage),
               contentDescription = "Food Item",
                modifier = Modifier
                    .fillMaxWidth()
