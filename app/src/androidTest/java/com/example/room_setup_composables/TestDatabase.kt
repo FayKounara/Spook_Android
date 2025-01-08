@@ -48,8 +48,8 @@ class DatabaseTest {
         userDao.insert(user2)
 
         // Insert sample stores
-        val store1 = Store(name = "Coffee Shop", info = "Great coffee!", avDays = "Mon-Sun", avHours = "8:00-18:00", location = "Main Street")
-        val store2 = Store(name = "Bookstore", info = "Best books!", avDays = "Mon-Sat", avHours = "10:00-19:00", location = "Downtown")
+        val store1 = Store(name = "Coffee Shop", info = "Great coffee!", avDays = "Mon-Sun", avHours = "8:00-18:00", location = "Main Street", availability = 12)
+        val store2 = Store(name = "Bookstore", info = "Best books!", avDays = "Mon-Sat", avHours = "10:00-19:00", location = "Downtown", availability = 12)
         storeDao.insert(store1)
         storeDao.insert(store2)
 
@@ -60,7 +60,7 @@ class DatabaseTest {
             storeId = 1,
             userId = 1,
             phoneNumber = "",
-            persons = "2",
+            persons = 2,
             occasion = ""
         )
         val booking2 = Booking(
@@ -69,7 +69,7 @@ class DatabaseTest {
             storeId = 2,
             userId = 2,
             phoneNumber = "",
-            persons = "2",
+            persons = 2,
             occasion = ""
         )
         bookingDao.insert(booking1)
