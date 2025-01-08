@@ -32,6 +32,11 @@ import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import com.example.room_setup_composables.ui.theme.Screen
 import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
+import androidx.compose.foundation.Image
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.room_database_setup.R
 
 
 @Composable
@@ -233,9 +238,6 @@ fun Homepage(
                             store = store,
                             onBookClick = {
                                 navController.navigate(Screen.Stores.withArgs(store.name))
-                            },
-                            onReviewClick = {
-                                navController.navigate(Screen.Reviews.withArgs(store.storeId.toString()))
                             }
                         )
                     }
@@ -246,7 +248,78 @@ fun Homepage(
 }
 
 
+@Composable
+fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+        shape = RoundedCornerShape(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White // Καθορίζει το φόντο της κάρτας
+        ),
+        modifier = Modifier
+            .width(200.dp)
+            .padding(end = 16.dp)
+            .clickable { onCardClick()}
+    ) {
+        Column {
+            Image(
+                painter = painterResource(id = R.drawable.restphoto),
+              contentDescription = "Food Item",
+               modifier = Modifier
+                   .fillMaxWidth()
+                   .height(120.dp),
+              contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier
+                    .padding(8.dp), // Απόσταση γύρω από το κείμενο
+                verticalArrangement = Arrangement.spacedBy(6.dp), // Απόσταση μεταξύ των στοιχείων
+                horizontalAlignment = Alignment.Start // Ευθυγράμμιση στην αριστερή πλευρά
+            ) {
+                Text(
+                    text = foodItem.name,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(1.dp)) // Κενό ανάμεσα στο όνομα και την τιμή/τοποθεσία
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp) // Μικρότερη απόσταση μεταξύ τιμής και τοποθεσίας
+                ) {
+                    // Προβολή του ονόματος του μαγαζιού
+                    Text(
+                        text = "Find it at $storeName",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = foodItem.orgPrice.toString(),//**************************
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Light,
+                                color = Color.Gray,
+                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough // Διαγράμμιση αρχικής τιμής
+                            ),
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                        Text(
+                            text = foodItem.discountPrice.toString(),//*****************
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFFFA726) // Πορτοκαλί χρώμα
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 
+/*
 @Composable
 fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
     Card(
@@ -280,68 +353,77 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
             }
         }
     }
-}
-
-
+}*/
 
 @Composable
-fun RestaurantCard(store: Store, onBookClick: () -> Unit, onReviewClick: (Int) -> Unit) {
+fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
     Card(
-        elevation = CardDefaults.cardElevation(10.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(vertical = 8.dp)
     ) {
         Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.padding(8.dp)
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Πληροφορίες καταστήματος και αστεράκια
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp) // Κενό μεταξύ στοιχείων
-            ) {
-                // Όνομα καταστήματος
-                Text(text = store.name, fontWeight = FontWeight.Bold)
 
-                // Αστεράκια
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    repeat(5) { index ->
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Star ${index + 1}",
-                            tint = Color(0xFFFFA726), // Πορτοκαλί χρώμα
-                            modifier = Modifier
-                                .size(16.dp)
-                                .clickable { onReviewClick(index + 1) } // Αποστολή βαθμολογίας
-                        )
-                    }
-                }
-                // Τοποθεσία (προαιρετικό)
-                Text(text = store.location, color = Color.Gray)
+            Image(
+                painter = painterResource(id = R.drawable.restphoto), contentDescription = "Restaurant Image",
+            modifier = Modifier
+             .size(80.dp)
+             .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp)),
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            )
+
+            // Στήλη για Όνομα και Τοποθεσία
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)
+            ) {
+                Text(
+                    text = store.name,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = store.location,
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
 
-            // Κουμπί κράτησης
+            // Κουμπί "Book"
             Button(
                 onClick = onBookClick,
                 modifier = Modifier
                     .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFFFA726), // Πορτοκαλί φόντο
-                    contentColor = Color.White         // Λευκό κείμενο
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFFFA726),
+                    contentColor = Color.White
                 )
             ) {
-                Text("Book")
+                Text(text = "Book")
             }
         }
     }
 }
+
+
+
 
 
 @Composable
