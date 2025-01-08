@@ -263,7 +263,7 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
     ) {
         Column {
             Image(
-                painter = painterResource(id = R.drawable.restphoto),
+                painter = painterResource(id = R.drawable.burgerphoto),
               contentDescription = "Food Item",
                modifier = Modifier
                    .fillMaxWidth()
