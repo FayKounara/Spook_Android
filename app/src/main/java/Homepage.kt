@@ -147,9 +147,9 @@ fun Homepage(
                 )
 
                 Text(
-                    text = "Welcome back, $userId!",
+                    text = "Welcome back, $userId:)",
                     style = TextStyle(
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     ),
                     modifier = Modifier.weight(1f)
@@ -161,8 +161,8 @@ fun Homepage(
             // Today's Offers Section
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Text(
-                    text = "Today's Offers",
-                    style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    text = "Today's Offers!",
+                    style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 )
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -200,7 +200,7 @@ fun Homepage(
                 // Header
                 Text(
                     text = "Explore Our Restaurants",
-                    style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 )
 
                 // "Available on" και Επιλογέας Ημέρας
@@ -278,7 +278,7 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
             ) {
                 Text(
                     text = foodItem.name,
-                    fontSize = 14.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
@@ -288,8 +288,8 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
                 ) {
                     // Προβολή του ονόματος του μαγαζιού
                     Text(
-                        text = "Find it at $storeName",
-                        fontSize = 12.sp,
+                        text = "Book at $storeName",
+                        fontSize = 18.sp,
                         color = Color.Gray
                     )
                     Spacer(modifier = Modifier.height(2.dp))
@@ -297,7 +297,7 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
                         Text(
                             text = foodItem.orgPrice.toString(),//**************************
                             style = TextStyle(
-                                fontSize = 12.sp,
+                                fontSize = 18.sp,
                                 fontWeight = FontWeight.Light,
                                 color = Color.Gray,
                                 textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough // Διαγράμμιση αρχικής τιμής
@@ -307,7 +307,7 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
                         Text(
                             text = foodItem.discountPrice.toString(),//*****************
                             style = TextStyle(
-                                fontSize = 12.sp,
+                                fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFFFFA726) // Πορτοκαλί χρώμα
                             )
@@ -318,42 +318,6 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
         }
     }
 }
-
-/*
-@Composable
-fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
-    Card(
-        elevation = CardDefaults.cardElevation(5.dp),
-        shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        modifier = Modifier
-            .width(200.dp)
-            .clickable { onCardClick() }
-    ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = foodItem.name, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Προβολή του ονόματος του μαγαζιού
-            Text(
-                text = "Find it at $storeName",
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-
-            Row {
-                Text(
-                    text = "${foodItem.orgPrice}",
-                    textDecoration = TextDecoration.LineThrough,
-                    color = Color.Gray
-                )
-                Spacer(Modifier.width(4.dp))
-                Text(text = "${foodItem.discountPrice}",fontWeight = FontWeight.Bold, color = Color(0xFFFFA726))
-            }
-        }
-    }
-}*/
 
 @Composable
 fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
@@ -391,7 +355,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
             ) {
                 Text(
                     text = store.name,
-                    fontSize = 14.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     maxLines = 1,
@@ -399,7 +363,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
                 )
                 Text(
                     text = store.location,
-                    fontSize = 12.sp,
+                    fontSize = 18.sp,
                     color = Color.Gray,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
