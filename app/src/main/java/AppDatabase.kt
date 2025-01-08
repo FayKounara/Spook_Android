@@ -80,6 +80,14 @@ abstract class AppDatabase : RoomDatabase() {
                             db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pizza Holargos', 'Special Pizzas and Burgers', 'Monday', '9:00 AM - 6:00 PM', 'Leoforos Kifisias 22', 2);")
                             db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pasta Exarchia', 'Special Pasta and Pizza', 'Sunday', '10:00 AM - 7:00 PM', 'Ippokratous 5', 3);")
 
+                            db.execSQL("INSERT INTO offers_table (name, description, orgPrice, discountPrice, image, storeId) \n" +
+                                    "VALUES \n" +
+                                    "('Pizza', 'Pizza Margarita', 15.99, 12.99, 'a', 1),\n" +
+                                    "('Burger', 'Double Cheeseburger', 10.99, 8.99, 'b', 2),\n" +
+                                    "('Pasta', 'Carbonara', 12.50, 9.99, 'c', 3);\n")
+
+
+
 
 
 //                            CoroutineScope(Dispatchers.IO).launch {
