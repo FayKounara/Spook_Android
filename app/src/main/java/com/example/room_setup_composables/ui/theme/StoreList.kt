@@ -147,11 +147,7 @@ fun StoreDetailsSection(store: Store) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Icon(
-            imageVector = Icons.Default.LocationOn,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp)
-        )
+
         Text(
             text = store.location,
             style = MaterialTheme.typography.bodyMedium
@@ -167,6 +163,17 @@ fun StoreDetailsSection(store: Store) {
 
         Text(
             text = "10:30 AM - 11:00 PM", // Replace with actual opening hours
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+
+        Text(
+            text = store.info,
             style = MaterialTheme.typography.bodyMedium
         )
     }
