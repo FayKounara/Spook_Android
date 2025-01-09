@@ -86,7 +86,7 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
                             userId = customerName.toInt(),
                             phoneNumber = "",
                             persons = 2,
-                            occasion = "" // Replace with real user ID logic
+                            occasion = ""
                         )
                     )
                     customerName = ""
@@ -125,7 +125,7 @@ fun BookingItem(navController: NavController, booking: Booking, onDelete: () -> 
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(text = "Name: ${booking.userId}") // Replace with logic to fetch name from userId
+                Text(text = "Name: ${booking.userId}")
                 Text(text = "Date: ${booking.date}")
                 Text(text = "Hours: ${booking.hours}")
                 Text(text = "Store ID: ${booking.storeId}")

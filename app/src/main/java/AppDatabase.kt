@@ -76,16 +76,44 @@ abstract class AppDatabase : RoomDatabase() {
                             Log.d("AppDatabase",
                                        "innnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn."
                                    )
-                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Grill', 'Special Burgers and snacks', 'Sunday', '8:00 AM - 8:00 PM', 'Kolokotroni 12', 1);")
-                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pizza', 'Special Pizzas and Burgers', 'Monday', '9:00 AM - 6:00 PM', 'Leoforos Kifisias 22', 2);")
-                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pizza', 'Special Pizzas and Burgers', 'Monday', '9:00 AM - 6:00 PM', 'Leoforos Kifisias 22', 3);")
-                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pasta', 'Special Pasta and Pizza', 'Sunday', '10:00 AM - 7:00 PM', 'Ippokratous 5', 3);")
+                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Grill', 'Special Burgers and snacks', 'Monday', '21', 'Kolokotroni 12', 1);")
+                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pizza', 'Special Pizzas and Burgers', 'Monday', '21', 'Leoforos Kifisias 22', 2);")
+                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pizza', 'Special Pizzas and Burgers', 'Monday', '21', 'Leoforos Kifisias 22', 3);")
+                            db.execSQL("INSERT INTO store_table (name, info, avDays, avHours, location, availability) VALUES ('Juicy Pasta', 'Special Pasta and Pizza', 'S', '21', 'Ippokratous 5', 3);")
 
                             db.execSQL("INSERT INTO offers_table (name, description, orgPrice, discountPrice, image, storeId) \n" +
                                     "VALUES \n" +
                                     "('Pizza', 'Pizza Margarita', 15.99, 12.99, 'a', 2),\n" +
                                     "('Burger', 'Double Cheeseburger', 10.99, 8.99, 'b', 1),\n" +
                                     "('Pasta', 'Carbonara', 12.50, 9.99, 'c', 3);\n")
+
+                            db.execSQL(
+                                """
+                                    INSERT INTO users_table (username, password, phoneNumber, email) VALUES
+                                    ('john_doe', 'password123', '1234567890', 'john.doe@example.com'),
+                                    ('jane_smith', 'mypassword', '0987654321', 'jane.smith@example.com'),
+                                    ('mike_brown', 'qwerty123', '1122334455', 'mike.brown@example.com'),
+                                    ('emily_davis', 'abc12345', '5566778899', 'emily.davis@example.com'),
+                                    ('david_jones', 'letmein', '6677889900', 'david.jones@example.com'),
+                                    ('sarah_lee', 'password1', '7788990011', 'sarah.lee@example.com'),
+                                    ('chris_white', 'simplepass', '8899001122', 'chris.white@example.com'),
+                                    ('linda_clark', 'pass1234', '9900112233', 'linda.clark@example.com'),
+                                    ('robert_hall', 'easy12345', '1122003344', 'robert.hall@example.com'),
+                                    ('laura_martin', '1234abcd', '3344556677', 'laura.martin@example.com');
+                                    """
+                            )
+
+                            db.execSQL(
+                                """
+                                    INSERT INTO reviews_table (stars, revText, userId, storeId) VALUES
+                                    (5, 'Excellent service and great ambiance. Highly recommended!', 1, 1),
+                                    (4, 'Good food but the wait time was a bit long. Would come back!', 2, 2),
+                                    (3, 'Decent place, but the food was just average. Not bad, but not great either.', 3, 3),
+                                    (2, 'The store was too crowded and the service was slow. Disappointing experience.', 4, 4);
+                                """
+                            )
+
+
 
 
 
