@@ -114,12 +114,12 @@ fun Homepage(
     var selectedPersons by remember { mutableStateOf("2") }
     val coroutineScope = rememberCoroutineScope()
 
-    // Φιλτράρισμα καταστημάτων με βάση την επιλεγμένη ημέρα
-    val filteredStores = stores.filter { store ->
-        val isDayMatch = store.avDays.split(",").contains(selectedDay)
-        val isPersonsMatch = (store.availability >= (selectedPersons.toIntOrNull() ?: 0))
-        (isDayMatch && isPersonsMatch)
-    }
+//    // Φιλτράρισμα καταστημάτων με βάση την επιλεγμένη ημέρα
+//    val filteredStores = stores.filter { store ->
+//        val isDayMatch = store.avDays.split(",").contains(selectedDay)
+//        val isPersonsMatch = (store.availability >= (selectedPersons.toIntOrNull() ?: 0))
+//        (isDayMatch && isPersonsMatch)
+//    }
 
     val currentUser = users.filter { it.userId == userId }.firstOrNull()
     val username = currentUser?.username ?: "Guest"
@@ -238,14 +238,14 @@ fun Homepage(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    items(filteredStores) { store ->
-                        RestaurantCard(
-                            store = store,
-                            onBookClick = {
-                                navController.navigate(Screen.Stores.withArgs(store.name))
-                            }
-                        )
-                    }
+//                    items(filteredStores) { store ->
+//                        RestaurantCard(
+//                            store = store,
+//                            onBookClick = {
+//                                navController.navigate(Screen.Stores.withArgs(store.name))
+//                            }
+//                        )
+//                    }
                 }
             }
         }

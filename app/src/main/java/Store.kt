@@ -9,8 +9,5 @@ data class Store(
     val storeId: Int = 0,
     val name: String,
     val info: String,
-    val avDays: String,
-    val avHours: String,
     val location: String,
-    val availability: Int
 )
