@@ -20,16 +20,13 @@ import androidx.compose.material.icons.filled.Phone
 import kotlinx.coroutines.delay
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -49,7 +46,6 @@ fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewMod
     NavHost(navController = navController, startDestination = Screen.RegisterPage.route) {
 
         composable(route = Screen.RegisterPage.route) {
-            val context = LocalContext.current
             RegisterScreen(
                 navController,
                 onLoginClick = {
@@ -74,7 +70,7 @@ fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewMod
         // Navigation to LoginPage, no need to dynamically pass parameters
         composable(
             route = Screen.LoginPage.route,
-        ) { entry ->
+        ) { _ ->
             LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
         }
 
@@ -95,7 +91,6 @@ fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewMod
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     navController: NavController,
@@ -107,15 +102,19 @@ fun RegisterScreen(
     var phoneNumber by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
+    var usernameUnsafeInputs by remember { mutableStateOf(false) }
+    var phoneUnsafeInputs by remember { mutableStateOf(false) }
+    var emailUnsafeInputs by remember { mutableStateOf(false) }
+    var passwordUnsafeInputs by remember { mutableStateOf(false) }
     var unsafeInputs by remember { mutableStateOf(false) }
-    var errorInfo by remember { mutableStateOf("") }
-    var isEmailValid by remember { mutableStateOf(true) }
-    var invalidEmail by remember { mutableStateOf(false) }
+
+
     val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+    var isEmailValid by remember { mutableStateOf(true) }
     var isPasswordSafe by remember { mutableStateOf(true) }
     var isUsernameValid by remember { mutableStateOf(true) }
     var isPhoneNumberValid by remember { mutableStateOf(true) }
-
+    var errorInfo by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -151,6 +150,20 @@ fun RegisterScreen(
             )
         )
 
+        if (usernameUnsafeInputs) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Username must be at least 4 characters",
+                color = Color(0xFFFD6924),
+                fontWeight = FontWeight.Bold,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            )
+            LaunchedEffect(Unit) {
+                delay(3000) // Delay for 3 seconds before hiding error message
+                usernameUnsafeInputs = false
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // PhoneNumber TextField
@@ -168,6 +181,20 @@ fun RegisterScreen(
             )
         )
 
+        if (phoneUnsafeInputs) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Invalid Phone Number",
+                color = Color(0xFFFD6924),
+                fontWeight = FontWeight.Bold,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            )
+            LaunchedEffect(Unit) {
+                delay(3000) // Delay for 3 seconds before hiding error message
+                phoneUnsafeInputs = false
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // Email TextField
@@ -184,6 +211,20 @@ fun RegisterScreen(
                 unfocusedBorderColor = Color(0xFFBDBDBD),
             )
         )
+
+        if (emailUnsafeInputs) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Invalid email format",
+                color = Color(0xFFFD6924),
+                fontWeight = FontWeight.Bold,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            )
+            LaunchedEffect(Unit) {
+                delay(3000) // Delay for 3 seconds before hiding error message
+                emailUnsafeInputs = false
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -209,27 +250,43 @@ fun RegisterScreen(
             )
         )
 
+        if (passwordUnsafeInputs) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Password must be 8+ characters, include upper/lowercase letters, a digit, a special character, and no spaces",
+                color = Color(0xFFFD6924),
+                fontWeight = FontWeight.Bold,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+            )
+            LaunchedEffect(Unit) {
+                delay(3000) // Delay for 3 seconds before hiding error message
+                passwordUnsafeInputs = false
+            }
+        }
+
         Spacer(modifier = Modifier.height(26.dp))
 
         // Register Button
         Button(
             onClick = {
                 // Many if statements so that users can see their errors one by one and avoid overcrowding of info
-                if (!isUsernameValid) {
-                    unsafeInputs = true
-                    errorInfo = "Username must be at least 4 characters"
-                } else if (!isPhoneNumberValid) {
-                    unsafeInputs = true
-                    errorInfo = "Invalid Phone Number"
-                } else if (!isEmailValid) {
-                    unsafeInputs = true
-                    errorInfo = "Invalid email format"
-                } else if (!isPasswordSafe) {
-                    unsafeInputs = true
-                    errorInfo = "Password must be 8+ characters, include upper/lowercase letters, a digit, a special character, and no spaces"
-                } else if (username.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                    unsafeInputs = true // Trigger error state
-                    errorInfo = "All fields are required!"
+                if (!isUsernameValid || !isPhoneNumberValid || !isEmailValid || !isPasswordSafe || username.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                    if (!isUsernameValid) {
+                        usernameUnsafeInputs = true
+                    }
+                    if (!isPhoneNumberValid) {
+                        phoneUnsafeInputs = true
+                    }
+                    if (!isEmailValid) {
+                        emailUnsafeInputs = true
+                    }
+                    if (!isPasswordSafe) {
+                        passwordUnsafeInputs = true
+                    }
+                    if (username.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                        unsafeInputs = true // Trigger error state
+                        errorInfo = "All fields are required!"
+                    }
                 } else {
                     onRegisterClick(username, password, phoneNumber, email)
                 }
@@ -253,7 +310,7 @@ fun RegisterScreen(
             )
             LaunchedEffect(Unit) {
                 delay(3000) // Delay for 3 seconds before hiding error message
-                invalidEmail = false
+                unsafeInputs = false
             }
         }
 
