@@ -98,10 +98,10 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     onClick = { viewModel.insertStore(Store(
                         name = storeName,
                         info = storeInfo,
-                        avDays = " ",
-                        avHours = " ",
+//                        avDays = " ",
+//                        avHours = " ",
                         location = " ",
-                        availability = 10
+//                        availability = 10
                     )) },
                     modifier = Modifier.padding(8.dp)
                 ) {

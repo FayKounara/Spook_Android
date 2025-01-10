@@ -72,8 +72,8 @@ fun StoreList(navController: NavController, viewModel: StoreViewModel, filternam
 
     if (filteredStores.isNotEmpty()) {
         val store = filteredStores.first()
-        val allAvailableHours = filteredStores.flatMap { it.avHours.split(",") }.distinct()
-        StoreCard(navController, store, allAvailableHours)
+        //val allAvailableHours = filteredStores.flatMap { it.avHours.split(",") }.distinct()
+        //StoreCard(navController, store, allAvailableHours)
     }
 }
 

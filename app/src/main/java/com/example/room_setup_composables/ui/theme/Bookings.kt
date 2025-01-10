@@ -83,7 +83,7 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
                             date = reservationDate,
                             hours = hour,
                             storeId = enteredStoreId.toInt(),
-                            userId = customerName.toInt(),
+                            userId = userId,
                             phoneNumber = "",
                             persons = 2,
                             occasion = ""
