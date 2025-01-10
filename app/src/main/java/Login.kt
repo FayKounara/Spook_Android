@@ -1,5 +1,6 @@
 package com.example.room_setup_composables
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -15,8 +16,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Phone
 import kotlinx.coroutines.delay
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -39,43 +38,43 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.room_setup_composables.ui.theme.Screen
-import java.util.Random
+
 
 @Composable
-fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
+fun LoginNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
 
     val navController = rememberNavController()
+    val users by userViewModel.allUsers.collectAsState(initial = emptyList())
 
-    NavHost(navController = navController, startDestination = Screen.RegisterPage.route) {
-
-        composable(route = Screen.RegisterPage.route) {
+    NavHost(navController = navController, startDestination = Screen.LoginPage.route) {
+        composable(route = Screen.LoginPage.route) {
             val context = LocalContext.current
-            RegisterScreen(
+            LoginScreen(
                 navController,
-                onLoginClick = {
-                    navController.navigate(Screen.LoginPage.withArgs())
+                onLoginClick = { username, password ->
+                    // Check if user exists
+                    val userId = users
+                        .filter { it.username == username && it.password == password }
+                        .map { it.userId }
+                        .firstOrNull()
+
+                    if (userId == null) {
+                        Toast.makeText(context, "Incorrect Credentials, please try again", Toast.LENGTH_LONG).show()
+                    } else {
+                        navController.navigate(Screen.HomePage.withArgs(userId.toString()))
+                    }
                 },
-                onRegisterClick = { username, password, phoneNumber, email ->
-                    val newUserId = Random().nextInt(999999999)
-                    userViewModel.insertUser(
-                        User(
-                            userId = newUserId,
-                            username = username,
-                            password = password,
-                            phoneNumber = phoneNumber,
-                            email = email
-                        )
-                    )
-                    navController.navigate(Screen.HomePage.withArgs(newUserId.toString()))
+                onSignUpClick = {
+                    navController.navigate(Screen.RegisterPage.withArgs())
                 }
             )
         }
 
-        // Navigation to LoginPage, no need to dynamically pass parameters
+        // Navigation to RegisterPage, no need to dynamically pass parameters
         composable(
-            route = Screen.LoginPage.route,
+            route = Screen.RegisterPage.route,
         ) { entry ->
-            LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
+            RegisterNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
         }
 
         // Navigation to HomePage
@@ -97,25 +96,14 @@ fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewMod
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(
+fun LoginScreen(
     navController: NavController,
-    onRegisterClick: (username: String, password: String, phoneNumber: String, email: String) -> Unit,
-    onLoginClick: () -> Unit
+    onLoginClick: (username: String, password: String) -> Unit,
+    onSignUpClick: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-
-    var unsafeInputs by remember { mutableStateOf(false) }
-    var errorInfo by remember { mutableStateOf("") }
-    var isEmailValid by remember { mutableStateOf(true) }
-    var invalidEmail by remember { mutableStateOf(false) }
-    val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
-    var isPasswordSafe by remember { mutableStateOf(true) }
-    var isUsernameValid by remember { mutableStateOf(true) }
-    var isPhoneNumberValid by remember { mutableStateOf(true) }
-
+    var showError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -128,7 +116,7 @@ fun RegisterScreen(
 
         // Title
         Text(
-            text = "Welcome!",
+            text = "Welcome Back!",
             style = androidx.compose.material3.MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color =Color(0xFFFFA726)
@@ -139,45 +127,9 @@ fun RegisterScreen(
         // Username TextField
         OutlinedTextField(
             value = username,
-            onValueChange = {
-                username = it
-                isUsernameValid = it.length > 3 },
+            onValueChange = { username = it },
             label = { Text("Username", color = Color(0xFF616161)) },
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFFFFA726)) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFFFA726),
-                unfocusedBorderColor = Color(0xFFBDBDBD),
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // PhoneNumber TextField
-        OutlinedTextField(
-            value = phoneNumber,
-            onValueChange = {
-                phoneNumber = it
-                isPhoneNumberValid = it.length == 10 },
-            label = { Text("Phone Number", color = Color(0xFF616161)) },
-            leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = Color(0xFFFFA726)) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFFFA726),
-                unfocusedBorderColor = Color(0xFFBDBDBD),
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Email TextField
-        OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                isEmailValid = it.matches(Regex(emailPattern)) },
-            label = { Text("Email", color = Color(0xFF616161)) },
-            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color(0xFFFFA726)) },
             modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFFFFA726),
@@ -190,15 +142,7 @@ fun RegisterScreen(
         // Password TextField
         OutlinedTextField(
             value = password,
-            onValueChange = {
-                password = it
-                isPasswordSafe = it.length >= 8 &&
-                        it.any { char -> char.isUpperCase() } &&
-                        it.any { char -> char.isLowerCase() } &&
-                        it.any { char -> char.isDigit() } &&
-                        it.any { char -> "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~".contains(char) } &&
-                        !it.contains(" ")
-            },
+            onValueChange = { password = it },
             label = { Text("Password", color = Color(0xFF616161)) },
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFFFFA726)) },
             visualTransformation = PasswordVisualTransformation(),
@@ -211,27 +155,13 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(26.dp))
 
-        // Register Button
+        // Login Button
         Button(
             onClick = {
-                // Many if statements so that users can see their errors one by one and avoid overcrowding of info
-                if (!isUsernameValid) {
-                    unsafeInputs = true
-                    errorInfo = "Username must be at least 4 characters"
-                } else if (!isPhoneNumberValid) {
-                    unsafeInputs = true
-                    errorInfo = "Invalid Phone Number"
-                } else if (!isEmailValid) {
-                    unsafeInputs = true
-                    errorInfo = "Invalid email format"
-                } else if (!isPasswordSafe) {
-                    unsafeInputs = true
-                    errorInfo = "Password must be 8+ characters, include upper/lowercase letters, a digit, a special character, and no spaces"
-                } else if (username.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                    unsafeInputs = true // Trigger error state
-                    errorInfo = "All fields are required!"
+                if (username.isEmpty() || password.isEmpty()) {
+                    showError = true // Trigger error state
                 } else {
-                    onRegisterClick(username, password, phoneNumber, email)
+                    onLoginClick(username, password)
                 }
             },
             modifier = Modifier
@@ -239,32 +169,32 @@ fun RegisterScreen(
                 .padding(vertical = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
         ) {
-            Text(text = "Register", color = Color.White, fontSize = 16.sp,fontWeight = FontWeight.Bold)
+            Text(text = "Login", color = Color.White, fontSize = 16.sp,fontWeight = FontWeight.Bold)
         }
 
-        // Capable to display whatever error message about any field that the user hasn't filled out properly
-        if (unsafeInputs) {
+        if (showError) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = errorInfo,
+                text = "Username and password are required",
                 color = Color(0xFFFD6924),
                 fontWeight = FontWeight.Bold,
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
             )
             LaunchedEffect(Unit) {
-                delay(3000) // Delay for 3 seconds before hiding error message
-                invalidEmail = false
+                delay(3000) // Delay for 2 seconds before hiding error message
+                showError = false
             }
         }
+        
 
         // Sign-Up Row
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Already Registered?", color = Color.Gray)
+            Text(text = "Don't have an Account?", color = Color.Gray)
             Spacer(modifier = Modifier.width(4.dp))
-            TextButton(onClick = onLoginClick) {
-                Text(text = "Log In", fontWeight = FontWeight.Bold,color = Color(0xFFFFA726))
+            TextButton(onClick = onSignUpClick) {
+                Text(text = "Sign Up", fontWeight = FontWeight.Bold,color = Color(0xFFFFA726))
             }
         }
 
@@ -282,6 +212,9 @@ fun RegisterScreen(
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))        ) {
             Text(text = "For testing: Go to HomePage", color = Color.White)
         }
+
+        // Error Message
+
     }
 }
 

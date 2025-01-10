@@ -51,7 +51,7 @@ fun HomePageNavigation(
 
     NavHost(navController = navController, startDestination = Screen.HomePage.route) {
         composable(route = Screen.HomePage.route) {
-            Homepage(navController, userId, storeViewModel = storeViewModel)
+            Homepage(navController, userId, userViewModel = userViewModel, storeViewModel = storeViewModel)
         }
         composable(
             route = Screen.Stores.route + "/{name}",
@@ -103,11 +103,13 @@ fun HomePageNavigation(
 fun Homepage(
     navController: NavController,
     userId: Int,
+    userViewModel: UserViewModel,
     storeViewModel: StoreViewModel,
     modifier: Modifier = Modifier
 ) {
     val stores by storeViewModel.allStores.collectAsState(initial = emptyList())
     val offers by storeViewModel.allOffers.collectAsState(initial = emptyList())
+    val users by userViewModel.allUsers.collectAsState(initial = emptyList())
     var selectedDay by remember { mutableStateOf("Monday") }
     var selectedPersons by remember { mutableStateOf("2") }
     val coroutineScope = rememberCoroutineScope()
@@ -118,6 +120,9 @@ fun Homepage(
         val isPersonsMatch = (store.availability >= (selectedPersons.toIntOrNull() ?: 0))
         (isDayMatch && isPersonsMatch)
     }
+
+    val currentUser = users.filter { it.userId == userId }.firstOrNull()
+    val username = currentUser?.username ?: "Guest"
 
     Box(
         modifier = modifier
@@ -147,7 +152,7 @@ fun Homepage(
                 )
 
                 Text(
-                    text = "Welcome back, $userId:)",
+                    text = "Welcome back, $username :)",
                     style = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold

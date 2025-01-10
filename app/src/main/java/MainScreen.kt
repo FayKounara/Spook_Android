@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import java.util.Random
 
 class MainScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +67,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                 )
                 Button(
                     onClick = { viewModel.insertUser(User(
+                        userId = Random().nextInt(100),
                         username = username,
                         password = password,
                         phoneNumber = "",

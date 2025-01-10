@@ -1,7 +1,8 @@
 package com.example.room_setup_composables.ui.theme
 
 sealed class Screen(val route: String) {
-    data object AuthPage : Screen("AuthScreen")
+    data object LoginPage : Screen("LoginScreen")
+    data object RegisterPage : Screen("RegisterScreen")
     data object HomePage : Screen("Homepage")
     data object ProfileScreen : Screen("ProfileScreen")
     data object Stores : Screen("StoreList")
