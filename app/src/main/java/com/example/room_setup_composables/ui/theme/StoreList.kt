@@ -125,18 +125,11 @@ fun StoreCard(navController: NavController, store: Store, availableHours: List<S
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                availableHours.forEach { hour ->
-                    HourButton(hour = hour.trim()) {
-                        Log.d("NavigationDebug", "Navigating with hour=$hour and storeId=${store.storeId}")
-                        navController.navigate(Screen.Bookings.withArgs(hour.trim(), store.storeId.toString()))
-                    }
-                }
+                HourSelection(navController, availableHours, store.storeId.toString())
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Κουμπί Κράτησης
-            BookNowButton(navController)
         }
     }
 }
@@ -180,20 +173,47 @@ fun StoreDetailsSection(store: Store) {
 }
 
 @Composable
-fun HourButton(hour: String, onClick: () -> Unit) {
+fun HourSelection(navController: NavController, availableHours: List<String>, storeId: String) {
+    var selectedHour by remember { mutableStateOf<String>("00") }
+
+    Column {
+        availableHours.forEach { hour ->
+            val isDisabled = selectedHour != "00" && selectedHour != hour.trim()
+
+            HourButton(
+                hour = hour.trim(),
+                isDisabled = isDisabled,
+                onClick = { selectedHour = hour.trim() }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Book Now Button
+        BookNowButton(
+            navController = navController,
+            storeId = storeId,
+            selectedHour = selectedHour
+        )
+    }
+}
+
+@Composable
+fun HourButton(hour: String, isDisabled: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726)) // Χρώμα πορτοκαλί για τα κουμπιά
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726)),
+        enabled = !isDisabled // Disable the button if not clickable
     ) {
         Text(text = hour)
     }
 }
 
 @Composable
-fun BookNowButton(navController: NavController) {
+fun BookNowButton(navController: NavController, storeId: String, selectedHour: String) {
     Button(
-        onClick = { navController.navigate(Screen.Bookings.withArgs()) },
+        onClick = { navController.navigate(Screen.Bookings.withArgs(selectedHour, storeId)) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
