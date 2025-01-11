@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">room_setup_composables</string>
+    <string name= "my_map_api_key">AIzaSyAN0ReHCYgkkqotEyHXYMfCSTo6go79xH8</string>
 </resources>
