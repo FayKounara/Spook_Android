@@ -73,7 +73,9 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.5.1")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
-
+    // google maps api
+    implementation ("com.google.android.gms:play-services-maps:18.1.0")
+    implementation ("com.google.maps.android:maps-compose:2.11.0")
     // Testing Dependencies
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
