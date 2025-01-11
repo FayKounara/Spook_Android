@@ -1,16 +1,18 @@
 package com.example.room_setup_composables.com.example.room_setup_composables.ui.theme
 
+import android.content.Context
+import android.location.Address
+import android.location.Geocoder
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -32,18 +35,27 @@ import androidx.navigation.navArgument
 import com.example.room_database_setup.R
 import com.example.room_setup_composables.BookingViewModel
 import com.example.room_setup_composables.BookingsScreen
+import com.example.room_setup_composables.Slot
+import com.example.room_setup_composables.SlotViewModel
 import com.example.room_setup_composables.Store
 import com.example.room_setup_composables.StoreViewModel
 import com.example.room_setup_composables.UserViewModel
 import com.example.room_setup_composables.ui.theme.Screen
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
+import java.util.Locale
 
 @Composable
-fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, filtername: String) {
+fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, filtername: String,filterday:String,slotViewModel: SlotViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
         composable(route = Screen.Stores.route) {
-            StoreList(navController, storeViewModel, filtername)
+            StoreList(navController, storeViewModel, filtername, slotViewModel ,filterday)
         }
         composable(
             route = Screen.Bookings.route + "/{hour}/{storeId}",
@@ -66,19 +78,40 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
 }
 
 @Composable
-fun StoreList(navController: NavController, viewModel: StoreViewModel, filtername: String) {
+fun StoreList(
+    navController: NavController,
+    viewModel: StoreViewModel,
+    filtername: String,
+    slotViewModel: SlotViewModel,
+    filterday: String
+) {
     val stores by viewModel.allStores.collectAsState(initial = emptyList())
     val filteredStores = stores.filter { it.name == filtername }
-
+    val slots by slotViewModel.slots.collectAsState(initial = emptyList())
     if (filteredStores.isNotEmpty()) {
         val store = filteredStores.first()
+            // slotViewModel.fetchSlotsForStore(store.storeId)
         //val allAvailableHours = filteredStores.flatMap { it.avHours.split(",") }.distinct()
         //StoreCard(navController, store, allAvailableHours)
+        //fay
+
+        slotViewModel.fetchSlotsForStore1(store.storeId)
+
+
+        val slotsForSelectedDay = slots.filter { it.storeId == store.storeId && it.day == filterday }
+        if (slotsForSelectedDay.isNotEmpty()) {
+            // Pass the filtered slots to your store card or whatever UI component you are rendering
+            StoreCard(
+                navController = navController,
+                store = store,
+                availableHours = slotsForSelectedDay
+            )
+        }
     }
 }
 
 @Composable
-fun StoreCard(navController: NavController, store: Store, availableHours: List<String>) {
+fun StoreCard(navController: NavController, store: Store, availableHours: List<Slot>) {
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
         shape = RoundedCornerShape(16.dp),
@@ -129,11 +162,88 @@ fun StoreCard(navController: NavController, store: Store, availableHours: List<S
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+            StoreLocationToLatLng(store)
 
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
+//map
+@Composable
+fun StoreMap(latitude: Double, longitude: Double) {
 
+    val location = LatLng(latitude, longitude)
+
+
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(location, 15f) // Zoom level 15 for a close view
+    }
+
+    GoogleMap(
+        modifier = Modifier
+            .fillMaxSize() // Make the map take up the full available space
+            .padding(16.dp), // Add padding around the map
+        cameraPositionState = cameraPositionState
+    ) {
+        val markerState = MarkerState(position = location)
+        Marker(
+            state = markerState,
+            title = "Store Location",
+            snippet = "This is the location of the store."
+        )
+    }
+}
+
+fun getLatLngFromAddress(context: Context, address: String): Pair<Double, Double>? {
+    val geocoder = Geocoder(context, Locale.getDefault()) // Create Geocoder instance
+    try {
+        // Get the list of addresses based on the address string
+        val addressResult: Address? = geocoder.getFromLocationName(address, 1)?.firstOrNull()
+
+        // If a valid address result is found, return its latitude and longitude
+        addressResult?.let {
+            return Pair(it.latitude, it.longitude)
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return null // Return null if geocoding fails or no address is found
+}
+
+@Composable
+fun StoreLocationToLatLng(store: Store) {
+    val context = LocalContext.current
+    var latitude by remember { mutableStateOf(0.0) }
+    var longitude by remember { mutableStateOf(0.0) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    // When the store location changes, fetch the latitude and longitude
+    LaunchedEffect(store.location) {
+        val latLng = getLatLngFromAddress(context, store.location)
+        if (latLng != null) {
+            latitude = latLng.first  // Update latitude
+            longitude = latLng.second // Update longitude
+            isLoading = false
+        } else {
+            Toast.makeText(context, "Address not found", Toast.LENGTH_SHORT).show()
+            isLoading = false
+        }
+    }
+
+    // Show loading indicator while fetching location
+    if (isLoading) {
+        CircularProgressIndicator() // Show a loading indicator while fetching coordinates
+    } else if (latitude != 0.0 && longitude != 0.0) {
+        // Only show the map when valid coordinates are available
+        StoreMap(latitude, longitude)
+    } else {
+        // Handle case where coordinates are not found (e.g., show an error message or default view)
+        Text("Invalid location.")
+    }
+}
+
+
+//map
 @Composable
 fun StoreDetailsSection(store: Store) {
     Row(
@@ -173,17 +283,42 @@ fun StoreDetailsSection(store: Store) {
 }
 
 @Composable
-fun HourSelection(navController: NavController, availableHours: List<String>, storeId: String) {
+//fun HourSelection(navController: NavController, availableHours: List<Slot>, storeId: String) {
+//var selectedHour by remember { mutableStateOf<String>("00") }
+
+//  Column {
+//      availableHours.forEach { hour ->
+//   val isDisabled = selectedHour != "00" && selectedHour != hour.toString().trim()
+
+//   HourButton(hour = hour.toString().trim(),
+//      isDisabled = isDisabled,
+//     onClick = { selectedHour = hour.toString().trim() }
+//     )
+//   }
+
+//    Spacer(modifier = Modifier.height(16.dp))
+
+//      BookNowButton(
+//        navController = navController,
+//         storeId = storeId,
+//         selectedHour = selectedHour
+//       )
+//   }
+// }
+fun HourSelection(navController: NavController, availableSlots: List<Slot>, storeId: String) {
     var selectedHour by remember { mutableStateOf<String>("00") }
+
+    // Convert availableSlots from List<Slot> to List<String>
+    val availableHours = availableSlots.map { it.hour } // Assuming Slot has a 'hour' property
 
     Column {
         availableHours.forEach { hour ->
-            val isDisabled = selectedHour != "00" && selectedHour != hour.trim()
+            val isDisabled = selectedHour != "00"
 
             HourButton(
-                hour = hour.trim(),
+                hour = hour.toString(), // Directly using the string hour without trimming
                 isDisabled = isDisabled,
-                onClick = { selectedHour = hour.trim() }
+                onClick = { selectedHour = hour.toString() } // Set selected hour directly
             )
         }
 
@@ -197,6 +332,8 @@ fun HourSelection(navController: NavController, availableHours: List<String>, st
         )
     }
 }
+
+
 
 @Composable
 fun HourButton(hour: String, isDisabled: Boolean, onClick: () -> Unit) {
