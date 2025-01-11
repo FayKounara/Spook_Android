@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SlotDao {
@@ -11,7 +12,7 @@ interface SlotDao {
     suspend fun insertSlot(slot: Slot)
 
     @Query("SELECT * FROM slots_table WHERE storeId = :storeId")
-    suspend fun getSlotsForStore(storeId: Int): List<Slot>
+    suspend fun getSlotsForStore(storeId: Int): Flow<List<Slot>>
 
     @Query("UPDATE slots_table SET availability = availability - 2 WHERE slotId = :slotId")
     suspend fun reduceByTwo(slotId: Int)
