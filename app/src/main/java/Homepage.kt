@@ -1,5 +1,6 @@
 package com.example.room_setup_composables
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -37,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.room_database_setup.R
+import androidx.compose.runtime.collectAsState
 
 
 @Composable
@@ -45,26 +47,30 @@ fun HomePageNavigation(
     userViewModel:UserViewModel,
     storeViewModel: StoreViewModel,
     bookingViewModel: BookingViewModel,
-    reviewViewModel: ReviewViewModel
+    reviewViewModel: ReviewViewModel,
+    slotViewModel: SlotViewModel
+
 ) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.HomePage.route) {
         composable(route = Screen.HomePage.route) {
-            Homepage(navController, userId, userViewModel = userViewModel, storeViewModel = storeViewModel)
+            Homepage(navController, userId, userViewModel = userViewModel, storeViewModel = storeViewModel,slotViewModel=slotViewModel)
         }
         composable(
-            route = Screen.Stores.route + "/{name}",
+            route = Screen.Stores.route + "/{name}/{selectedDay}",
             arguments = listOf(
                 navArgument("name") {
                     type = NavType.StringType
                     defaultValue = "Juicy Grill"
                     nullable = true
-                }
+                },
+                navArgument("selectedDay") { type = NavType.StringType }
             )
         ) { entry ->
             val name = entry.arguments?.getString("name") ?: "Juicy Grill"
-            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, name)
+            val selectedDay = entry.arguments?.getString("selectedDay") ?: "Monday"
+            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, name,selectedDay,slotViewModel)
         }
 
         // For navigation to reviews
@@ -105,21 +111,41 @@ fun Homepage(
     userId: Int,
     userViewModel: UserViewModel,
     storeViewModel: StoreViewModel,
+    slotViewModel: SlotViewModel,
     modifier: Modifier = Modifier
 ) {
     val stores by storeViewModel.allStores.collectAsState(initial = emptyList())
     val offers by storeViewModel.allOffers.collectAsState(initial = emptyList())
     val users by userViewModel.allUsers.collectAsState(initial = emptyList())
+    val slots by slotViewModel.slots.collectAsState(initial = emptyList())
     var selectedDay by remember { mutableStateOf("Monday") }
     var selectedPersons by remember { mutableStateOf("2") }
     val coroutineScope = rememberCoroutineScope()
+    val filteredStores = remember { mutableStateListOf<Store>() }
 
-//    // Φιλτράρισμα καταστημάτων με βάση την επιλεγμένη ημέρα
-//    val filteredStores = stores.filter { store ->
-//        val isDayMatch = store.avDays.split(",").contains(selectedDay)
-//        val isPersonsMatch = (store.availability >= (selectedPersons.toIntOrNull() ?: 0))
-//        (isDayMatch && isPersonsMatch)
-//    }
+// LaunchedEffect to filter stores based on available slots
+    LaunchedEffect(stores, selectedDay, selectedPersons) {
+        filteredStores.clear()
+
+        stores.forEach { store ->
+            // Fetch the slots for each store directly using the new function
+            val storeSlots = slotViewModel.fetchSlotsForStore(store.storeId)
+
+            // Check if any slot for the store on the selected day has enough available slots
+            val hasAvailableSlot = storeSlots.any { slot ->
+                slot.day == selectedDay && slot.availability >= (selectedPersons.toIntOrNull() ?: 0)
+            }
+
+            // If a store has an available slot, add it to the filtered list
+            if (hasAvailableSlot) {
+                filteredStores.add(store)
+            }
+        }
+
+        Log.d("Homepage", "Filtered Stores: ${filteredStores.size}")
+    }
+
+//fay
 
     val currentUser = users.filter { it.userId == userId }.firstOrNull()
     val username = currentUser?.username ?: "Guest"
@@ -189,7 +215,7 @@ fun Homepage(
                                 coroutineScope.launch {
                                     val store = storeViewModel.getStoreById(offer.storeId)
                                     store?.let {
-                                        navController.navigate(Screen.Stores.withArgs(it.name))
+                                        navController.navigate(Screen.Stores.withArgs(it.name,selectedDay))
                                     }
                                 }
                             }
@@ -237,15 +263,16 @@ fun Homepage(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
+                    //fay
                 ) {
-//                    items(filteredStores) { store ->
-//                        RestaurantCard(
-//                            store = store,
-//                            onBookClick = {
-//                                navController.navigate(Screen.Stores.withArgs(store.name))
-//                            }
-//                        )
-//                    }
+                  items(filteredStores) { store ->
+                       RestaurantCard(
+                          store = store,
+                          onBookClick = {
+                              navController.navigate(Screen.Stores.withArgs(store.name,selectedDay))
+                          }
+                      )
+                  }
                 }
             }
         }
@@ -405,7 +432,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
 @Composable
 fun DaySelector(selectedDay: String, onDaySelected: (String) -> Unit, modifier: Modifier = Modifier) {
     val daysOfWeek = listOf(
-        "Mon-Sun", "Mon-Sat", "Mon-Fri", "Monday", "Tuesday", "Wednesday",
+        "Monday", "Tuesday", "Wednesday",
         "Thursday", "Friday", "Saturday", "Sunday"
     )
     var expanded by remember { mutableStateOf(false) }
