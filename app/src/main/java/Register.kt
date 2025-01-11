@@ -39,7 +39,7 @@ import com.example.room_setup_composables.ui.theme.Screen
 import java.util.Random
 
 @Composable
-fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
+fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel,slotViewModel: SlotViewModel) {
 
     val navController = rememberNavController()
 
@@ -71,7 +71,7 @@ fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewMod
         composable(
             route = Screen.LoginPage.route,
         ) { _ ->
-            LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
+            LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
 
         // Navigation to HomePage
@@ -86,7 +86,7 @@ fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewMod
             )
         ) { entry ->
             val userId = entry.arguments?.getString("id") ?: "1"
-            HomePageNavigation(userId = userId.toInt(), userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
+            HomePageNavigation(userId = userId.toInt(), userViewModel, storeViewModel, bookingViewModel, reviewViewModel,slotViewModel)
         }
     }
 }
