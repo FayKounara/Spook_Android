@@ -41,7 +41,7 @@ import com.example.room_setup_composables.ui.theme.Screen
 
 
 @Composable
-fun LoginNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel) {
+fun LoginNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel,slotViewModel: SlotViewModel) {
 
     val navController = rememberNavController()
     val users by userViewModel.allUsers.collectAsState(initial = emptyList())
@@ -74,7 +74,7 @@ fun LoginNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel,
         composable(
             route = Screen.RegisterPage.route,
         ) { entry ->
-            RegisterNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
+            RegisterNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel,slotViewModel)
         }
 
         // Navigation to HomePage
@@ -89,7 +89,8 @@ fun LoginNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel,
             )
         ) { entry ->
             val userId = entry.arguments?.getString("id") ?: "1"
-            HomePageNavigation(userId = userId.toInt(), userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
+
+            HomePageNavigation(userId = userId.toInt(), userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
     }
 }
