@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +19,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,10 +33,11 @@ import com.example.room_setup_composables.ui.theme.Screen
 import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
 import androidx.compose.foundation.Image
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.example.room_database_setup.R
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
 
 @Composable
@@ -150,6 +149,69 @@ fun Homepage(
     val currentUser = users.filter { it.userId == userId }.firstOrNull()
     val username = currentUser?.username ?: "Guest"
 
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    if (showErrorDialog) {
+        Dialog(
+            onDismissRequest = { showErrorDialog = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                modifier = Modifier
+                    .width(300.dp) // Μικρότερο πλάτος
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp), // Πιο στρογγυλεμένες γωνίες
+                color = Color.White,
+                shadowElevation = 10.dp // Προσθήκη σκιάς
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp) // Προσθήκη εσωτερικού περιθωρίου
+                ) {
+                    // Τίτλος
+                    Text(
+                        text = "Too Juicy to Handle!",
+                        style = TextStyle(
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFFF9800) // Πορτοκαλί γραμματοσειρά
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    // Κυρίως κείμενο
+                    Text(
+                        text = errorMessage,
+                        style = TextStyle(
+                            fontSize = 18.sp, // Μικρότερη γραμματοσειρά
+                            color = Color.Black
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    // Κουμπί επιβεβαίωσης
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = { showErrorDialog = false }) {
+                            Text(
+                                "OK",
+                                style = TextStyle(
+                                    color = Color(0xFFFF9800),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -212,11 +274,22 @@ fun Homepage(
                             foodItem = offer,
                             storeName = storeName,
                             onCardClick = {
-                                coroutineScope.launch {
-                                    val store = storeViewModel.getStoreById(offer.storeId)
-                                    store?.let {
-                                        navController.navigate(Screen.Stores.withArgs(it.name,selectedDay))
+                                // Έλεγχος αν το store της προσφοράς βρίσκεται στη λίστα filteredStores
+                                val storeExistsInFilteredStores = filteredStores.any { store ->
+                                    store.storeId == offer.storeId
+                                }
+
+                                if (storeExistsInFilteredStores) {
+                                    coroutineScope.launch {
+                                        val store = storeViewModel.getStoreById(offer.storeId)
+                                        store?.let {
+                                            navController.navigate(Screen.Stores.withArgs(it.name, selectedDay))
+                                        }
                                     }
+                                } else {
+                                    // Εμφάνιση μηνύματος σφάλματος
+                                    errorMessage = "Wow, this deal’s on fire! \n\n We are fully booked for today, but check back tomorrow\n— we’d love to Juicy serve you;)"
+                                    showErrorDialog = true
                                 }
                             }
                         )
