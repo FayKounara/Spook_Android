@@ -142,6 +142,31 @@ fun StoreCard(navController: NavController, store: Store, availableHours: List<S
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
+            // Αστεράκια για reviews
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .clickable {
+                        //navController.navigate("reviews/${store.storeId}")
+                    }
+            ) {
+                repeat(5) { index ->
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "Review Star",
+                        tint = Color(0xFFFFA726), // Χρώμα για τα αστεράκια
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Text(
+                    text = " Check Reviews",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 4.dp),
+                    color = Color.Gray
+                )
+            }
+
             StoreDetailsSection(store)
 
             Spacer(modifier = Modifier.height(16.dp))
