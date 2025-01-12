@@ -20,7 +20,10 @@ class MainActivity : ComponentActivity() {
     private val userViewModel: UserViewModel by viewModels {
         UserViewModel.UserViewModelFactory(AppDatabase.getDatabase(applicationContext).userDao())
     }
-
+    private val slotViewModel: SlotViewModel by viewModels {
+        SlotViewModel.SlotViewModelFactory(
+            AppDatabase.getDatabase(applicationContext).slotDao(),AppDatabase.getDatabase(applicationContext).storeDao())
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -29,7 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             RoomDatabaseSetupTheme {
-                LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel)
+                LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel,slotViewModel)
                 //HomePageNavigation(userId = 1, storeViewModel, bookingViewModel, reviewViewModel)
             }
         }
