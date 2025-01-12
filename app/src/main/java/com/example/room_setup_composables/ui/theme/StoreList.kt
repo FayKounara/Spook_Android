@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -124,22 +126,32 @@ fun StoreCard(navController: NavController, store: Store, availableHours: List<S
         colors = CardDefaults.cardColors(containerColor = Color.White) // Η κάρτα να είναι λευκή
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Προσθήκη Εικόνας
-            Image(
-                painter = painterResource(id = R.drawable.restphoto), // Replace with actual image
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            )
+
+                // Δυναμική φόρτωση εικόνας βάσει του id του Store
+                val imageRes = when (store.storeId) {
+                    1 -> R.drawable.rest1photo
+                    2 -> R.drawable.rest2photo
+                    3 -> R.drawable.rest3photo
+                    4 -> R.drawable.rest4photo
+                    else -> R.drawable.rest1photo // Εικόνα προεπιλογής
+                }
+
+                Image(
+                    painter = painterResource(id = imageRes), // Replace with actual image
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Πληροφορίες Καταστήματος
             Text(
                 text = store.name,
+                fontSize = 20.sp,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -149,9 +161,9 @@ fun StoreCard(navController: NavController, store: Store, availableHours: List<S
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
-//                    .clickable {
-//                        //navController.navigate("reviews/${store.storeId}")
-//                    }
+                    .clickable {
+                        //navController.navigate("reviews/${store.storeId}")
+                    }
             ) {
                 repeat(5) { index ->
                     Icon(
@@ -280,6 +292,7 @@ fun StoreDetailsSection(store: Store) {
 
         Text(
             text = store.location,
+            fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -292,10 +305,13 @@ fun StoreDetailsSection(store: Store) {
     ) {
 
         Text(
-            text = "10:30 AM - 11:00 PM", // Replace with actual opening hours
+            text = "10:30 AM - 11:00 PM",// Replace with actual opening hours
+            fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium
         )
     }
+
+    Spacer(modifier = Modifier.height(8.dp))
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -304,6 +320,7 @@ fun StoreDetailsSection(store: Store) {
 
         Text(
             text = store.info,
+            fontSize = 18.sp,
             style = MaterialTheme.typography.bodyMedium
         )
     }
