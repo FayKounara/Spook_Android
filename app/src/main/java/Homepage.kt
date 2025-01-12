@@ -288,7 +288,7 @@ fun Homepage(
                                     }
                                 } else {
                                     // Εμφάνιση μηνύματος σφάλματος
-                                    errorMessage = "Wow, this deal’s on fire! \n\n We are fully booked for today, but check another date\n \n— we’d love to Juicy serve you;)"
+                                    errorMessage = "Wow, this deal’s on fire! \n\n We are fully booked for today, but check back tomorrow\n— we’d love to Juicy serve you;)"
                                     showErrorDialog = true
                                 }
                             }
