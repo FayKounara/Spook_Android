@@ -20,15 +20,61 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
+import com.example.room_setup_composables.ui.theme.Screen
 
 // Μετονομασία της κλάσης από Booking σε BookingsHistory
 data class BookingsHistory(val storeId: Int, val storeName: String, val date: String, val location: String)
 
 @Composable
-fun ProfileScreen(navController: NavController, userId: Int) {
+fun ProfileNavigation(
+    userId: Int,
+    userViewModel:UserViewModel,
+    storeViewModel: StoreViewModel,
+    bookingViewModel: BookingViewModel,
+    reviewViewModel: ReviewViewModel,
+    slotViewModel: SlotViewModel
+) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Screen.ProfileScreen.route) {
+        composable(route = Screen.ProfileScreen.route) {
+            ProfileScreen(navController, userId, userViewModel = userViewModel, bookingViewModel, slotViewModel, reviewViewModel)
+        }
+
+        // For navigation to reviews
+        composable(
+            route = Screen.Reviews.route + "/{storeId}",
+            arguments = listOf(
+                navArgument("storeId") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                    nullable = false
+                }
+            )
+        ) { entry ->
+            val storeId = entry.arguments?.getInt("storeId") ?: 1
+            ReviewScreen(navController, reviewViewModel, storeId = storeId)
+        }
+
+        composable(
+            route = Screen.LoginPage.route,
+            arguments = emptyList()
+        ) { entry ->
+            LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        }
+    }
+}
+
+
+@Composable
+fun ProfileScreen(navController: NavController, userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel , slotViewModel: SlotViewModel, reviewViewModel: ReviewViewModel) {
+
     val bookingsHistory = listOf(
         BookingsHistory(storeId = 1, storeName = "Ambrosia Hotel & Restaurant", date = "2025-01-01", location = "Kazi Deiry, Taiger Pass, Chittagong"),
         BookingsHistory(storeId = 2, storeName = "Tava Restaurant", date = "2025-01-02", location = "Zakir Hossain Rd, Chittagong"),
@@ -57,7 +103,9 @@ fun ProfileScreen(navController: NavController, userId: Int) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        LogoutButton(navController)
+        LogoutButton(navController, onLogoutClick = {
+            navController.navigate(Screen.LoginPage.withArgs())
+        },)
     }
 
 }
@@ -195,13 +243,13 @@ fun BookingItem(
 }
 
 @Composable
-fun LogoutButton(navController: NavController) {
+fun LogoutButton(navController: NavController, onLogoutClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = { /* Λειτουργία Αποσύνδεσης */ },
+            onClick = { onLogoutClick() },
             modifier = Modifier
                 .width(200.dp)
                 .padding(vertical = 16.dp),

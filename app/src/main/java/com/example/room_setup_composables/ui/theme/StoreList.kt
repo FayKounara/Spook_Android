@@ -9,6 +9,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -147,9 +149,9 @@ fun StoreCard(navController: NavController, store: Store, availableHours: List<S
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
-                    .clickable {
-                        //navController.navigate("reviews/${store.storeId}")
-                    }
+//                    .clickable {
+//                        //navController.navigate("reviews/${store.storeId}")
+//                    }
             ) {
                 repeat(5) { index ->
                     Icon(

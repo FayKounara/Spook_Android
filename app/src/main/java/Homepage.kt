@@ -100,7 +100,7 @@ fun HomePageNavigation(
             )
         ) { entry ->
             val currentUserId = entry.arguments?.getInt("userId") ?: 1
-            ProfileScreen(navController, currentUserId)
+            ProfileNavigation(userId, userViewModel = userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
     }
 }
