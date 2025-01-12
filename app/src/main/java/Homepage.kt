@@ -99,7 +99,7 @@ fun HomePageNavigation(
             )
         ) { entry ->
             val currentUserId = entry.arguments?.getInt("userId") ?: 1
-            ProfileNavigation(userId, userViewModel = userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+            ProfileScreen(navController, currentUserId)
         }
     }
 }
@@ -207,11 +207,6 @@ fun Homepage(
             }
         }
     }
-
-
-
-
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -450,12 +445,21 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            // Δυναμική φόρτωση εικόνας βάσει του id του Store
+            val imageRes = when (store.storeId) {
+                1 -> R.drawable.rest1photo
+                2 -> R.drawable.rest2photo
+                3 -> R.drawable.rest3photo
+                4 -> R.drawable.rest4photo
+                else -> R.drawable.rest1photo // Εικόνα προεπιλογής
+            }
 
             Image(
-                painter = painterResource(id = R.drawable.restphoto), contentDescription = "Restaurant Image",
-            modifier = Modifier
-             .size(80.dp)
-             .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp)),
+                painter = painterResource(id = imageRes),
+                contentDescription = "Restaurant Image",
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp)),
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop
             )
 
@@ -497,10 +501,6 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
         }
     }
 }
-
-
-
-
 
 @Composable
 fun DaySelector(selectedDay: String, onDaySelected: (String) -> Unit, modifier: Modifier = Modifier) {
