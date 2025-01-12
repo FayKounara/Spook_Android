@@ -12,11 +12,11 @@ interface SlotDao {
     suspend fun insertSlot(slot: Slot)
 
     @Query("SELECT * FROM slots_table WHERE storeId = :storeId")
-    suspend fun getSlotsForStore(storeId: Int): Flow<List<Slot>>
+     fun getSlotsForStore(storeId: Int): Flow<List<Slot>>
 
     @Query("UPDATE slots_table SET availability = availability - 2 WHERE slotId = :slotId")
-    suspend fun reduceByTwo(slotId: Int)
+     fun reduceByTwo(slotId: Int)
 
     @Query("UPDATE slots_table SET availability = availability + 2 WHERE slotId = :slotId")
-    suspend fun increaseByTwo(slotId: Int)
+     fun increaseByTwo(slotId: Int)
 }
