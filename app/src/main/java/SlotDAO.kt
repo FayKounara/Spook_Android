@@ -18,5 +18,9 @@ interface SlotDao {
      fun reduceByTwo(slotId: Int)
 
     @Query("UPDATE slots_table SET availability = availability + 2 WHERE slotId = :slotId")
-     fun increaseByTwo(slotId: Int)
+    fun increaseByTwo(slotId: Int)
+
+    @Query("UPDATE slots_table SET availability = availability - 2 WHERE storeId = :storeId and hour = :hour")
+    suspend fun newReduceByTwo(storeId: Int, hour: String)
+
 }
