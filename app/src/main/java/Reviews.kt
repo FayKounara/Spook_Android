@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -36,20 +34,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.material3.TextField
 import androidx.compose.material3.Button
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.TextFieldDefaults
-
 
 @Composable
-fun ReviewScreen(navController: NavController, viewModel: ReviewViewModel, storeId: Int) {
+fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserViewModel, viewModel: ReviewViewModel, storeId: Int) {
+
     val reviews by viewModel.allReviews.collectAsState(initial = emptyList())
     val specificStoreReviews = reviews.filter { it.storeId == storeId }
+    val users by userViewModel.allUsers.collectAsState(initial = emptyList())
+
+    val currentUser = users.filter { it.userId == userId }.firstOrNull()
+    val username = currentUser?.username ?: "Guest"
 
     Box(
         modifier = Modifier
@@ -75,7 +75,7 @@ fun ReviewScreen(navController: NavController, viewModel: ReviewViewModel, store
                         revId = 0,
                         stars = selectedStars,
                         revText = reviewText,
-                        userId = 1, // Replace with actual user ID
+                        userId = userId,
                         storeId = storeId
                     )
                 )
@@ -112,14 +112,11 @@ fun ReviewScreen(navController: NavController, viewModel: ReviewViewModel, store
                         ReviewCard(
                             reviewText = review.revText,
                             reviewStars = review.stars.toString(),
-                            reviewerName = "User ${review.userId}"
+                            reviewerName = username
                         )
                     }
                 }
             }
-
-
-            PassedArgument(storeId.toString())
 
             // Back Button
             IconButton(
@@ -194,7 +191,6 @@ fun ReviewCard(reviewText: String, reviewStars: String, reviewerName: String) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubmitReview(onReviewSubmit: (String, Int) -> Unit) {
     var reviewText by remember { mutableStateOf("") }
@@ -281,16 +277,4 @@ fun SubmitReview(onReviewSubmit: (String, Int) -> Unit) {
             )
         }
     }
-}
-
-
-
-@Composable
-fun PassedArgument(name: String?) {
-
-        Text(
-            text = "Hi again, $name",
-            style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-        )
-
 }

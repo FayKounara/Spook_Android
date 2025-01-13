@@ -1,8 +1,6 @@
 package com.example.room_setup_composables
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,7 +23,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
 import com.example.room_setup_composables.ui.theme.Screen
 
 // Μετονομασία της κλάσης από Booking σε BookingsHistory
@@ -40,6 +37,7 @@ fun ProfileNavigation(
     reviewViewModel: ReviewViewModel,
     slotViewModel: SlotViewModel
 ) {
+
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.ProfileScreen.route) {
@@ -59,7 +57,7 @@ fun ProfileNavigation(
             )
         ) { entry ->
             val storeId = entry.arguments?.getInt("storeId") ?: 1
-            ReviewScreen(navController, reviewViewModel, storeId = storeId)
+            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
         }
 
         composable(

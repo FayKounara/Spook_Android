@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -37,6 +38,8 @@ import androidx.navigation.navArgument
 import com.example.room_database_setup.R
 import com.example.room_setup_composables.BookingViewModel
 import com.example.room_setup_composables.BookingsScreen
+import com.example.room_setup_composables.ReviewScreen
+import com.example.room_setup_composables.ReviewViewModel
 import com.example.room_setup_composables.Slot
 import com.example.room_setup_composables.SlotViewModel
 import com.example.room_setup_composables.Store
@@ -52,13 +55,15 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Locale
 
 @Composable
-fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, filtername: String,filterday:String,slotViewModel: SlotViewModel) {
+fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, filtername: String, filterday:String, persons:Int, slotViewModel: SlotViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
+
         composable(route = Screen.Stores.route) {
             StoreList(navController, storeViewModel, filtername, slotViewModel ,filterday)
         }
+
         composable(
             route = Screen.Bookings.route + "/{hour}/{storeId}",
             arguments = listOf(
@@ -74,8 +79,24 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
         ) { entry ->
             val hour = entry.arguments?.getString("hour") ?: "0"
             val storeId = entry.arguments?.getString("storeId") ?: "1"
-            BookingsScreen(userId, userViewModel, navController, bookingViewModel, hour, storeId)
+            BookingsScreen(userId, userViewModel, navController, bookingViewModel, hour, persons, storeId)
         }
+
+        // For navigation to reviews
+        composable(
+            route = Screen.Reviews.route + "/{storeId}",
+            arguments = listOf(
+                navArgument("storeId") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                    nullable = false
+                }
+            )
+        ) { entry ->
+            val storeId = entry.arguments?.getInt("storeId") ?: 1
+            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
+        }
+
     }
 }
 
@@ -149,9 +170,9 @@ fun StoreCard(navController: NavController, store: Store, availableHours: List<S
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
-//                    .clickable {
-//                        //navController.navigate("reviews/${store.storeId}")
-//                    }
+                    .clickable {
+                        navController.navigate(Screen.Reviews.withArgs(store.storeId.toString()))
+                    }
             ) {
                 repeat(5) { index ->
                     Icon(

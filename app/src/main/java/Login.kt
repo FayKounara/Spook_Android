@@ -41,7 +41,7 @@ import com.example.room_setup_composables.ui.theme.Screen
 
 
 @Composable
-fun LoginNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel,slotViewModel: SlotViewModel) {
+fun LoginNavigation(userViewModel:UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, slotViewModel: SlotViewModel) {
 
     val navController = rememberNavController()
     val users by userViewModel.allUsers.collectAsState(initial = emptyList())

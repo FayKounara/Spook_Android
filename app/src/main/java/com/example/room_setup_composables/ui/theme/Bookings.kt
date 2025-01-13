@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @Composable
-fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: NavController, viewModel: BookingViewModel, hour:String, storeId: String) {
+fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: NavController, viewModel: BookingViewModel, hour:String, persons:Int, storeId: String) {
     var customerName by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf(userId) }
     var enteredStoreId by remember { mutableStateOf(storeId) }
@@ -103,7 +103,7 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
         Divider()
         LazyColumn {
             items(bookings) { booking ->
-                BookingItem(navController, booking, onDelete = { viewModel.deleteBooking(booking) })
+                BookingItem(navController, booking, persons, onDelete = { viewModel.deleteBooking(booking) })
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -111,7 +111,7 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
 }
 
 @Composable
-fun BookingItem(navController: NavController, booking: Booking, onDelete: () -> Unit) {
+fun BookingItem(navController: NavController, booking: Booking, persons: Int, onDelete: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,6 +129,7 @@ fun BookingItem(navController: NavController, booking: Booking, onDelete: () -> 
                 Text(text = "Date: ${booking.date}")
                 Text(text = "Hours: ${booking.hours}")
                 Text(text = "Store ID: ${booking.storeId}")
+                Text(text = "Persons: $persons")
             }
             IconButton(onClick = { onDelete() }) {
                 Icon(

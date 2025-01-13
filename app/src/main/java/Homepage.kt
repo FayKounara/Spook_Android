@@ -48,7 +48,6 @@ fun HomePageNavigation(
     bookingViewModel: BookingViewModel,
     reviewViewModel: ReviewViewModel,
     slotViewModel: SlotViewModel
-
 ) {
     val navController = rememberNavController()
 
@@ -57,19 +56,29 @@ fun HomePageNavigation(
             Homepage(navController, userId, userViewModel = userViewModel, storeViewModel = storeViewModel,slotViewModel=slotViewModel)
         }
         composable(
-            route = Screen.Stores.route + "/{name}/{selectedDay}",
+            route = Screen.Stores.route + "/{name}/{selectedDay}/{selectedPersons}",
             arguments = listOf(
+
                 navArgument("name") {
                     type = NavType.StringType
-                    defaultValue = "Juicy Grill"
                     nullable = true
                 },
-                navArgument("selectedDay") { type = NavType.StringType }
+
+                navArgument("selectedDay") {
+                    type = NavType.StringType
+                    nullable = true
+                },
+
+                navArgument("selectedPersons") {
+                    type = NavType.StringType
+                    nullable = true
+                }
             )
         ) { entry ->
             val name = entry.arguments?.getString("name") ?: "Juicy Grill"
             val selectedDay = entry.arguments?.getString("selectedDay") ?: "Monday"
-            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, name,selectedDay,slotViewModel)
+            val persons = entry.arguments?.getString("selectedPersons") ?: "2"
+            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, name, selectedDay, persons.toInt(), slotViewModel)
         }
 
         // For navigation to reviews
@@ -84,7 +93,7 @@ fun HomePageNavigation(
             )
         ) { entry ->
             val storeId = entry.arguments?.getInt("storeId") ?: 1
-            ReviewScreen(navController, reviewViewModel, storeId = storeId)
+            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
         }
 
         // For navigation to profile
@@ -283,7 +292,7 @@ fun Homepage(
                                     coroutineScope.launch {
                                         val store = storeViewModel.getStoreById(offer.storeId)
                                         store?.let {
-                                            navController.navigate(Screen.Stores.withArgs(it.name, selectedDay))
+                                            navController.navigate(Screen.Stores.withArgs(it.name, selectedDay, selectedPersons))
                                         }
                                     }
                                 } else {
@@ -342,7 +351,7 @@ fun Homepage(
                        RestaurantCard(
                           store = store,
                           onBookClick = {
-                              navController.navigate(Screen.Stores.withArgs(store.name,selectedDay))
+                              navController.navigate(Screen.Stores.withArgs(store.name, selectedDay, selectedPersons))
                           }
                       )
                   }
