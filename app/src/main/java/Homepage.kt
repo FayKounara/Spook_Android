@@ -1,5 +1,6 @@
 package com.example.room_setup_composables
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,6 +39,10 @@ import com.example.room_database_setup.R
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.util.Calendar
+import java.util.Locale
 
 
 @Composable
@@ -104,6 +109,7 @@ fun HomePageNavigation(
     }
 }
 
+@SuppressLint("NewApi")
 @Composable
 fun Homepage(
     navController: NavController,
@@ -117,7 +123,16 @@ fun Homepage(
     val offers by storeViewModel.allOffers.collectAsState(initial = emptyList())
     val users by userViewModel.allUsers.collectAsState(initial = emptyList())
     val slots by slotViewModel.slots.collectAsState(initial = emptyList())
-    var selectedDay by remember { mutableStateOf("Monday") }
+
+    fun getCurrentDayName(): String {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+        return dateFormat.format(calendar.time).replaceFirstChar { it.uppercase() }
+    }
+
+    var selectedDay by remember {
+        mutableStateOf(getCurrentDayName())
+    }
     var selectedPersons by remember { mutableStateOf("2") }
     val coroutineScope = rememberCoroutineScope()
     val filteredStores = remember { mutableStateListOf<Store>() }
