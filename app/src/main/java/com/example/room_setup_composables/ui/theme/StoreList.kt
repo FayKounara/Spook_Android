@@ -92,7 +92,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
         ) { entry ->
             val hour = entry.arguments?.getString("hour") ?: "0"
             val storeId = entry.arguments?.getString("storeId") ?: "1"
-            BookingsScreen(userId, userViewModel, navController, bookingViewModel, hour, persons, storeId)
+            BookingsScreen(userId, userViewModel, navController, bookingViewModel, hour, persons, storeId, slotViewModel)
         }
 
         // Navigation to reviews

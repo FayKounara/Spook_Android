@@ -58,17 +58,25 @@ class SlotViewModel(private val slotDao: SlotDao, private val storeDao: StoreDao
 
     }
 
-    // Reduce slot availability by two
-    fun reduceSlotAvailabilityByTwo(slotId: Int) {
+    fun reduceSlotAvailability(storeId: Int, hour: String) {
         viewModelScope.launch {
-            try {
-                slotDao.reduceByTwo(slotId)
-                Log.d("SlotViewModel", "Slot availability reduced for slotId: $slotId")
-            } catch (e: Exception) {
-                Log.e("SlotViewModel", "Error reducing availability", e)
-            }
+            slotDao.newReduceByTwo(storeId, hour)
+            Log.d("SlotViewModel", "Slot availability reduced for storeId: $storeId, hour: $hour")
+
         }
     }
+
+//    // Reduce slot availability by two
+//    fun reduceSlotAvailabilityByTwo(slotId: Int) {
+//        viewModelScope.launch {
+//            try {
+//                slotDao.reduceByTwo(slotId)
+//                Log.d("SlotViewModel", "Slot availability reduced for slotId: $slotId")
+//            } catch (e: Exception) {
+//                Log.e("SlotViewModel", "Error reducing availability", e)
+//            }
+//        }
+//    }
 
     // Increase slot availability by two
     fun increaseSlotAvailabilityByTwo(slotId: Int) {

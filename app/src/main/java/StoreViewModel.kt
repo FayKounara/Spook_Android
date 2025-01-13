@@ -113,6 +113,7 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
     }
 
 
+
     // Factory for creating StoreViewModel with StoreDao
     class StoreViewModelFactory(private val storeDao: StoreDao, private val offerDao: OfferDao) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
