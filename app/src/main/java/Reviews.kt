@@ -174,23 +174,6 @@ fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserVi
                     }
                 }
             }
-
-            // Back Button
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Go Back",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .background(Color(0xFFFFA726), RoundedCornerShape(50)) // Button color
-                        .padding(12.dp)
-                )
-            }
         }
     }
 }

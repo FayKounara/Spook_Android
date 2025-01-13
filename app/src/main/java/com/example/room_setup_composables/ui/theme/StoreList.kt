@@ -38,6 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.room_database_setup.R
+import com.example.room_setup_composables.BookingNavigation
 import com.example.room_setup_composables.BookingViewModel
 import com.example.room_setup_composables.BookingsScreen
 import com.example.room_setup_composables.BottomNavBar
@@ -92,7 +93,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
         ) { entry ->
             val hour = entry.arguments?.getString("hour") ?: "0"
             val storeId = entry.arguments?.getString("storeId") ?: "1"
-            BookingsScreen(userId, userViewModel, navController, bookingViewModel, hour, persons, storeId, slotViewModel)
+            BookingNavigation(userId, userViewModel, bookingViewModel, hour, persons, storeId, reviewViewModel, storeViewModel, slotViewModel)
         }
 
         // Navigation to reviews

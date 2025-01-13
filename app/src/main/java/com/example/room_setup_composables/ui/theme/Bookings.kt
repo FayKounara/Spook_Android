@@ -33,6 +33,57 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.room_setup_composables.ui.theme.Screen
+
+@Composable
+fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel, hour:String, persons:Int, storeId: String, reviewViewModel: ReviewViewModel, storeViewModel: StoreViewModel, slotViewModel: SlotViewModel) {
+
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = Screen.Bookings.route) {
+
+        // Review Receive
+        composable(route = Screen.Bookings.route) {
+            BookingsScreen(userId, userViewModel, navController, bookingViewModel, hour, persons, storeId, slotViewModel)
+            BottomNavBar(
+                onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
+                onProfileClick = { navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) }
+            )
+        }
+
+        // Navigation to HomePage
+        composable(
+            route = Screen.HomePage.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.StringType
+                    defaultValue = "1"
+                    nullable = true
+                }
+            )
+        ) { _ ->
+            HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        }
+
+        // Navigation to profile
+        composable(
+            route = Screen.ProfileScreen.route + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                    nullable = false
+                }
+            )
+        ) { _ ->
+            ProfileNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        }
+    }
+}
 
 @Composable
 fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: NavController, viewModel: BookingViewModel, hour:String, persons:Int, storeId: String, slotViewModel: SlotViewModel) {
