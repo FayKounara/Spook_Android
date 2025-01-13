@@ -121,8 +121,7 @@ fun HomePageNavigation(
                     nullable = false
                 }
             )
-        ) { entry ->
-            val currentUserId = entry.arguments?.getInt("userId") ?: 1
+        ) { _ ->
             ProfileNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
     }
@@ -181,7 +180,7 @@ fun Homepage(
 
 //fay
 
-    val currentUser = users.filter { it.userId == userId }.firstOrNull()
+    val currentUser = users.firstOrNull { it.userId == userId }
     val username = currentUser?.username ?: "Guest"
 
     var showErrorDialog by remember { mutableStateOf(false) }
@@ -494,7 +493,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
                 contentDescription = "Restaurant Image",
                 modifier = Modifier
                     .size(80.dp)
-                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp)),
+                    .clip(RoundedCornerShape(4.dp)),
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop
             )
 
@@ -526,7 +525,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
                 onClick = onBookClick,
                 modifier = Modifier
                     .defaultMinSize(minHeight = 40.dp, minWidth = 80.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFFA726),
                     contentColor = Color.White
                 )

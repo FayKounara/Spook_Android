@@ -73,7 +73,7 @@ fun LoginNavigation(userViewModel:UserViewModel, storeViewModel: StoreViewModel,
         // Navigation to RegisterPage, no need to dynamically pass parameters
         composable(
             route = Screen.RegisterPage.route,
-        ) { entry ->
+        ) { _ ->
             RegisterNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel,slotViewModel)
         }
 
@@ -89,13 +89,11 @@ fun LoginNavigation(userViewModel:UserViewModel, storeViewModel: StoreViewModel,
             )
         ) { entry ->
             val userId = entry.arguments?.getString("id") ?: "1"
-
             HomePageNavigation(userId = userId.toInt(), userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavController,

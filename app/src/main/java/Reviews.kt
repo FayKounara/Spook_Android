@@ -37,9 +37,61 @@ import androidx.compose.runtime.setValue
 import androidx.compose.material3.Button
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.room_setup_composables.ui.theme.Screen
+
+
+@Composable
+fun ReviewNavigation(userId: Int, userViewModel:UserViewModel, reviewViewModel: ReviewViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, slotViewModel: SlotViewModel, storeId: Int) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Screen.Reviews.route) {
+
+        // Review Receive
+        composable(route = Screen.Reviews.route) {
+            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
+            BottomNavBar(
+                onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
+                onProfileClick = { navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) }
+            )
+        }
+
+        // Navigation to HomePage
+        composable(
+            route = Screen.HomePage.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.StringType
+                    defaultValue = "1"
+                    nullable = true
+                }
+            )
+        ) { _ ->
+            HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        }
+
+        // Navigation to profile
+        composable(
+            route = Screen.ProfileScreen.route + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                    nullable = false
+                }
+            )
+        ) { _ ->
+            ProfileNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        }
+    }
+}
+
 
 @Composable
 fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserViewModel, viewModel: ReviewViewModel, storeId: Int) {
@@ -48,8 +100,13 @@ fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserVi
     val specificStoreReviews = reviews.filter { it.storeId == storeId }
     val users by userViewModel.allUsers.collectAsState(initial = emptyList())
 
-    val currentUser = users.filter { it.userId == userId }.firstOrNull()
+    val currentUser = users.firstOrNull { it.userId == userId }
     val username = currentUser?.username ?: "Guest"
+
+    BottomNavBar(
+        onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
+        onProfileClick = { navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) }
+    )
 
     Box(
         modifier = Modifier

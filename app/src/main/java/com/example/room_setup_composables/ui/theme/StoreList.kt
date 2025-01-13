@@ -44,6 +44,7 @@ import com.example.room_setup_composables.BottomNavBar
 import com.example.room_setup_composables.HomePageNavigation
 import com.example.room_setup_composables.ProfileNavigation
 import com.example.room_setup_composables.Review
+import com.example.room_setup_composables.ReviewNavigation
 import com.example.room_setup_composables.ReviewScreen
 import com.example.room_setup_composables.ReviewViewModel
 import com.example.room_setup_composables.Slot
@@ -106,7 +107,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
             )
         ) { entry ->
             val storeId = entry.arguments?.getInt("storeId") ?: 1
-            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
+            ReviewNavigation(userId, userViewModel, reviewViewModel, storeViewModel, bookingViewModel, slotViewModel, storeId = storeId)
         }
 
         // Navigation to HomePage
@@ -120,8 +121,6 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
                 }
             )
         ) { entry ->
-            val userId = entry.arguments?.getString("id") ?: "1"
-
             HomePageNavigation(userId = userId.toInt(), userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
 
@@ -136,7 +135,6 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
                 }
             )
         ) { entry ->
-            val currentUserId = entry.arguments?.getInt("userId") ?: 1
             ProfileNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
     }
@@ -465,47 +463,5 @@ fun BookNowButton(navController: NavController, storeId: String, selectedHour: S
             text = "Proceed with reservation :)",
             style = MaterialTheme.typography.bodyLarge
         )
-    }
-}
-
-@Composable
-fun BottomNavBar(
-    onHomeClick: () -> Unit,
-    onProfileClick: () -> Unit
-) {
-    val navItems = listOf(
-        "Home" to Icons.Default.Home,
-        "Profile" to Icons.Default.Person
-    )
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            navItems.forEach { (label, icon) ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable {
-                        when (label) {
-                            "Home" -> onHomeClick()
-                            "Profile" -> onProfileClick()
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = "$label Icon",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(text = label)
-                }
-            }
-        }
     }
 }

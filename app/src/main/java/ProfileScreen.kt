@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -43,6 +40,14 @@ fun ProfileNavigation(
     NavHost(navController = navController, startDestination = Screen.ProfileScreen.route) {
         composable(route = Screen.ProfileScreen.route) {
             ProfileScreen(navController, userId, userViewModel = userViewModel, bookingViewModel, slotViewModel, reviewViewModel)
+            BottomNavBar(
+                onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
+                onProfileClick = {
+                    navController.navigate(Screen.ProfileScreen.route) {
+                        popUpTo(Screen.ProfileScreen.route) { inclusive = true } // Avoids stacking multiple Profile pages
+                    }
+                }
+            )
         }
 
         // For navigation to reviews
@@ -57,14 +62,28 @@ fun ProfileNavigation(
             )
         ) { entry ->
             val storeId = entry.arguments?.getInt("storeId") ?: 1
-            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
+            ReviewNavigation(userId, userViewModel, reviewViewModel, storeViewModel, bookingViewModel, slotViewModel, storeId = storeId)
         }
 
         composable(
             route = Screen.LoginPage.route,
             arguments = emptyList()
-        ) { entry ->
+        ) { _ ->
             LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        }
+
+        // Navigation to HomePage
+        composable(
+            route = Screen.HomePage.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.StringType
+                    defaultValue = "1"
+                    nullable = true
+                }
+            )
+        ) { _ ->
+            HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
     }
 }
@@ -260,25 +279,5 @@ fun LogoutButton(navController: NavController, onLogoutClick: () -> Unit) {
                 fontWeight = FontWeight.Bold
             )
         }
-    }
-    GoBack(navController)
-}
-
-
-@Composable
-fun GoBack(navController: NavController) {
-// Go Back button at the bottom of the screen
-    IconButton(
-        onClick = { navController.popBackStack() },
-        modifier = Modifier
-            .padding(16.dp) // Padding for the button
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Go Back",
-            modifier = Modifier
-                .background(Color(0xFF007066), RoundedCornerShape(50))
-                .padding(12.dp)
-        )
     }
 }
