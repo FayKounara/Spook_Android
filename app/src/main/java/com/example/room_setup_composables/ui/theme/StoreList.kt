@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,9 +11,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
-
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +40,9 @@ import androidx.navigation.navArgument
 import com.example.room_database_setup.R
 import com.example.room_setup_composables.BookingViewModel
 import com.example.room_setup_composables.BookingsScreen
+import com.example.room_setup_composables.BottomNavBar
+import com.example.room_setup_composables.HomePageNavigation
+import com.example.room_setup_composables.ProfileNavigation
 import com.example.room_setup_composables.Review
 import com.example.room_setup_composables.ReviewScreen
 import com.example.room_setup_composables.ReviewViewModel
@@ -63,10 +66,16 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
 
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
 
+        // Store Receive
         composable(route = Screen.Stores.route) {
             StoreList(navController, storeViewModel, reviewViewModel, filtername, slotViewModel ,filterday)
+            BottomNavBar(
+                onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
+                onProfileClick = { navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) }
+            )
         }
 
+        // Navigation to Bookings
         composable(
             route = Screen.Bookings.route + "/{hour}/{storeId}",
             arguments = listOf(
@@ -85,7 +94,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
             BookingsScreen(userId, userViewModel, navController, bookingViewModel, hour, persons, storeId)
         }
 
-        // For navigation to reviews
+        // Navigation to reviews
         composable(
             route = Screen.Reviews.route + "/{storeId}",
             arguments = listOf(
@@ -100,6 +109,36 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
             ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
         }
 
+        // Navigation to HomePage
+        composable(
+            route = Screen.HomePage.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.StringType
+                    defaultValue = "1"
+                    nullable = true
+                }
+            )
+        ) { entry ->
+            val userId = entry.arguments?.getString("id") ?: "1"
+
+            HomePageNavigation(userId = userId.toInt(), userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        }
+
+        // Navigation to profile
+        composable(
+            route = Screen.ProfileScreen.route + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                    nullable = false
+                }
+            )
+        ) { entry ->
+            val currentUserId = entry.arguments?.getInt("userId") ?: 1
+            ProfileNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        }
     }
 }
 
@@ -426,5 +465,47 @@ fun BookNowButton(navController: NavController, storeId: String, selectedHour: S
             text = "Proceed with reservation :)",
             style = MaterialTheme.typography.bodyLarge
         )
+    }
+}
+
+@Composable
+fun BottomNavBar(
+    onHomeClick: () -> Unit,
+    onProfileClick: () -> Unit
+) {
+    val navItems = listOf(
+        "Home" to Icons.Default.Home,
+        "Profile" to Icons.Default.Person
+    )
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            navItems.forEach { (label, icon) ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {
+                        when (label) {
+                            "Home" -> onHomeClick()
+                            "Profile" -> onProfileClick()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "$label Icon",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text(text = label)
+                }
+            }
+        }
     }
 }

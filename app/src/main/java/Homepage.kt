@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import com.example.room_setup_composables.ui.theme.Screen
 import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
 import androidx.compose.foundation.Image
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import com.example.room_database_setup.R
@@ -40,9 +41,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
+
 
 
 @Composable
@@ -57,9 +58,18 @@ fun HomePageNavigation(
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.HomePage.route) {
+        // HomePage receive
         composable(route = Screen.HomePage.route) {
             Homepage(navController, userId, userViewModel = userViewModel, storeViewModel = storeViewModel,slotViewModel=slotViewModel)
+            BottomNavBar(
+                onHomeClick = {
+                    navController.navigate(Screen.HomePage.route) {
+                    popUpTo(Screen.HomePage.route) { inclusive = true } // Avoids stacking multiple Homepages
+                } },
+                onProfileClick = { navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) }
+            )
         }
+
         composable(
             route = Screen.Stores.route + "/{name}/{selectedDay}/{selectedPersons}",
             arguments = listOf(
@@ -117,6 +127,7 @@ fun HomePageNavigation(
         }
     }
 }
+
 
 @SuppressLint("NewApi")
 @Composable
@@ -605,7 +616,51 @@ fun PersonsSelector(selectedPersons: String, onPersonsSelected: (String) -> Unit
             }
         }
     }
+
 }
+
+@Composable
+fun BottomNavBar(
+    onHomeClick: () -> Unit,
+    onProfileClick: () -> Unit
+) {
+    val navItems = listOf(
+        "Home" to Icons.Default.Home,
+        "Profile" to Icons.Default.Person
+    )
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            navItems.forEach { (label, icon) ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {
+                        when (label) {
+                            "Home" -> onHomeClick()
+                            "Profile" -> onProfileClick()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "$label Icon",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text(text = label)
+                }
+            }
+        }
+    }
+}
+
 
 
 

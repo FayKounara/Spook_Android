@@ -32,7 +32,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             RoomDatabaseSetupTheme {
                 LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel,slotViewModel)
-                //HomePageNavigation(userId = 1, storeViewModel, bookingViewModel, reviewViewModel)
             }
         }
     }
