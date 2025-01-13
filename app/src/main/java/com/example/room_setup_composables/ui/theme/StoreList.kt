@@ -1,5 +1,6 @@
 package com.example.room_setup_composables.com.example.room_setup_composables.ui.theme
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -38,6 +40,7 @@ import androidx.navigation.navArgument
 import com.example.room_database_setup.R
 import com.example.room_setup_composables.BookingViewModel
 import com.example.room_setup_composables.BookingsScreen
+import com.example.room_setup_composables.Review
 import com.example.room_setup_composables.ReviewScreen
 import com.example.room_setup_composables.ReviewViewModel
 import com.example.room_setup_composables.Slot
@@ -61,7 +64,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
 
         composable(route = Screen.Stores.route) {
-            StoreList(navController, storeViewModel, filtername, slotViewModel ,filterday)
+            StoreList(navController, storeViewModel, reviewViewModel, filtername, slotViewModel ,filterday)
         }
 
         composable(
@@ -104,15 +107,20 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
 fun StoreList(
     navController: NavController,
     viewModel: StoreViewModel,
+    reviewViewModel: ReviewViewModel,
     filtername: String,
     slotViewModel: SlotViewModel,
     filterday: String
 ) {
+    val allReviews by reviewViewModel.allReviews.collectAsState(initial = emptyList())
     val stores by viewModel.allStores.collectAsState(initial = emptyList())
     val filteredStores = stores.filter { it.name == filtername }
     val slots by slotViewModel.slots.collectAsState(initial = emptyList())
+
     if (filteredStores.isNotEmpty()) {
         val store = filteredStores.first()
+        val storeReviews = allReviews.filter { it.storeId == store.storeId }
+
             // slotViewModel.fetchSlotsForStore(store.storeId)
         //val allAvailableHours = filteredStores.flatMap { it.avHours.split(",") }.distinct()
         //StoreCard(navController, store, allAvailableHours)
@@ -127,14 +135,24 @@ fun StoreList(
             StoreCard(
                 navController = navController,
                 store = store,
+                storeReviews = storeReviews,
                 availableHours = slotsForSelectedDay
             )
         }
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
-fun StoreCard(navController: NavController, store: Store, availableHours: List<Slot>) {
+fun StoreCard(navController: NavController, store: Store, storeReviews: List<Review>, availableHours: List<Slot>) {
+    val sumOfReviews = storeReviews.size
+    val sumOfStars = storeReviews.sumOf { it.stars }
+    val rating = if (sumOfReviews > 0) {
+        (sumOfStars.toFloat() / sumOfReviews).let { String.format("%.1f", it).toFloat() }
+    } else {
+        0
+    }
+
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
         shape = RoundedCornerShape(16.dp),
@@ -176,14 +194,14 @@ fun StoreCard(navController: NavController, store: Store, availableHours: List<S
             ) {
                 repeat(5) { index ->
                     Icon(
-                        imageVector = Icons.Filled.Star,
+                        imageVector = if (index < rating.toInt()) Icons.Filled.Star else Icons.Outlined.Star,
                         contentDescription = "Review Star",
-                        tint = Color(0xFFFFA726), // Χρώμα για τα αστεράκια
+                        tint = if (index < rating.toInt()) Color(0xFFFFA726) else Color.Gray, // Filled and empty star colors
                         modifier = Modifier.size(20.dp)
                     )
                 }
                 Text(
-                    text = " Check Reviews",
+                    text = "$rating Check Reviews",
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 4.dp),
                     color = Color.Gray
