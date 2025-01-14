@@ -10,8 +10,12 @@ import com.example.room_setup_composables.StoreDao
 import com.example.room_setup_composables.Store
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class StoreViewModel(private val storeDao: StoreDao, private val offerDao: OfferDao) : ViewModel() {
@@ -30,6 +34,38 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
             Pair(offer, store?.location ?: "Unknown Location") // Επιστρέφει τοποθεσία του καταστήματος
         }
     }
+    private val _storeNames = MutableStateFlow<Map<Int, String?>>(emptyMap())
+    val storeNames: StateFlow<Map<Int, String?>>
+        get() = _storeNames
+
+    fun fetchStoreName(storeId: Int) {
+        viewModelScope.launch {
+            val name = storeDao.getStoreNameById(storeId)
+            _storeNames.update { current ->
+                current.toMutableMap().apply {
+                    this[storeId] = name
+                }
+            }
+        }
+    }
+
+    private val _storeLocations = MutableStateFlow<Map<Int, String?>>(emptyMap())
+    val storeLocations: StateFlow<Map<Int, String?>>
+        get() = _storeLocations
+
+    fun fetchStoreLocation(storeId: Int) {
+        viewModelScope.launch {
+            val location = storeDao.getLocationById(storeId)
+            _storeLocations.update { current ->
+                current.toMutableMap().apply {
+                    this[storeId] = location
+                }
+            }
+        }
+    }
+
+
+
 
 
     init {
@@ -111,7 +147,6 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
 //            Log.d("StoreViewModel", "Dummy offers inserted")
         }
     }
-
 
 
     // Factory for creating StoreViewModel with StoreDao
