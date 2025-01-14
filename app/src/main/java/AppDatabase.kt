@@ -11,29 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
-/*@Database(entities = [Booking::class], version = 1, exportSchema = false)
-abstract class BookingDatabase : RoomDatabase() {
-
-    abstract fun bookingDao(): BookingDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: BookingDatabase? = null
-
-        fun getDatabase(context: android.content.Context): BookingDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = androidx.room.Room.databaseBuilder(
-                    context.applicationContext,
-                    BookingDatabase::class.java,
-                    "booking_database"
-                ).build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
-}*/
-
 val MIGRATION_2_3 = object : Migration(2, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE booking_table ADD COLUMN phoneNumber TEXT")
@@ -255,10 +232,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
     }
-
-
-
-
 
 }
 
