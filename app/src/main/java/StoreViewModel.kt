@@ -40,7 +40,7 @@ class StoreViewModel(private val storeDao: StoreDao, private val offerDao: Offer
 
     fun fetchStoreName(storeId: Int) {
         viewModelScope.launch {
-            val name = storeDao.getStoreNameById(storeId)
+            val name = storeDao.getStoreNameById(storeId.toString())
             _storeNames.update { current ->
                 current.toMutableMap().apply {
                     this[storeId] = name

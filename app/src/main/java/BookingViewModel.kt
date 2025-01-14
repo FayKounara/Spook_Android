@@ -2,11 +2,16 @@ package com.example.room_setup_composables
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 
 class BookingViewModel(application: Application) : AndroidViewModel(application) {
@@ -26,6 +31,22 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
 
     private val _bookings = MutableStateFlow<List<Booking>>(emptyList())
     val bookings: StateFlow<List<Booking>> = _bookings
+
+    var storeName by mutableStateOf("")
+        private set
+    var enteredStoreId by mutableStateOf("")
+        private set
+
+    fun fetchStoreNameById(storeId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val name = storeDao.getStoreNameById(storeId)
+            storeName = name ?: "Store Not Found"
+        }
+    }
+    fun newEnteredStoreId(storeId: String) {
+        enteredStoreId = storeId
+        fetchStoreNameById(storeId)
+    }
 
     private fun fetchAllBookings() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -93,23 +114,5 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun insertDummyUsers() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val users = listOf(
-                User(userId = 1, username = "Alice", password = "123", phoneNumber = "", email = ""),
-                User(userId = 2, username = "Bob", password = "123", phoneNumber = "", email = ""),
-                User(
-                    userId = 3,
-                    username = "Charlie",
-                    password = "123",
-                    phoneNumber = "",
-                    email = ""
-                )
-            )
-            for (user in users) {
-                userDao.insert(user)
-            }
-            Log.d("BookingViewModel", "Dummy users inserted")
-        }
-    }
+
 }
