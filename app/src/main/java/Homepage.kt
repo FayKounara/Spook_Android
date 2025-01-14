@@ -319,8 +319,9 @@ fun Homepage(
                                         }
                                     }
                                 } else {
-                                    // Εμφάνιση μηνύματος σφάλματος
-                                    errorMessage = "Wow, this deal’s on fire! \n\n We are fully booked for today, but check back tomorrow\n— we’d love to Juicy serve you;)"
+                                   val isTodayy = selectedDay == getCurrentDayName()
+                                    val mes = if (isTodayy) "today," else "on $selectedDay,"
+                                    errorMessage = "Wow, this deal’s on fire! \n\n We are fully booked mes but check another day\n— we’d love to Juicy serve you;)"
                                     showErrorDialog = true
                                 }
                             }
