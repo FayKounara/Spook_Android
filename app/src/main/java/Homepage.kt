@@ -321,7 +321,7 @@ fun Homepage(
                                 } else {
                                    val isTodayy = selectedDay == getCurrentDayName()
                                     val mes = if (isTodayy) "today," else "on $selectedDay,"
-                                    errorMessage = "Wow, this deal’s on fire! \n\n We are fully booked mes but check another day\n— we’d love to Juicy serve you;)"
+                                    errorMessage = "Wow, this deal’s on fire! \n\n We are fully booked $mes but check another day\n— we’d love to Juicy serve you;)"
                                     showErrorDialog = true
                                 }
                             }
@@ -333,7 +333,7 @@ fun Homepage(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Explore Restaurants Section
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 // Header
                 Text(
                     text = "Explore Our Restaurants",
@@ -369,6 +369,7 @@ fun Homepage(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
+                        .height(234.dp) // Περιορισμός ύψους της λίστας
                     //fay
                 ) {
                   items(filteredStores) { store ->
@@ -474,7 +475,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 10.dp)
+            .padding(vertical = 8.dp)
     ) {
         Row(
             modifier = Modifier
@@ -538,7 +539,6 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
             }
         }
     }
-    Spacer(modifier = Modifier.height(37.8.dp))
 }
 
 @Composable
