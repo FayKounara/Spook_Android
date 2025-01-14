@@ -387,42 +387,19 @@ fun StoreDetailsSection(store: Store) {
 }
 
 @Composable
-//fun HourSelection(navController: NavController, availableHours: List<Slot>, storeId: String) {
-//var selectedHour by remember { mutableStateOf<String>("00") }
-
-//  Column {
-//      availableHours.forEach { hour ->
-//   val isDisabled = selectedHour != "00" && selectedHour != hour.toString().trim()
-
-//   HourButton(hour = hour.toString().trim(),
-//      isDisabled = isDisabled,
-//     onClick = { selectedHour = hour.toString().trim() }
-//     )
-//   }
-
-//    Spacer(modifier = Modifier.height(16.dp))
-
-//      BookNowButton(
-//        navController = navController,
-//         storeId = storeId,
-//         selectedHour = selectedHour
-//       )
-//   }
-// }
 fun HourSelection(navController: NavController, availableSlots: List<Slot>, storeId: String) {
-    var selectedHour by remember { mutableStateOf<String>("00") }
+    // Αρχικοποιούμε το selectedHour ως nullable Int, όχι String
+    var selectedHour by remember { mutableStateOf<Int?>(null) }
 
-    // Convert availableSlots from List<Slot> to List<String>
-    val availableHours = availableSlots.map { it.hour } // Assuming Slot has a 'hour' property
+    // Αν τα διαθέσιμα slots είναι Int
+    val availableHours = availableSlots.map { it.hour.toInt() } // Μετατροπή των hours σε Int, αν χρειαστεί
 
     Column {
         availableHours.forEach { hour ->
-            val isDisabled = selectedHour != "00"
-
             HourButton(
-                hour = hour.toString(), // Directly using the string hour without trimming
-                isDisabled = isDisabled,
-                onClick = { selectedHour = hour.toString() } // Set selected hour directly
+                hour = hour.toString(), // Εμφανίζεται ως string για το UI
+                isSelected = selectedHour == hour, // Σύγκριση Int με Int
+                onClick = { selectedHour = hour } // Ενημερώνουμε το επιλεγμένο slot
             )
         }
 
@@ -437,24 +414,28 @@ fun HourSelection(navController: NavController, availableSlots: List<Slot>, stor
     }
 }
 
-
-
 @Composable
-fun HourButton(hour: String, isDisabled: Boolean, onClick: () -> Unit) {
+fun HourButton(hour: String, isSelected: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726)),
-        enabled = !isDisabled // Disable the button if not clickable
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected) Color.Gray else Color(0xFFFFA726)
+        ),
+        enabled = true
     ) {
         Text(text = hour)
     }
 }
 
 @Composable
-fun BookNowButton(navController: NavController, storeId: String, selectedHour: String) {
+fun BookNowButton(navController: NavController, storeId: String, selectedHour: Int?) {
     Button(
-        onClick = { navController.navigate(Screen.Bookings.withArgs(selectedHour, storeId)) },
+        onClick = {
+            selectedHour?.let { hour ->
+                navController.navigate(Screen.Bookings.withArgs(hour.toString(), storeId)) // Χρησιμοποιούμε hour ως String
+            }
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
@@ -466,3 +447,5 @@ fun BookNowButton(navController: NavController, storeId: String, selectedHour: S
         )
     }
 }
+
+
