@@ -1,25 +1,17 @@
 package com.example.room_setup_composables
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -88,13 +80,16 @@ fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewMode
 @Composable
 fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: NavController, viewModel: BookingViewModel, hour:String, persons:Int, storeId: String, slotViewModel: SlotViewModel) {
     val primaryColor = Color(0xFFFFA000)
-    var customerName by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf(userId) }
     var enteredStoreId by remember { mutableStateOf(storeId) }
-    var phone by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
     var hour by remember { mutableStateOf(hour) }
-    val bookings by viewModel.allBookings.collectAsState()
-    //val name by viewModel.selectedStoreName.collectAsState()
+
+    val users by userViewModel.allUsers.collectAsState(initial = emptyList())
+    val currentUser = users.firstOrNull { it.userId == userId }
+    username = currentUser?.username ?: "Guest"
+    phoneNumber = currentUser?.phoneNumber ?: "6900000000"
 
     var showReservationComplete by remember { mutableStateOf(false) }
 
@@ -117,15 +112,15 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
                 Text(text = "One step closer to your booking!")
                 Spacer(modifier = Modifier.height(16.dp))
                 TextField(
-                    value = customerName,
-                    onValueChange = { customerName = it },
+                    value = username,
+                    onValueChange = { username = it },
                     label = { Text("Your name") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 TextField(
-                    value = phone,
-                    onValueChange = { phone = it },
+                    value = phoneNumber,
+                    onValueChange = { phoneNumber = it },
                     label = { Text("Your phone number") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -151,7 +146,7 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = {
-                        if (customerName.isNotEmpty() && phone.isNotEmpty() &&
+                        if (username.isNotEmpty() && phoneNumber.isNotEmpty() &&
                             hour.isNotEmpty() && enteredStoreId.isNotEmpty()
                         ) {
                             viewModel.insertBooking(
@@ -160,14 +155,14 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
                                     hours = hour,
                                     storeId = enteredStoreId.toInt(),
                                     userId = userId,
-                                    phoneNumber = phone,
+                                    phoneNumber = phoneNumber,
                                     persons = 2,
                                     occasion = ""
                                 )
                             )
                             slotViewModel.reduceSlotAvailability(enteredStoreId.toInt(), hour)
-                            customerName = ""
-                            phone = ""
+                            username = ""
+                            phoneNumber = ""
                             hour = ""
                             enteredStoreId = ""
                             showReservationComplete = true
@@ -189,7 +184,8 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
                     text = { Text("👍 Your reservation was successfully made!") },
                     confirmButton = {
                         TextButton(onClick = {
-                            showReservationComplete = false; navController.navigateUp()
+                            showReservationComplete = false;
+                            navController.navigate(Screen.ProfileScreen.withArgs(userId.toString()))
                         }) {
                             Text("OK")
                         }

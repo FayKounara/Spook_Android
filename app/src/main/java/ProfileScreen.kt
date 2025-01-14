@@ -43,6 +43,15 @@ fun ProfileNavigation(
     NavHost(navController = navController, startDestination = Screen.ProfileScreen.route) {
         composable(route = Screen.ProfileScreen.route) {
             ProfileScreen(navController, userId, userViewModel = userViewModel, bookingViewModel, slotViewModel, reviewViewModel,storeViewModel)
+            BottomNavBar(
+                onHomeClick = {
+                    navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
+                onProfileClick = {
+                    navController.navigate(Screen.ProfileScreen.route) {
+                        popUpTo(Screen.ProfileScreen.route) { inclusive = true } // Avoids stacking multiple Homepages
+                    }
+                }
+            )
         }
 
         // For navigation to reviews
@@ -57,7 +66,7 @@ fun ProfileNavigation(
             )
         ) { entry ->
             val storeId = entry.arguments?.getInt("storeId") ?: 1
-            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
+            ReviewNavigation(userId, userViewModel, reviewViewModel, storeViewModel, bookingViewModel, slotViewModel, storeId = storeId)
         }
 
         composable(
@@ -65,6 +74,20 @@ fun ProfileNavigation(
             arguments = emptyList()
         ) { entry ->
             LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        }
+
+        // Navigation to HomePage
+        composable(
+            route = Screen.HomePage.route + "/{id}",
+            arguments = listOf(
+                navArgument("id") {
+                    type = NavType.StringType
+                    defaultValue = "1"
+                    nullable = true
+                }
+            )
+        ) { _ ->
+            HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
     }
 }
@@ -91,7 +114,7 @@ fun ProfileScreen(navController: NavController, userId: Int, userViewModel: User
         BookingHistory(
             bookingsHistory = bookingsHistory,
             onCheckClick = { storeId ->
-                println("Selected Store ID: $storeId")
+                navController.navigate(Screen.Reviews.withArgs(storeId.toString()))
             },
             userId = userId,
             storeViewModel = storeViewModel
