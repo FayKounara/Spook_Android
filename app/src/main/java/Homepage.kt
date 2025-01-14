@@ -282,8 +282,11 @@ fun Homepage(
 
             // Today's Offers Section
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                val isToday = selectedDay == getCurrentDayName()
+                val offersTitle = if (isToday) "Today's Offers!" else "$selectedDay's Offers!"
+                
                 Text(
-                    text = "Today's Offers!",
+                    text = offersTitle,
                     style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 )
                 LazyRow(
