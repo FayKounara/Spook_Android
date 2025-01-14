@@ -333,7 +333,7 @@ fun Homepage(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Explore Restaurants Section
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 // Header
                 Text(
                     text = "Explore Our Restaurants",
@@ -474,7 +474,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 8.dp, horizontal = 10.dp)
     ) {
         Row(
             modifier = Modifier
@@ -538,6 +538,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
             }
         }
     }
+    Spacer(modifier = Modifier.height(37.8.dp))
 }
 
 @Composable
