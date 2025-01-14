@@ -9,10 +9,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -134,18 +137,15 @@ fun BookingHeader() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
             .background(
-                color = Color(0xFFFFA726),
-                shape = RoundedCornerShape(
-                    bottomStart = 16.dp,
-                    bottomEnd = 16.dp
-                )
+                color = Color(0xFFFFA726)
             )
             .padding(vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Bookings History",
+            text = "Your bookings history \uD83D\uDCD6",
             color = Color.White,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
@@ -157,7 +157,7 @@ fun BookingHeader() {
 fun UserProfileSection(userViewModel: UserViewModel, userId: Int) {
     val userName by userViewModel.userDetails.collectAsState()
     val email by userViewModel.email.collectAsState()
-    // Trigger fetching user details
+
     LaunchedEffect(userId) {
 
         userViewModel.fetchUserName(userId)
@@ -170,7 +170,7 @@ fun UserProfileSection(userViewModel: UserViewModel, userId: Int) {
             .fillMaxWidth()
             .padding(bottom = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.elevatedCardElevation(6.dp)
+        elevation = CardDefaults.elevatedCardElevation(10.dp)
     ) {
         Row(
             modifier = Modifier
@@ -180,22 +180,28 @@ fun UserProfileSection(userViewModel: UserViewModel, userId: Int) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(50.dp)
-                    .background(color = Color(0xFFF1F3F4)),
+                    .size(50.dp),
+                    //.background(color = Color(0xFFF1F3F4)), shape = RoundedCornerShape(50)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = ".", fontSize = 24.sp)
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = "Profile Icon",
+                    tint = Color(0xFF9C27B0), // Purple tint for the icon
+                    modifier = Modifier.size(32.dp)
+                )
+                //Text(text = ".", fontSize = 24.sp)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = userName,
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = email,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     color = Color.Gray
                 )
             }
@@ -219,11 +225,20 @@ fun BookingHistory(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(bookingsHistory) { booking ->
-                BookingItem(
-                    booking = booking,
-                    storeViewModel = storeViewModel,
-                    onCheckClick = onCheckClick
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(8.dp, shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
+                        .background(color = Color.White)
+                ) {
+                    BookingItem(
+                        booking = booking,
+                        storeViewModel = storeViewModel,
+                        onCheckClick = onCheckClick,
+                    )
+                }
+
+
             }
         }
     }
@@ -264,23 +279,23 @@ fun BookingItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     //text = booking.storeName,
-                    text="Store: $storeName",
+                    text="\uD83D\uDCCD $storeName",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                    //text = booking.location,
-                    text= "Location: ${location}",
+                    text= " Address: $location",
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
+//                Text(
+//                    text = "Date: ${booking.date}",
+//                    fontSize = 14.sp,
+//                    color = Color.Gray
+//                )
                 Text(
-                    text = "Date: ${booking.date}",
-                    fontSize = 14.sp,
-                    color = Color.Gray
-                )
-                Text(
-                    text = "People: ${booking.persons}",
+                    text = "\uD83D\uDC65 ${booking.persons}",
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -289,7 +304,7 @@ fun BookingItem(
                 onClick = { onCheckClick(booking.storeId) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
             ) {
-                Text(text = "Review", color = Color.White)
+                Text(text = "Review", color = Color.White, fontSize = 16.sp)
             }
         }
     }

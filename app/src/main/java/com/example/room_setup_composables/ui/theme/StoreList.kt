@@ -210,7 +210,7 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
         ) {
             // Προσθήκη Εικόνας
             Image(
-                painter = painterResource(id = R.drawable.restphoto), // Replace with actual image
+                painter = painterResource(id = R.drawable.restphoto), 
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

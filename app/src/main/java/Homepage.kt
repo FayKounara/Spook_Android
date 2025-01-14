@@ -197,7 +197,7 @@ fun Homepage(
                     .padding(16.dp),
                 shape = RoundedCornerShape(16.dp), // Πιο στρογγυλεμένες γωνίες
                 color = Color.White,
-                shadowElevation = 10.dp // Προσθήκη σκιάς
+                shadowElevation = 20.dp // Προσθήκη σκιάς
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp) // Προσθήκη εσωτερικού περιθωρίου
@@ -256,10 +256,10 @@ fun Homepage(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Εικονίδιο Προφίλ
                 Icon(
-                    imageVector = Icons.Default.Person, // Χρησιμοποίησε ένα προκαθορισμένο εικονίδιο ή αντικατέστησέ το με το δικό σου
+                    imageVector = Icons.Filled.Person,
                     contentDescription = "Profile Icon",
+                    tint = Color(0xFF9C27B0),
                     modifier = Modifier
                         .size(40.dp) // Μέγεθος του εικονιδίου
                         .clickable {
@@ -296,7 +296,6 @@ fun Homepage(
                     items(offers) { offer ->
                         var storeName by remember { mutableStateOf("Loading...") }
 
-                        // Φόρτωσε το όνομα του μαγαζιού σε coroutine
                         LaunchedEffect(offer.storeId) {
                             val store = storeViewModel.getStoreById(offer.storeId)
                             storeName = store?.name ?: "Unknown Store"
@@ -306,7 +305,6 @@ fun Homepage(
                             foodItem = offer,
                             storeName = storeName,
                             onCardClick = {
-                                // Έλεγχος αν το store της προσφοράς βρίσκεται στη λίστα filteredStores
                                 val storeExistsInFilteredStores = filteredStores.any { store ->
                                     store.storeId == offer.storeId
                                 }
