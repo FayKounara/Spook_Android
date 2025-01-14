@@ -1,11 +1,14 @@
 package com.example.room_setup_composables
 
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,15 +42,7 @@ fun ProfileNavigation(
 
     NavHost(navController = navController, startDestination = Screen.ProfileScreen.route) {
         composable(route = Screen.ProfileScreen.route) {
-            ProfileScreen(navController, userId, userViewModel = userViewModel, bookingViewModel, slotViewModel, reviewViewModel)
-            BottomNavBar(
-                onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
-                onProfileClick = {
-                    navController.navigate(Screen.ProfileScreen.route) {
-                        popUpTo(Screen.ProfileScreen.route) { inclusive = true } // Avoids stacking multiple Profile pages
-                    }
-                }
-            )
+            ProfileScreen(navController, userId, userViewModel = userViewModel, bookingViewModel, slotViewModel, reviewViewModel,storeViewModel)
         }
 
         // For navigation to reviews
@@ -62,42 +57,23 @@ fun ProfileNavigation(
             )
         ) { entry ->
             val storeId = entry.arguments?.getInt("storeId") ?: 1
-            ReviewNavigation(userId, userViewModel, reviewViewModel, storeViewModel, bookingViewModel, slotViewModel, storeId = storeId)
+            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
         }
 
         composable(
             route = Screen.LoginPage.route,
             arguments = emptyList()
-        ) { _ ->
+        ) { entry ->
             LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
-        }
-
-        // Navigation to HomePage
-        composable(
-            route = Screen.HomePage.route + "/{id}",
-            arguments = listOf(
-                navArgument("id") {
-                    type = NavType.StringType
-                    defaultValue = "1"
-                    nullable = true
-                }
-            )
-        ) { _ ->
-            HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
     }
 }
 
 
 @Composable
-fun ProfileScreen(navController: NavController, userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel , slotViewModel: SlotViewModel, reviewViewModel: ReviewViewModel) {
-
-    val bookingsHistory = listOf(
-        BookingsHistory(storeId = 1, storeName = "Ambrosia Hotel & Restaurant", date = "2025-01-01", location = "Kazi Deiry, Taiger Pass, Chittagong"),
-        BookingsHistory(storeId = 2, storeName = "Tava Restaurant", date = "2025-01-02", location = "Zakir Hossain Rd, Chittagong"),
-        BookingsHistory(storeId = 3, storeName = "Haatkhola", date = "2025-01-03", location = "6 Surson Road, Chittagong")
-    )
-
+fun ProfileScreen(navController: NavController, userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel , slotViewModel: SlotViewModel, reviewViewModel: ReviewViewModel,storeViewModel: StoreViewModel) {
+    bookingViewModel.getBookingsForUser(userId)
+    val bookingsHistory by bookingViewModel.bookings.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -105,7 +81,8 @@ fun ProfileScreen(navController: NavController, userId: Int, userViewModel: User
             .padding(20.dp),
         verticalArrangement = Arrangement.Top
     ) {
-        UserProfileSection()
+        UserProfileSection(userViewModel,userId)
+
 
         BookingHeader()
 
@@ -115,7 +92,9 @@ fun ProfileScreen(navController: NavController, userId: Int, userViewModel: User
             bookingsHistory = bookingsHistory,
             onCheckClick = { storeId ->
                 println("Selected Store ID: $storeId")
-            }
+            },
+            userId = userId,
+            storeViewModel = storeViewModel
         )
 
         Spacer(modifier = Modifier.height(40.dp))
@@ -152,7 +131,16 @@ fun BookingHeader() {
 }
 
 @Composable
-fun UserProfileSection() {
+fun UserProfileSection(userViewModel: UserViewModel, userId: Int) {
+    val userName by userViewModel.userDetails.collectAsState()
+    val email by userViewModel.email.collectAsState()
+    // Trigger fetching user details
+    LaunchedEffect(userId) {
+
+        userViewModel.fetchUserName(userId)
+        userViewModel.fetchEmail(userId)
+    }
+
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
@@ -178,12 +166,12 @@ fun UserProfileSection() {
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Sadek Hossen",
+                    text = userName,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "sadekbranding@gmail.com",
+                    text = email,
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -194,7 +182,9 @@ fun UserProfileSection() {
 
 @Composable
 fun BookingHistory(
-    bookingsHistory: List<BookingsHistory>,
+    bookingsHistory: List<Booking>,
+    userId: Int,
+    storeViewModel: StoreViewModel,
     onCheckClick: (Int) -> Unit
 ) {
     Column(
@@ -208,6 +198,7 @@ fun BookingHistory(
             items(bookingsHistory) { booking ->
                 BookingItem(
                     booking = booking,
+                    storeViewModel = storeViewModel,
                     onCheckClick = onCheckClick
                 )
             }
@@ -217,9 +208,24 @@ fun BookingHistory(
 
 @Composable
 fun BookingItem(
-    booking: BookingsHistory,
+    booking: Booking,
+    storeViewModel: StoreViewModel,
     onCheckClick: (Int) -> Unit
 ) {
+
+    val storeNames by storeViewModel.storeNames.collectAsState()
+    val storeLocations by storeViewModel.storeLocations.collectAsState()
+    // Get the name for the current storeId
+    val storeName = storeNames[booking.storeId] ?: "Loading..."
+    val location = storeLocations[booking.storeId] ?: "Loading..."
+
+    // Trigger fetching user details when the storeId changes
+    LaunchedEffect(booking.storeId) {
+        Log.d("BookingItem", "Fetching data for : $storeName")
+        storeViewModel.fetchStoreName(booking.storeId)
+        storeViewModel.fetchStoreLocation(booking.storeId)
+    }
+
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
@@ -234,17 +240,24 @@ fun BookingItem(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = booking.storeName,
+                    //text = booking.storeName,
+                    text="Store: $storeName",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = booking.location,
+                   //text = booking.location,
+                    text= "Location: ${location}",
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
                 Text(
                     text = "Date: ${booking.date}",
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+                Text(
+                    text = "People: ${booking.persons}",
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
@@ -279,5 +292,25 @@ fun LogoutButton(navController: NavController, onLogoutClick: () -> Unit) {
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+    GoBack(navController)
+}
+
+
+@Composable
+fun GoBack(navController: NavController) {
+// Go Back button at the bottom of the screen
+    IconButton(
+        onClick = { navController.popBackStack() },
+        modifier = Modifier
+            .padding(16.dp) // Padding for the button
+    ) {
+        Icon(
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "Go Back",
+            modifier = Modifier
+                .background(Color(0xFF007066), RoundedCornerShape(50))
+                .padding(12.dp)
+        )
     }
 }
