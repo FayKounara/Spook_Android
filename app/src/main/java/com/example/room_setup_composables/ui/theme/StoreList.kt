@@ -8,7 +8,9 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -388,19 +390,26 @@ fun StoreDetailsSection(store: Store) {
 
 @Composable
 fun HourSelection(navController: NavController, availableSlots: List<Slot>, storeId: String) {
-    // Αρχικοποιούμε το selectedHour ως nullable Int, όχι String
     var selectedHour by remember { mutableStateOf<Int?>(null) }
 
     // Αν τα διαθέσιμα slots είναι Int
     val availableHours = availableSlots.map { it.hour.toInt() } // Μετατροπή των hours σε Int, αν χρειαστεί
 
     Column {
-        availableHours.forEach { hour ->
-            HourButton(
-                hour = hour.toString(), // Εμφανίζεται ως string για το UI
-                isSelected = selectedHour == hour, // Σύγκριση Int με Int
-                onClick = { selectedHour = hour } // Ενημερώνουμε το επιλεγμένο slot
-            )
+        // Προσθήκη οριζόντιας στοίχισης και κύλισης
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp) // Αφή μεταξύ των κουμπιών
+        ) {
+            availableHours.forEach { hour ->
+                HourButton(
+                    hour = hour.toString(), // Εμφανίζεται ως string για το UI
+                    isSelected = selectedHour == hour, // Σύγκριση Int με Int
+                    onClick = { selectedHour = hour } // Ενημερώνουμε το επιλεγμένο slot
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -447,5 +456,6 @@ fun BookNowButton(navController: NavController, storeId: String, selectedHour: I
         )
     }
 }
+
 
 
