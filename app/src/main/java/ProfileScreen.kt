@@ -293,24 +293,4 @@ fun LogoutButton(navController: NavController, onLogoutClick: () -> Unit) {
             )
         }
     }
-    GoBack(navController)
-}
-
-
-@Composable
-fun GoBack(navController: NavController) {
-// Go Back button at the bottom of the screen
-    IconButton(
-        onClick = { navController.popBackStack() },
-        modifier = Modifier
-            .padding(16.dp) // Padding for the button
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Go Back",
-            modifier = Modifier
-                .background(Color(0xFF007066), RoundedCornerShape(50))
-                .padding(12.dp)
-        )
-    }
 }
