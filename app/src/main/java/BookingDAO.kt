@@ -18,4 +18,7 @@ interface BookingDao {
 
     @Query("DELETE FROM booking_table")
     fun deleteAllBookings()
+
+    @Query("SELECT * FROM booking_table WHERE userId = :userId")
+    fun getBookingsForUser(userId: Int): Flow<List<Booking>>
 }
