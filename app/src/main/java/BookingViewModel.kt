@@ -27,15 +27,6 @@ class BookingViewModel(application: Application) : AndroidViewModel(application)
     private val _bookings = MutableStateFlow<List<Booking>>(emptyList())
     val bookings: StateFlow<List<Booking>> = _bookings
 
-    init {
-        fetchAllBookings()
-        fetchAllStores()
-        fetchAllUsers()
-       // deleteAllBookings()
-
-//        insertDummyUsers()
-    }
-
     private fun fetchAllBookings() {
         viewModelScope.launch(Dispatchers.IO) {
             bookingDao.getAllBookings().collect { bookings ->
