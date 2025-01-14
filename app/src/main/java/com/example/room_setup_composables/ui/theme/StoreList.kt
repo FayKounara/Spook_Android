@@ -12,6 +12,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -128,7 +129,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
         }
 
         // Navigation to profile
-        composable(
+         composable(
             route = Screen.ProfileScreen.route + "/{userId}",
             arguments = listOf(
                 navArgument("userId") {
@@ -194,7 +195,7 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
     }
 
     Card(
-        elevation = CardDefaults.cardElevation(8.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -202,7 +203,11 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
             .background(Color(0xFFF1F3F4)), // Background για όλη την κάρτα
         colors = CardDefaults.cardColors(containerColor = Color.White) // Η κάρτα να είναι λευκή
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .verticalScroll(rememberScrollState()) // Προσθήκη Scroll
+        ) {
             // Προσθήκη Εικόνας
             Image(
                 painter = painterResource(id = R.drawable.restphoto), // Replace with actual image
@@ -267,13 +272,18 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
                 HourSelection(navController, availableHours, store.storeId.toString())
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            StoreLocationToLatLng(store)
-
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp) // Περισσότερο ύψος για τον χάρτη
+            ) {
+                StoreLocationToLatLng(store)
+            }
         }
     }
 }
+
 //map
 @Composable
 fun StoreMap(latitude: Double, longitude: Double) {
@@ -288,7 +298,7 @@ fun StoreMap(latitude: Double, longitude: Double) {
     GoogleMap(
         modifier = Modifier
             .fillMaxSize() // Make the map take up the full available space
-            .padding(16.dp), // Add padding around the map
+            .padding(12.dp), // Add padding around the map
         cameraPositionState = cameraPositionState
     ) {
         val markerState = MarkerState(position = location)
