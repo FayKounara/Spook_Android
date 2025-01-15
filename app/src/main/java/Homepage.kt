@@ -248,7 +248,7 @@ fun Homepage(
             .padding(16.dp)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxSize()
         ) {
             // Header Section
@@ -269,21 +269,30 @@ fun Homepage(
                 )
 
                 Text(
-                    text = "Welcome back, $username :)",
+                    text = "Welcome back, $username !",
                     style = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     ),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.padding(start = 8.dp)
                 )
+
             }
+            Text(
+                text = "We hope you are hungry \uD83D\uDE0F",
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray
+                ),
+                modifier = Modifier.padding(top = 4.dp)
+            )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Today's Offers Section
-            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 val isToday = selectedDay == getCurrentDayName()
-                val offersTitle = if (isToday) "Today's Offers!" else "$selectedDay's Offers!"
+                val offersTitle = if (isToday) "Today's offers!" else "$selectedDay's offers!"
                 
                 Text(
                     text = offersTitle,
@@ -334,11 +343,10 @@ fun Homepage(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 // Header
                 Text(
-                    text = "Explore Our Restaurants",
+                    text = "Explore our Restaurants",
                     style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 )
 
-                // "Available on" και Επιλογέας Ημέρας
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
