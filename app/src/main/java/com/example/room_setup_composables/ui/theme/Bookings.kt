@@ -12,12 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -33,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key.Companion.Back
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,21 +51,37 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.room_database_setup.R
+import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
 import com.example.room_setup_composables.ui.theme.Screen
 
 @Composable
-fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel, hour:String, persons:Int, storeId: String, reviewViewModel: ReviewViewModel, storeViewModel: StoreViewModel, slotViewModel: SlotViewModel) {
+fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel, hour: String, filterday: String, filtername: String, persons: Int, storeId: String, reviewViewModel: ReviewViewModel, storeViewModel: StoreViewModel, slotViewModel: SlotViewModel) {
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Bookings.route) {
 
-        // Review Receive
+        // Bookings Receive
         composable(route = Screen.Bookings.route) {
             BookingsScreen(userId, userViewModel, navController, bookingViewModel, hour, persons, storeId, slotViewModel)
             BottomNavBar(
                 onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
                 onProfileClick = { navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) }
             )
+        }
+
+
+        // Navigation to Store Page
+        composable(
+            route = Screen.Stores.route + "/{name}",
+            arguments = listOf(
+
+                navArgument("name") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) { entry ->
+            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, filtername = filtername, filterday, persons.toInt(), slotViewModel)
         }
 
         // Navigation to HomePage
@@ -126,6 +147,7 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
 
 
     ) {
+
         Card(
             elevation = CardDefaults.cardElevation(8.dp),
             modifier = Modifier.padding(8.dp).border(2.dp, Color(0xFFFF9800), shape = RoundedCornerShape(8.dp)),
@@ -283,18 +305,28 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
                     )
             }
 
-
             Divider(modifier = Modifier.padding(vertical = 8.dp))
-//            LazyColumn {
-//                items(bookings) { booking ->
-//                    BookingItem(
-//                        navController,
-//                        booking,
-//                        persons,
-//                        onDelete = { viewModel.deleteBooking(booking) })
-//                }
-//            }
-            Spacer(modifier = Modifier.height(16.dp))
+            BackBtn(
+                onClick = { navController.navigate(Screen.Stores.withArgs(userId.toString())) },
+            )
+
         }
+    }
+}
+
+
+@Composable
+fun BackBtn(onClick: () -> Unit) {
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .padding(8.dp)
+            .background(Color.Yellow.copy(alpha = 0.6f))
+    ) {
+        Icon(
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = "Back",
+            tint = Color(0xFFFFC107), // Bright yellow shade
+        )
     }
 }

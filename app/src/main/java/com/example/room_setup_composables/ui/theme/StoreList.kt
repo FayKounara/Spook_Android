@@ -66,14 +66,14 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import java.util.Locale
 
 @Composable
-fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, filtername: String, filterday:String, persons:Int, slotViewModel: SlotViewModel) {
+fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, filtername: String, filterday: String, persons: Int, slotViewModel: SlotViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
 
         // Store Receive
         composable(route = Screen.Stores.route) {
-            StoreList(navController, storeViewModel, reviewViewModel, filtername, slotViewModel ,filterday)
+            StoreList(navController, storeViewModel, reviewViewModel, slotViewModel, filtername, filterday)
             BottomNavBar(
                 onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
                 onProfileClick = { navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) }
@@ -96,7 +96,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
         ) { entry ->
             val hour = entry.arguments?.getString("hour") ?: "0"
             val storeId = entry.arguments?.getString("storeId") ?: "1"
-            BookingNavigation(userId, userViewModel, bookingViewModel, hour, persons, storeId, reviewViewModel, storeViewModel, slotViewModel)
+            BookingNavigation(userId, userViewModel, bookingViewModel, hour, filterday, filtername, persons, storeId, reviewViewModel, storeViewModel, slotViewModel)
         }
 
         // Navigation to reviews
@@ -125,7 +125,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
                 }
             )
         ) { entry ->
-            HomePageNavigation(userId = userId.toInt(), userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+            HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
 
         // Navigation to profile
@@ -149,8 +149,8 @@ fun StoreList(
     navController: NavController,
     viewModel: StoreViewModel,
     reviewViewModel: ReviewViewModel,
-    filtername: String,
     slotViewModel: SlotViewModel,
+    filtername: String,
     filterday: String
 ) {
     val allReviews by reviewViewModel.allReviews.collectAsState(initial = emptyList())
@@ -162,13 +162,7 @@ fun StoreList(
         val store = filteredStores.first()
         val storeReviews = allReviews.filter { it.storeId == store.storeId }
 
-            // slotViewModel.fetchSlotsForStore(store.storeId)
-        //val allAvailableHours = filteredStores.flatMap { it.avHours.split(",") }.distinct()
-        //StoreCard(navController, store, allAvailableHours)
-        //fay
-
         slotViewModel.fetchSlotsForStore1(store.storeId)
-
 
         val slotsForSelectedDay = slots.filter { it.storeId == store.storeId && it.day == filterday }
         if (slotsForSelectedDay.isNotEmpty()) {
@@ -177,7 +171,7 @@ fun StoreList(
                 navController = navController,
                 store = store,
                 storeReviews = storeReviews,
-                availableHours = slotsForSelectedDay
+                availableHours = slotsForSelectedDay,
             )
         }
     }
@@ -269,7 +263,7 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                HourSelection(navController, availableHours, store.storeId.toString())
+                HourSelection(navController, store, availableHours)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -399,7 +393,7 @@ fun StoreDetailsSection(store: Store) {
 }
 
 @Composable
-fun HourSelection(navController: NavController, availableSlots: List<Slot>, storeId: String) {
+fun HourSelection(navController: NavController, store: Store, availableSlots: List<Slot>) {
     var selectedHour by remember { mutableStateOf<Int?>(null) }
 
     // Αν τα διαθέσιμα slots είναι Int
@@ -427,7 +421,7 @@ fun HourSelection(navController: NavController, availableSlots: List<Slot>, stor
         // Book Now Button
         BookNowButton(
             navController = navController,
-            storeId = storeId,
+            store = store,
             selectedHour = selectedHour
         )
     }
@@ -448,11 +442,11 @@ fun HourButton(hour: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun BookNowButton(navController: NavController, storeId: String, selectedHour: Int?) {
+fun BookNowButton(navController: NavController, store: Store, selectedHour: Int?) {
     Button(
         onClick = {
             selectedHour?.let { hour ->
-                navController.navigate(Screen.Bookings.withArgs(hour.toString(), storeId)) // Χρησιμοποιούμε hour ως String
+                navController.navigate(Screen.Bookings.withArgs( hour.toString(), store.storeId.toString()) )// Χρησιμοποιούμε hour ως String
             }
         },
         modifier = Modifier
