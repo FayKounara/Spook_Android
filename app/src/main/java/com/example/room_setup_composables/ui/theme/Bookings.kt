@@ -139,6 +139,7 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
         else -> R.drawable.burgerphoto // Προεπιλεγμένη εικόνα
     }
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -253,7 +254,12 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
                                     occasion = ""
                                 )
                             )
-                            slotViewModel.reduceSlotAvailability(enteredStoreId.toInt(), hour)
+
+                            repeat(persons / 2) {
+                                slotViewModel.reduceSlotAvailability(enteredStoreId.toInt(), hour)
+                            }
+
+
                             username = ""
                             phoneNumber = ""
                             hour = ""
