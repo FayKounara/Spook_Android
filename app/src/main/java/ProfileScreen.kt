@@ -351,6 +351,11 @@ fun BookingItem(
                     fontSize = 18.sp,
                     color = Color.Gray
                 )
+                Text(
+                    text = " Hour: ${booking.hours}",
+                    fontSize = 18.sp,
+                    color = Color.Gray
+                )
             }
             Button(
                 onClick = { onCheckClick(booking.storeId) },
