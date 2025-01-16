@@ -31,7 +31,7 @@ class UserViewModel(private val userDao: UserDao) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) { // Run the database operation in the background
             val username = userDao.getName(userId)
 
-            // Switch to the main thread to update the UI
+
             withContext(Dispatchers.Main) {
                 _userDetails.value = username ?: "Unknown"
             }
@@ -39,17 +39,16 @@ class UserViewModel(private val userDao: UserDao) : ViewModel() {
     }
     //get email
     fun fetchEmail(userId: Int) {
-        viewModelScope.launch(Dispatchers.IO) { // Run the database operation in the background
+        viewModelScope.launch(Dispatchers.IO) {
             val email = userDao.getEmail(userId)
 
-            // Switch to the main thread to update the UI
             withContext(Dispatchers.Main) {
                 _email.value = email ?: "Unknown"
             }
         }
     }
 
-        // Factory for creating StoreViewModel with StoreDao
+
         class UserViewModelFactory(private val userDao: UserDao) : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 if (modelClass.isAssignableFrom(UserViewModel::class.java)) {

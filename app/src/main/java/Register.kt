@@ -125,7 +125,7 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF1F3F4)) // Light background color
+            .background(Color(0xFFF1F3F4))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -227,7 +227,7 @@ fun RegisterScreen(
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
             )
             LaunchedEffect(Unit) {
-                delay(3000) // Delay for 3 seconds before hiding error message
+                delay(3000)
                 emailUnsafeInputs = false
             }
         }
@@ -265,7 +265,7 @@ fun RegisterScreen(
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
             )
             LaunchedEffect(Unit) {
-                delay(3000) // Delay for 3 seconds before hiding error message
+                delay(3000)
                 passwordUnsafeInputs = false
             }
         }
@@ -315,7 +315,7 @@ fun RegisterScreen(
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
             )
             LaunchedEffect(Unit) {
-                delay(3000) // Delay for 3 seconds before hiding error message
+                delay(3000)
                 unsafeInputs = false
             }
         }
