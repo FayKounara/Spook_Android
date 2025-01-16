@@ -199,23 +199,23 @@ fun Homepage(
         ) {
             Surface(
                 modifier = Modifier
-                    .width(300.dp) // Smaller width
+                    .width(300.dp)
                     .padding(16.dp),
-                shape = RoundedCornerShape(16.dp), // More rounded corners
+                shape = RoundedCornerShape(16.dp),
                 color = Color.White,
-                shadowElevation = 20.dp // Adding shadow
+                shadowElevation = 20.dp
             ) {
 
                 Column(
-                    modifier = Modifier.padding(16.dp) // Adding internal padding
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    // Title
+
                     Text(
                         text = "Too Juicy to Handle!",
                         style = TextStyle(
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFF9800) // Orange font
+                            color = Color(0xFFFF9800)
                         )
                     )
 
@@ -224,7 +224,7 @@ fun Homepage(
                     Text(
                         text = errorMessage,
                         style = TextStyle(
-                            fontSize = 18.sp, // Smaller font size
+                            fontSize = 18.sp,
                             color = Color.Black
                         )
                     )
@@ -374,7 +374,7 @@ fun Homepage(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
-                        .height(240.dp) // Restricting the height of the list
+                        .height(240.dp)
                 ) {
                     items(filteredStores) { store ->
                         RestaurantCard(
@@ -433,7 +433,7 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(1.dp)) // Space between name and price/location
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp) // Smaller spacing between price and location
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     // Displays the store name
                     Text(
@@ -449,16 +449,16 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Light,
                                 color = Color.Gray,
-                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough // Strikethrough original price
+                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
                             ),
                             modifier = Modifier.padding(end = 4.dp)
                         )
                         Text(
-                            text = foodItem.discountPrice.toString(), // Discounted price
+                            text = foodItem.discountPrice.toString(),
                             style = TextStyle(
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFFFA726) // Orange color
+                                color = Color(0xFFFFA726)
                             )
                         )
                     }
@@ -487,7 +487,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Dynamically loads an image based on the Store's ID
+
             val imageRes = when (store.storeId) {
                 1 -> R.drawable.rest1photo
                 2 -> R.drawable.rest2photo
@@ -528,7 +528,6 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
                 )
             }
 
-            // "Book" button
             Button(
                 onClick = onBookClick,
                 modifier = Modifier
@@ -594,8 +593,8 @@ fun PersonsSelector(selectedPersons: String, onPersonsSelected: (String) -> Unit
     Box(
         modifier = modifier
             .clickable { expanded = true }
-            .padding(horizontal = 4.dp, vertical = 4.dp) // Smaller padding
-            .width(80.dp) // Reduced width
+            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .width(80.dp)
             .drawBehind {
                 drawLine(
                     color = Color(0xFFFFA726),

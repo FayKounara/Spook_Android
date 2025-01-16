@@ -37,27 +37,14 @@ class SlotViewModel(private val slotDao: SlotDao, private val storeDao: StoreDao
         }
     }
 
-
-    fun increaseSlotAvailabilityByTwo(slotId: Int) {
-        viewModelScope.launch {
-            try {
-                slotDao.increaseByTwo(slotId)
-                Log.d("SlotViewModel", "Slot availability increased for slotId: $slotId")
-            } catch (e: Exception) {
-                Log.e("SlotViewModel", "Error increasing availability", e)
-            }
-        }
-    }
-
-    // Factory for creating SlotViewModel instances
     class SlotViewModelFactory(
         private val slotDao: SlotDao,
-        private val storeDao: StoreDao// SlotDao instance should be passed
+        private val storeDao: StoreDao
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(SlotViewModel::class.java)) {
 
-                return SlotViewModel(slotDao, storeDao) as T   // Use both slotDao and storeDao
+                return SlotViewModel(slotDao, storeDao) as T
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }
