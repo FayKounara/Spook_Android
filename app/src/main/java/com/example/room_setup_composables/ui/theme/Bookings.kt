@@ -2,7 +2,6 @@ package com.example.room_setup_composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +18,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +25,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,9 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key.Companion.Back
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -81,7 +77,7 @@ fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewMode
                 }
             )
         ) { entry ->
-            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, filtername = filtername, filterday, persons.toInt(), slotViewModel)
+            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, filtername = filtername, filterday, persons, slotViewModel)
         }
 
         // Navigation to HomePage
@@ -115,13 +111,18 @@ fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewMode
 }
 
 @Composable
-fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: NavController, viewModel: BookingViewModel, hour:String, persons:Int, storeId: String, slotViewModel: SlotViewModel) {
-    //val primaryColor = Color(0xFFFFA000)
+fun BookingsScreen(
+    userId: Int,
+    userViewModel: UserViewModel,
+    navController: NavController,
+    viewModel: BookingViewModel,
+    hour: String,
+    persons: Int,
+    storeId: String,
+    slotViewModel: SlotViewModel
+) {
     var username by remember { mutableStateOf("") }
-    var userId by remember { mutableStateOf(userId) }
-    var enteredStoreId by remember { mutableStateOf(storeId) }
     var phoneNumber by remember { mutableStateOf("") }
-    var hour by remember { mutableStateOf(hour) }
 
     val users by userViewModel.allUsers.collectAsState(initial = emptyList())
     val currentUser = users.firstOrNull { it.userId == userId }
@@ -130,209 +131,161 @@ fun BookingsScreen(userId: Int, userViewModel: UserViewModel, navController: Nav
 
     var showReservationComplete by remember { mutableStateOf(false) }
 
-
     viewModel.newEnteredStoreId(storeId)
+
     val foodImage = when {
         viewModel.storeName.contains("Pizza", ignoreCase = true) -> R.drawable.pizzaphoto
         viewModel.storeName.contains("Burger", ignoreCase = true) -> R.drawable.burgerphoto
         viewModel.storeName.contains("Pasta", ignoreCase = true) -> R.drawable.pastaphoto
-        else -> R.drawable.burgerphoto // Προεπιλεγμένη εικόνα
+        else -> R.drawable.burgerphoto
     }
-
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .background(Color(0xFFFDFDFD))
             .verticalScroll(rememberScrollState())
-
-
     ) {
-
         Card(
-            elevation = CardDefaults.cardElevation(8.dp),
-            modifier = Modifier.padding(8.dp).border(2.dp, Color(0xFFFF9800), shape = RoundedCornerShape(8.dp)),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
+            elevation = CardDefaults.cardElevation(4.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
-
             ) {
                 Text(
-                    text = "Yum! \n You are one step closer to your booking @",
+                    text = "Yum! You are one step closer to your booking at",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
+                    color = Color(0xFF212121),
                     textAlign = TextAlign.Center
-
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = viewModel.storeName,
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                     color = Color(0xFFFF9800),
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Image(
                     painter = painterResource(id = foodImage),
                     contentDescription = "Food Item",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(120.dp),
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                        .height(140.dp),
+                    contentScale = ContentScale.Crop
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = "\uD83D\uDD52 Don't be late! Your reservation is at $hour pm sharp.",
-                    textAlign = TextAlign.Center,
-                    color = Color.Gray,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(bottom = 8.dp)
-
+                    text = "\uD83D\uDD52 Reservation time: $hour pm",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color(0xFF757575),
+                    textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
-                    label = {
-                        Text(
-                            "\uD83D\uDD8A\uFE0F Fill out the name for the reservation...",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    textStyle = TextStyle(fontSize = 16.sp),
+                    label = { Text("Name for reservation", color = Color(0xFF757575)) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFFFFA726),
-                        unfocusedBorderColor = Color(0xFFBDBDBD),
+                        unfocusedBorderColor = Color(0xFFBDBDBD)
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFFF8F9FA), shape = RoundedCornerShape(8.dp))
-                        .padding(bottom = 16.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = phoneNumber,
                     onValueChange = { phoneNumber = it },
-                    label = {
-                        Text(
-                            "\uD83D\uDCDE ... and your phone number. Just in case!",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    textStyle = TextStyle(fontSize = 16.sp),
+                    label = { Text("Phone number", color = Color(0xFF757575)) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFFFFA726),
-                        unfocusedBorderColor = Color(0xFFBDBDBD),
+                        unfocusedBorderColor = Color(0xFFBDBDBD)
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFFF8F9FA), shape = RoundedCornerShape(8.dp))
-                        .padding(bottom = 16.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-
-
+                Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
-                        if (username.isNotEmpty() && phoneNumber.isNotEmpty() &&
-                            hour.isNotEmpty() && enteredStoreId.isNotEmpty()
-                        ) {
+                        if (username.isNotEmpty() && phoneNumber.isNotEmpty() && hour.isNotEmpty() && storeId.isNotEmpty()) {
                             viewModel.insertBooking(
                                 Booking(
                                     date = "",
                                     hours = hour,
-                                    storeId = enteredStoreId.toInt(),
+                                    storeId = storeId.toInt(),
                                     userId = userId,
                                     phoneNumber = phoneNumber,
-                                    persons = 2,
+                                    persons = persons,
                                     occasion = ""
                                 )
                             )
-
                             repeat(persons / 2) {
-                                slotViewModel.reduceSlotAvailability(enteredStoreId.toInt(), hour)
+                                slotViewModel.reduceSlotAvailability(storeId.toInt(), hour)
                             }
-
-
-                            username = ""
-                            phoneNumber = ""
-                            hour = ""
-                            enteredStoreId = ""
                             showReservationComplete = true
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF137316)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Reserve now", fontSize = 20.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                    Text("Reserve now", fontSize = 18.sp, color = Color.White)
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+        }
 
-            if (showReservationComplete) {
-                AlertDialog(
-                    onDismissRequest = { showReservationComplete = false },
-                    title = {
-                        Text(
-                            text = "Reservation Complete \uD83C\uDF89",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = Color(0xFFFF9800)
-                        )
-                    },
-                    text = {
-                        Text(
-                            text = "Your reservation was successfully made! Enjoy your time, and don't forget to rate your experience!",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.DarkGray
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                showReservationComplete = false
-                                navController.navigate(Screen.ProfileScreen.withArgs(userId.toString()))
-                            }
-                        ) {
-                            Text(
-                                text = "OK",
-                                color = Color(0xFFFF9800)
-                            )
-                        }
-                    },
-                    containerColor = Color.White,
-
+        if (showReservationComplete) {
+            AlertDialog(
+                onDismissRequest = { showReservationComplete = false },
+                title = {
+                    Text(
+                        text = "Reservation Complete!",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFFFF9800)
                     )
-            }
-
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
-            BackBtn(
-                onClick = { navController.navigate(Screen.Stores.withArgs(userId.toString())) },
+                },
+                text = {
+                    Text(
+                        text = "Your reservation was successfully made! Enjoy your juicy meal!",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xFF616161)
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showReservationComplete = false
+                            navController.navigate(Screen.ProfileScreen.withArgs(userId.toString()))
+                        }
+                    ) {
+                        Text("OK", color = Color(0xFFFF9800))
+                    }
+                },
+                containerColor = Color.White
             )
+        }
 
+        Spacer(modifier = Modifier.height(16.dp))
+        IconButton(
+            onClick = { navController.navigate(Screen.Stores.withArgs(userId.toString())) },
+            modifier = Modifier.align(Alignment.Start)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = Color(0xFFFF9800)
+            )
         }
     }
 }
 
 
-@Composable
-fun BackBtn(onClick: () -> Unit) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier
-            .padding(8.dp)
-            .background(Color.Yellow.copy(alpha = 0.6f))
-    ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = "Back",
-            tint = Color(0xFFFFC107), // Bright yellow shade
-        )
-    }
-}
+
+
