@@ -97,7 +97,6 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
             BookingNavigation(userId, userViewModel, bookingViewModel, hour, filterday, filtername, persons, storeId, reviewViewModel, storeViewModel, slotViewModel)
         }
 
-        // Navigation to reviews
         composable(
             route = Screen.Reviews.route + "/{storeId}",
             arguments = listOf(
@@ -112,7 +111,6 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
             ReviewNavigation(userId, userViewModel, reviewViewModel, storeViewModel, bookingViewModel, slotViewModel, storeId = storeId)
         }
 
-        // Navigation to HomePage
         composable(
             route = Screen.HomePage.route + "/{id}",
             arguments = listOf(
@@ -192,15 +190,14 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .background(Color(0xFFF1F3F4)), // Background για όλη την κάρτα
-        colors = CardDefaults.cardColors(containerColor = Color.White) // Η κάρτα να είναι λευκή
+            .background(Color(0xFFF1F3F4)),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(
             modifier = Modifier
                 .padding(8.dp)
-                .verticalScroll(rememberScrollState()) // Προσθήκη Scroll
+                .verticalScroll(rememberScrollState())
         ) {
-            // Προσθήκη Εικόνας
             Image(
                 painter = painterResource(id = R.drawable.restphoto), 
                 contentDescription = null,
@@ -213,14 +210,14 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Πληροφορίες Καταστήματος
+
             Text(
                 text = store.name,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Αστεράκια για reviews
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -233,7 +230,7 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
                     Icon(
                         imageVector = if (index < rating.toInt()) Icons.Filled.Star else Icons.Outlined.Star,
                         contentDescription = "Review Star",
-                        tint = if (index < rating.toInt()) Color(0xFFFFA726) else Color.Gray, // Filled and empty star colors
+                        tint = if (index < rating.toInt()) Color(0xFFFFA726) else Color.Gray,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -249,7 +246,6 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Διαθέσιμες Ώρες
             Text(
                 text = "Available Hours:",
                 style = MaterialTheme.typography.bodyLarge,
@@ -268,7 +264,7 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp) // Περισσότερο ύψος για τον χάρτη
+                    .height(180.dp)
             ) {
                 StoreLocationToLatLng(store)
             }
@@ -305,17 +301,15 @@ fun StoreMap(latitude: Double, longitude: Double) {
 fun getLatLngFromAddress(context: Context, address: String): Pair<Double, Double>? {
     val geocoder = Geocoder(context, Locale.getDefault()) // Create Geocoder instance
     try {
-        // Get the list of addresses based on the address string
-        val addressResult: Address? = geocoder.getFromLocationName(address, 1)?.firstOrNull()
 
-        // If a valid address result is found, return its latitude and longitude
+        val addressResult: Address? = geocoder.getFromLocationName(address, 1)?.firstOrNull()
         addressResult?.let {
             return Pair(it.latitude, it.longitude)
         }
     } catch (e: Exception) {
         e.printStackTrace()
     }
-    return null // Return null if geocoding fails or no address is found
+    return null
 }
 
 @Composable
@@ -329,8 +323,8 @@ fun StoreLocationToLatLng(store: Store) {
     LaunchedEffect(store.location) {
         val latLng = getLatLngFromAddress(context, store.location)
         if (latLng != null) {
-            latitude = latLng.first  // Update latitude
-            longitude = latLng.second // Update longitude
+            latitude = latLng.first
+            longitude = latLng.second
             isLoading = false
         } else {
             Toast.makeText(context, "Address not found", Toast.LENGTH_SHORT).show()
@@ -338,14 +332,11 @@ fun StoreLocationToLatLng(store: Store) {
         }
     }
 
-    // Show loading indicator while fetching location
     if (isLoading) {
-        CircularProgressIndicator() // Show a loading indicator while fetching coordinates
+        CircularProgressIndicator()
     } else if (latitude != 0.0 && longitude != 0.0) {
-        // Only show the map when valid coordinates are available
         StoreMap(latitude, longitude)
     } else {
-        // Handle case where coordinates are not found (e.g., show an error message or default view)
         Text("Invalid location.")
     }
 }
@@ -395,28 +386,27 @@ fun HourSelection(navController: NavController, store: Store, availableSlots: Li
     var selectedHour by remember { mutableStateOf<Int?>(null) }
 
     // Αν τα διαθέσιμα slots είναι Int
-    val availableHours = availableSlots.map { it.hour.toInt() } // Μετατροπή των hours σε Int, αν χρειαστεί
+    val availableHours = availableSlots.map { it.hour.toInt() }
 
     Column {
-        // Προσθήκη οριζόντιας στοίχισης και κύλισης
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp) // Αφή μεταξύ των κουμπιών
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             availableHours.forEach { hour ->
                 HourButton(
-                    hour = hour.toString(), // Εμφανίζεται ως string για το UI
-                    isSelected = selectedHour == hour, // Σύγκριση Int με Int
-                    onClick = { selectedHour = hour } // Ενημερώνουμε το επιλεγμένο slot
+                    hour = hour.toString(),
+                    isSelected = selectedHour == hour,
+                    onClick = { selectedHour = hour }
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Book Now Button
         BookNowButton(
             navController = navController,
             store = store,
@@ -444,13 +434,13 @@ fun BookNowButton(navController: NavController, store: Store, selectedHour: Int?
     Button(
         onClick = {
             selectedHour?.let { hour ->
-                navController.navigate(Screen.Bookings.withArgs( hour.toString(), store.storeId.toString()) )// Χρησιμοποιούμε hour ως String
+                navController.navigate(Screen.Bookings.withArgs( hour.toString(), store.storeId.toString()) )
             }
         },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726)) // Πορτοκαλί χρώμα
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
     ) {
         Text(
             text = "Proceed with reservation :)",

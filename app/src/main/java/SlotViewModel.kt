@@ -9,42 +9,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
-//class SlotsViewModel(application: Application) : AndroidViewModel(application) {
-//
-//    private val slotDao: SlotDao = AppDatabase.getDatabase(application).slotDao()
-//    private val _slotsForStore = MutableLiveData<List<Slot>>()
-//    val slotsForStore: LiveData<List<Slot>> = _slotsForStore
-//
-//    suspend fun getSlotsForStore(storeId: Int): List<Slot> {
-//        return slotDao.getSlotsForStore(storeId)
-//    }
-//
-//    fun reduceAvailabilityByTwo(slotId: Int) {
-//        viewModelScope.launch {
-//            slotDao.reduceByTwo(slotId)
-//        }
-//    }
-//
-//    fun increaseAvailabilityByTwo(slotId: Int) {
-//        viewModelScope.launch {
-//            slotDao.increaseByTwo(slotId)
-//        }
-//    }
-//
-//    fun insertSlot(slot: Slot) {
-//        viewModelScope.launch {
-//            slotDao.insertSlot(slot)
-//        }
-//    }
-//}
+
 
 class SlotViewModel(private val slotDao: SlotDao, private val storeDao: StoreDao) : ViewModel() {
 
-    // MutableStateFlow to hold the slot data
     private val _slots = MutableStateFlow<List<Slot>>(emptyList())
     val slots: StateFlow<List<Slot>> = _slots
-    //the flow is expected to emit a list of slots for the store, .first() will return that list
-    // Fetch slots for a store and collect them in a coroutine
+
     suspend  fun fetchSlotsForStore(storeId: Int): List<Slot> {
         return slotDao.getSlotsForStore(storeId).first()
 
@@ -66,19 +37,7 @@ class SlotViewModel(private val slotDao: SlotDao, private val storeDao: StoreDao
         }
     }
 
-//    // Reduce slot availability by two
-//    fun reduceSlotAvailabilityByTwo(slotId: Int) {
-//        viewModelScope.launch {
-//            try {
-//                slotDao.reduceByTwo(slotId)
-//                Log.d("SlotViewModel", "Slot availability reduced for slotId: $slotId")
-//            } catch (e: Exception) {
-//                Log.e("SlotViewModel", "Error reducing availability", e)
-//            }
-//        }
-//    }
 
-    // Increase slot availability by two
     fun increaseSlotAvailabilityByTwo(slotId: Int) {
         viewModelScope.launch {
             try {
@@ -98,7 +57,7 @@ class SlotViewModel(private val slotDao: SlotDao, private val storeDao: StoreDao
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(SlotViewModel::class.java)) {
 
-                return SlotViewModel(slotDao, storeDao) as T   // Use both slotDao and storeDao here
+                return SlotViewModel(slotDao, storeDao) as T   // Use both slotDao and storeDao
             }
             throw IllegalArgumentException("Unknown ViewModel class")
         }

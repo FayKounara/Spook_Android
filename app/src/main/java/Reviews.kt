@@ -193,7 +193,7 @@ fun ReviewHeader(storeId: Int, storeViewModel: StoreViewModel) {
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "$storename", //"Coffee Cafe NYC",
+            text = storename, //"Coffee Cafe NYC",
             style = TextStyle(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,

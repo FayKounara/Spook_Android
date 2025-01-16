@@ -28,7 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.room_setup_composables.ui.theme.Screen
 
-// Μετονομασία της κλάσης από Booking σε BookingsHistory
 data class BookingsHistory(val storeId: Int, val storeName: String, val date: String, val location: String)
 
 @Composable
@@ -51,7 +50,7 @@ fun ProfileNavigation(
                     navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
                 onProfileClick = {
                     navController.navigate(Screen.ProfileScreen.route) {
-                        popUpTo(Screen.ProfileScreen.route) { inclusive = true } // Avoids stacking multiple Homepages
+                        popUpTo(Screen.ProfileScreen.route) { inclusive = true }
                     }
                 }
             )
@@ -187,7 +186,7 @@ fun UserProfileSection(userViewModel: UserViewModel, userId: Int) {
                 Icon(
                     imageVector = Icons.Filled.Person,
                     contentDescription = "Profile Icon",
-                    tint = Color(0xFF9C27B0), // Purple tint for the icon
+                    tint = Color(0xFF9C27B0),
                     modifier = Modifier.size(32.dp)
                 )
                 //Text(text = ".", fontSize = 24.sp)
@@ -256,7 +255,7 @@ fun BookingItem(
 
     val storeNames by storeViewModel.storeNames.collectAsState()
     val storeLocations by storeViewModel.storeLocations.collectAsState()
-    // Get the name for the current storeId
+
     val storeName = storeNames[booking.storeId] ?: "Loading..."
     val location = storeLocations[booking.storeId] ?: "Loading..."
 
