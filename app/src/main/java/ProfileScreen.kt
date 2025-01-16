@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -219,28 +220,53 @@ fun BookingHistory(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(420.dp)
-                .padding(bottom = 60.dp)
-        ) {
-            items(bookingsHistory) { booking ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(8.dp, shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
-                        .background(color = Color.White)
-                ) {
-                    BookingItem(
-                        booking = booking,
-                        storeViewModel = storeViewModel,
-                        onCheckClick = onCheckClick,
+        if (bookingsHistory.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(12.dp)
                     )
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No bookings available. Make your first reservation to see your history!",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.DarkGray,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(420.dp)
+                    .padding(bottom = 60.dp)
+            ) {
+
+                items(bookingsHistory) { booking ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shadow(
+                                8.dp,
+                                shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+                            )
+                            .background(color = Color.White)
+                    ) {
+                        BookingItem(
+                            booking = booking,
+                            storeViewModel = storeViewModel,
+                            onCheckClick = onCheckClick,
+                        )
+                    }
+
+
                 }
-
-
             }
         }
     }

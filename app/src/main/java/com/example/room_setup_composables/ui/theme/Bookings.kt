@@ -191,7 +191,7 @@ fun BookingsScreen(
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
-                    label = { Text("Name for reservation", color = Color(0xFF757575)) },
+                    label = { Text("Name for the reservation", color = Color(0xFF757575), fontSize = 16.sp, fontWeight = FontWeight.Bold) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFFFFA726),
                         unfocusedBorderColor = Color(0xFFBDBDBD)
@@ -202,7 +202,7 @@ fun BookingsScreen(
                 OutlinedTextField(
                     value = phoneNumber,
                     onValueChange = { phoneNumber = it },
-                    label = { Text("Phone number", color = Color(0xFF757575)) },
+                    label = { Text("Phone number", color = Color(0xFF757575), fontSize = 16.sp, fontWeight = FontWeight.Bold) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color(0xFFFFA726),
                         unfocusedBorderColor = Color(0xFFBDBDBD)
@@ -244,7 +244,7 @@ fun BookingsScreen(
                 onDismissRequest = { showReservationComplete = false },
                 title = {
                     Text(
-                        text = "Reservation Complete!",
+                        text = "Reservation Complete \uD83C\uDF89",
                         style = MaterialTheme.typography.titleLarge,
                         color = Color(0xFFFF9800)
                     )
@@ -252,8 +252,8 @@ fun BookingsScreen(
                 text = {
                     Text(
                         text = "Your reservation was successfully made! Enjoy your juicy meal!",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF616161)
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.DarkGray
                     )
                 },
                 confirmButton = {
