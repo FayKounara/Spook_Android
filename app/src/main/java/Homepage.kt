@@ -108,7 +108,7 @@ fun HomePageNavigation(
             )
         ) { entry ->
             val storeId = entry.arguments?.getInt("storeId") ?: 1
-            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
+            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId, storeViewModel)
         }
 
         // For navigation to profile

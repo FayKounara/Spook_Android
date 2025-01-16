@@ -71,7 +71,6 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
 
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
 
-        // Store Receive
         composable(route = Screen.Stores.route) {
             StoreList(navController, storeViewModel, reviewViewModel, slotViewModel, filtername, filterday)
             BottomNavBar(
@@ -80,7 +79,6 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
             )
         }
 
-        // Navigation to Bookings
         composable(
             route = Screen.Bookings.route + "/{hour}/{storeId}",
             arguments = listOf(

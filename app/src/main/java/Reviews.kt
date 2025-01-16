@@ -54,7 +54,7 @@ fun ReviewNavigation(userId: Int, userViewModel:UserViewModel, reviewViewModel: 
 
         // Review Receive
         composable(route = Screen.Reviews.route) {
-            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId)
+            ReviewScreen(navController, userId, userViewModel, reviewViewModel, storeId = storeId, storeViewModel)
             BottomNavBar(
                 onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
                 onProfileClick = { navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) }
@@ -93,7 +93,7 @@ fun ReviewNavigation(userId: Int, userViewModel:UserViewModel, reviewViewModel: 
 
 
 @Composable
-fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserViewModel, viewModel: ReviewViewModel, storeId: Int) {
+fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserViewModel, viewModel: ReviewViewModel, storeId: Int, storeViewModel: StoreViewModel) {
 
     val reviews by viewModel.allReviews.collectAsState(initial = emptyList())
     val specificStoreReviews = reviews.filter { it.storeId == storeId }
@@ -110,7 +110,7 @@ fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserVi
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF1F3F4)) // Background to match Login Screen
+            .background(Color(0xFFF1F3F4))
             .padding(16.dp)
     ) {
         Column(
@@ -120,7 +120,7 @@ fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserVi
         ) {
             // Header with Store Title
             Spacer(modifier = Modifier.height(8.dp))
-            ReviewHeader()
+            ReviewHeader(storeId, storeViewModel)
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -144,14 +144,14 @@ fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserVi
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxSize() // Εξασφάλιση ότι γεμίζει όλο το διαθέσιμο χώρο
+                    .fillMaxSize()
             ) {
                 if (specificStoreReviews.isEmpty()) {
                     item {
                         Box(
                             modifier = Modifier
-                                .fillParentMaxSize(), // Εξασφαλίζει ότι παίρνει όλο τον χώρο
-                            contentAlignment = Alignment.Center // Κεντρική τοποθέτηση περιεχομένου
+                                .fillParentMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "No reviews yet",
@@ -178,7 +178,14 @@ fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserVi
 }
 
 @Composable
-fun ReviewHeader() {
+fun ReviewHeader(storeId: Int, storeViewModel: StoreViewModel) {
+
+    var storename by remember { mutableStateOf("") }
+
+    val stores by storeViewModel.allStores.collectAsState(initial = emptyList())
+    val currentStore = stores.firstOrNull { it.storeId == storeId }
+    storename = (currentStore?.name ?: "This store")
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,7 +193,7 @@ fun ReviewHeader() {
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Coffee Cafe NYC",
+            text = "$storename", //"Coffee Cafe NYC",
             style = TextStyle(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,

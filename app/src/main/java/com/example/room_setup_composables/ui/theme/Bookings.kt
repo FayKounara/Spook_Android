@@ -66,7 +66,6 @@ fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewMode
         }
 
 
-        // Navigation to Store Page
         composable(
             route = Screen.Stores.route + "/{name}",
             arguments = listOf(
@@ -94,7 +93,6 @@ fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewMode
             HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
 
-        // Navigation to profile
         composable(
             route = Screen.ProfileScreen.route + "/{userId}",
             arguments = listOf(
