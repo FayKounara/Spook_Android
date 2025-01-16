@@ -135,7 +135,8 @@ fun ProfileScreen(
             storeViewModel = storeViewModel,
             onCheckClick = { storeId ->
                 navController.navigate(Screen.Reviews.withArgs(storeId.toString()))
-            }
+            },
+            navController = navController
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -230,7 +231,8 @@ fun UserProfileSection(userViewModel: UserViewModel, userId: Int) {
 fun BookingHistory(
     bookingsHistory: List<Booking>,
     storeViewModel: StoreViewModel,
-    onCheckClick: (Int) -> Unit
+    onCheckClick: (Int) -> Unit,
+    navController: NavController
 ) {
     Column(
         modifier = Modifier
@@ -248,12 +250,23 @@ fun BookingHistory(
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "No bookings available. Make your first reservation to see your history!",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.DarkGray,
-                    textAlign = TextAlign.Center
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "No bookings available. Make your first reservation to see your history!",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.DarkGray,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    LogoutButton(
+                        onLogoutClick = {
+                            navController.navigate(Screen.LoginPage.withArgs())
+                        },
+                    )
+                }
             }
         } else {
             LazyColumn(
@@ -301,7 +314,6 @@ fun BookingItem(
     val storeName = storeNames[booking.storeId] ?: "Loading..."
     val location = storeLocations[booking.storeId] ?: "Loading..."
 
-    // Trigger fetching user details when the storeId changes
     LaunchedEffect(booking.storeId) {
         Log.d("BookingItem", "Fetching data for : $storeName")
         storeViewModel.fetchStoreName(booking.storeId)

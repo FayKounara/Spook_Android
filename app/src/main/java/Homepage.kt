@@ -373,7 +373,7 @@ fun Homepage(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
-                        .height(240.dp) // Restricting the height of the list
+                        .height(240.dp)
                 ) {
                     items(filteredStores) { store ->
                         RestaurantCard(
@@ -453,11 +453,11 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
                             modifier = Modifier.padding(end = 4.dp)
                         )
                         Text(
-                            text = foodItem.discountPrice.toString(), // Discounted price
+                            text = foodItem.discountPrice.toString(),
                             style = TextStyle(
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFFFA726) // Orange color
+                                color = Color(0xFFFFA726)
                             )
                         )
                     }
