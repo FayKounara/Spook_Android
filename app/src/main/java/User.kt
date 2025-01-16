@@ -12,5 +12,4 @@ data class User(
     val password: String,
     val phoneNumber: String,
     val email: String
-//    val bookings: List<Booking>
 )

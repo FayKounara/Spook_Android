@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.navigation.compose.rememberNavController
 import com.example.room_setup_composables.ui.theme.RoomDatabaseSetupTheme
-//import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 //class MainActivity : ComponentActivity() {
 //    private val bookingViewModel: BookingViewModel by viewModels()

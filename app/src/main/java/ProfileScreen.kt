@@ -1,6 +1,3 @@
-package com.example.room_setup_composables
-
-
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -8,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,14 +23,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.room_setup_composables.Booking
+import com.example.room_setup_composables.BookingViewModel
+import com.example.room_setup_composables.BottomNavBar
+import com.example.room_setup_composables.HomePageNavigation
+import com.example.room_setup_composables.LoginNavigation
+import com.example.room_setup_composables.ReviewNavigation
+import com.example.room_setup_composables.ReviewViewModel
+import com.example.room_setup_composables.SlotViewModel
+import com.example.room_setup_composables.StoreViewModel
+import com.example.room_setup_composables.UserViewModel
 import com.example.room_setup_composables.ui.theme.Screen
-
-data class BookingsHistory(val storeId: Int, val storeName: String, val date: String, val location: String)
 
 @Composable
 fun ProfileNavigation(
     userId: Int,
-    userViewModel:UserViewModel,
+    userViewModel: UserViewModel,
     storeViewModel: StoreViewModel,
     bookingViewModel: BookingViewModel,
     reviewViewModel: ReviewViewModel,
@@ -45,7 +49,13 @@ fun ProfileNavigation(
 
     NavHost(navController = navController, startDestination = Screen.ProfileScreen.route) {
         composable(route = Screen.ProfileScreen.route) {
-            ProfileScreen(navController, userId, userViewModel = userViewModel, bookingViewModel, slotViewModel, reviewViewModel,storeViewModel)
+            ProfileScreen(
+                navController,
+                userId,
+                userViewModel = userViewModel,
+                bookingViewModel,
+                storeViewModel
+            )
             BottomNavBar(
                 onHomeClick = {
                     navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
@@ -75,7 +85,7 @@ fun ProfileNavigation(
         composable(
             route = Screen.LoginPage.route,
             arguments = emptyList()
-        ) { entry ->
+        ) { _ ->
             LoginNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
 
@@ -97,7 +107,13 @@ fun ProfileNavigation(
 
 
 @Composable
-fun ProfileScreen(navController: NavController, userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel , slotViewModel: SlotViewModel, reviewViewModel: ReviewViewModel,storeViewModel: StoreViewModel) {
+fun ProfileScreen(
+    navController: NavController,
+    userId: Int,
+    userViewModel: UserViewModel,
+    bookingViewModel: BookingViewModel,
+    storeViewModel: StoreViewModel
+) {
     bookingViewModel.getBookingsForUser(userId)
     val bookingsHistory by bookingViewModel.bookings.collectAsState()
     Column(
@@ -107,7 +123,7 @@ fun ProfileScreen(navController: NavController, userId: Int, userViewModel: User
             .padding(20.dp),
         verticalArrangement = Arrangement.Top
     ) {
-        UserProfileSection(userViewModel,userId)
+        UserProfileSection(userViewModel, userId)
 
 
         BookingHeader()
@@ -116,18 +132,19 @@ fun ProfileScreen(navController: NavController, userId: Int, userViewModel: User
 
         BookingHistory(
             bookingsHistory = bookingsHistory,
+            storeViewModel = storeViewModel,
             onCheckClick = { storeId ->
                 navController.navigate(Screen.Reviews.withArgs(storeId.toString()))
-            },
-            userId = userId,
-            storeViewModel = storeViewModel
+            }
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        LogoutButton(navController, onLogoutClick = {
-            navController.navigate(Screen.LoginPage.withArgs())
-        },)
+        LogoutButton(
+            onLogoutClick = {
+                navController.navigate(Screen.LoginPage.withArgs())
+            },
+        )
     }
 
 }
@@ -212,7 +229,6 @@ fun UserProfileSection(userViewModel: UserViewModel, userId: Int) {
 @Composable
 fun BookingHistory(
     bookingsHistory: List<Booking>,
-    userId: Int,
     storeViewModel: StoreViewModel,
     onCheckClick: (Int) -> Unit
 ) {
@@ -335,7 +351,7 @@ fun BookingItem(
 }
 
 @Composable
-fun LogoutButton(navController: NavController, onLogoutClick: () -> Unit) {
+fun LogoutButton(onLogoutClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
