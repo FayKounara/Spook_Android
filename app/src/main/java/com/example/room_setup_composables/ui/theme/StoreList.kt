@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +64,8 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 @Composable
@@ -162,7 +165,6 @@ fun StoreList(
 
         val slotsForSelectedDay = slots.filter { it.storeId == store.storeId && it.day == filterday }
         if (slotsForSelectedDay.isNotEmpty()) {
-            // Pass the filtered slots to your store card or whatever UI component you are rendering
             StoreCard(
                 navController = navController,
                 store = store,
@@ -280,67 +282,57 @@ fun StoreMap(latitude: Double, longitude: Double) {
 
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(location, 15f) // Zoom level 15 for a close view
+        position = CameraPosition.fromLatLngZoom(location, 15f)
     }
 
     GoogleMap(
         modifier = Modifier
-            .fillMaxSize() // Make the map take up the full available space
-            .padding(12.dp), // Add padding around the map
+            .fillMaxSize()
+            .padding(12.dp),
         cameraPositionState = cameraPositionState
     ) {
         val markerState = MarkerState(position = location)
         Marker(
             state = markerState,
             title = "Store Location",
-            snippet = "This is the location of the store."
+            //snippet = "This is the location of the store."
         )
     }
 }
 
-fun getLatLngFromAddress(context: Context, address: String): Pair<Double, Double>? {
-    val geocoder = Geocoder(context, Locale.getDefault()) // Create Geocoder instance
-    try {
-
-        val addressResult: Address? = geocoder.getFromLocationName(address, 1)?.firstOrNull()
-        addressResult?.let {
-            return Pair(it.latitude, it.longitude)
+suspend fun getLatLngFromAddress(context: Context, address: String): Pair<Double, Double>? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val geocoder = Geocoder(context, Locale.getDefault())
+            val addressResult: Address? = geocoder.getFromLocationName(address, 1)?.firstOrNull()
+            addressResult?.let { Pair(it.latitude, it.longitude) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
     }
-    return null
 }
 
 @Composable
 fun StoreLocationToLatLng(store: Store) {
     val context = LocalContext.current
-    var latitude by remember { mutableStateOf(0.0) }
-    var longitude by remember { mutableStateOf(0.0) }
+    var coordinates by rememberSaveable { mutableStateOf<Pair<Double, Double>?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
-    // When the store location changes, fetch the latitude and longitude
     LaunchedEffect(store.location) {
-        val latLng = getLatLngFromAddress(context, store.location)
-        if (latLng != null) {
-            latitude = latLng.first
-            longitude = latLng.second
-            isLoading = false
-        } else {
-            Toast.makeText(context, "Address not found", Toast.LENGTH_SHORT).show()
-            isLoading = false
-        }
+        isLoading = true
+        coordinates = getLatLngFromAddress(context, store.location)
+        isLoading = false
     }
 
     if (isLoading) {
-        CircularProgressIndicator()
-    } else if (latitude != 0.0 && longitude != 0.0) {
-        StoreMap(latitude, longitude)
+        CircularProgressIndicator(modifier = Modifier.fillMaxSize())
     } else {
-        Text("Invalid location.")
+        coordinates?.let { (latitude, longitude) ->
+            StoreMap(latitude, longitude)
+        } ?: Text("Invalid location.", modifier = Modifier.fillMaxSize())
     }
 }
-
 
 //map
 @Composable
@@ -364,7 +356,7 @@ fun StoreDetailsSection(store: Store) {
     ) {
 
         Text(
-            text = "10:30 AM - 11:00 PM", // Replace with actual opening hours
+            text = "10:30 AM - 11:00 PM",
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -385,7 +377,7 @@ fun StoreDetailsSection(store: Store) {
 fun HourSelection(navController: NavController, store: Store, availableSlots: List<Slot>) {
     var selectedHour by remember { mutableStateOf<Int?>(null) }
 
-    // Αν τα διαθέσιμα slots είναι Int
+
     val availableHours = availableSlots.map { it.hour.toInt() }
 
     Column {
