@@ -333,18 +333,6 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Testing Button
-        Button(
-            onClick = {
-                // Navigate to Profile screen with userId as argument
-                navController.navigate(Screen.HomePage.withArgs("1"))
-            },
-            modifier = Modifier
-                .width(200.dp)
-                .padding(vertical = 16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))        ) {
-            Text(text = "For testing: Go to HomePage", color = Color.White)
-        }
     }
 }
 
