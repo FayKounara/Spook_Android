@@ -141,7 +141,6 @@ fun Homepage(
     val stores by storeViewModel.allStores.collectAsState(initial = emptyList())
     val offers by storeViewModel.allOffers.collectAsState(initial = emptyList())
     val users by userViewModel.allUsers.collectAsState(initial = emptyList())
-    val slots by slotViewModel.slots.collectAsState(initial = emptyList())
 
     fun getCurrentDayName(): String {
         val calendar = Calendar.getInstance()
@@ -156,7 +155,7 @@ fun Homepage(
     val coroutineScope = rememberCoroutineScope()
     val filteredStores = remember { mutableStateListOf<Store>() }
 
-// LaunchedEffect to filter stores based on available slots
+    // LaunchedEffect to filter stores based on available slots
     LaunchedEffect(stores, selectedDay, selectedPersons) {
         filteredStores.clear()
 
@@ -178,8 +177,6 @@ fun Homepage(
         Log.d("Homepage", "Filtered Stores: ${filteredStores.size}")
     }
 
-//fay
-
     val currentUser = users.firstOrNull { it.userId == userId }
     val username = currentUser?.username ?: "Guest"
 
@@ -193,36 +190,36 @@ fun Homepage(
         ) {
             Surface(
                 modifier = Modifier
-                    .width(300.dp) // Μικρότερο πλάτος
+                    .width(300.dp) // Smaller width
                     .padding(16.dp),
-                shape = RoundedCornerShape(16.dp), // Πιο στρογγυλεμένες γωνίες
+                shape = RoundedCornerShape(16.dp), // More rounded corners
                 color = Color.White,
-                shadowElevation = 20.dp // Προσθήκη σκιάς
+                shadowElevation = 20.dp // Adding shadow
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp) // Προσθήκη εσωτερικού περιθωρίου
+                    modifier = Modifier.padding(16.dp) // Adding internal padding
                 ) {
-                    // Τίτλος
+                    // Title
                     Text(
                         text = "Too Juicy to Handle!",
                         style = TextStyle(
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFFF9800) // Πορτοκαλί γραμματοσειρά
+                            color = Color(0xFFFF9800) // Orange font
                         )
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    // Κυρίως κείμενο
+                    // Main text
                     Text(
                         text = errorMessage,
                         style = TextStyle(
-                            fontSize = 18.sp, // Μικρότερη γραμματοσειρά
+                            fontSize = 18.sp, // Smaller font size
                             color = Color.Black
                         )
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    // Κουμπί επιβεβαίωσης
+                    // Confirmation button
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
@@ -261,11 +258,11 @@ fun Homepage(
                     contentDescription = "Profile Icon",
                     tint = Color(0xFF9C27B0),
                     modifier = Modifier
-                        .size(40.dp) // Μέγεθος του εικονιδίου
+                        .size(40.dp) // Icon size
                         .clickable {
-                            navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) // Ενέργεια που γίνεται όταν πατηθεί το εικονίδιο
+                            navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) // Action when the icon is clicked
                         }
-                        .padding(8.dp) // Κενό γύρω από το εικονίδιο
+                        .padding(8.dp) // Space around the icon
                 )
 
                 Text(
@@ -278,22 +275,14 @@ fun Homepage(
                 )
 
             }
-            Text(
-                text = "We hope you are hungry \uD83D\uDE0F",
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray
-                ),
-                modifier = Modifier.padding(top = 4.dp)
-            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 val isToday = selectedDay == getCurrentDayName()
                 val offersTitle = if (isToday) "Today's offers!" else "$selectedDay's offers!"
-                
+                Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = offersTitle,
                     style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold)
@@ -326,8 +315,8 @@ fun Homepage(
                                         }
                                     }
                                 } else {
-                                   val isTodayy = selectedDay == getCurrentDayName()
-                                    val mes = if (isTodayy) "today," else "on $selectedDay,"
+                                    val itsToday = selectedDay == getCurrentDayName()
+                                    val mes = if (itsToday) "today," else "on $selectedDay,"
                                     errorMessage = "Wow, this deal’s on fire! \n\n We are fully booked $mes but check another day\n— we’d love to Juicy serve you;)"
                                     showErrorDialog = true
                                 }
@@ -354,7 +343,7 @@ fun Homepage(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {
-                    // Επιλογέας ατόμων
+                    // Persons selector
                     PersonsSelector(
                         selectedPersons = selectedPersons,
                         onPersonsSelected = { persons -> selectedPersons = persons },
@@ -363,7 +352,7 @@ fun Homepage(
 
                     Spacer(modifier = Modifier.width(4.dp))
 
-                    // Επιλογέας ημέρας
+                    // Day selector
                     DaySelector(
                         selectedDay = selectedDay,
                         onDaySelected = { day -> selectedDay = day },
@@ -371,27 +360,25 @@ fun Homepage(
                     )
                 }
 
-                // Λίστα Εστιατορίων
+                // Restaurants list
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
-                        .height(234.dp) // Περιορισμός ύψους της λίστας
-                    //fay
+                        .height(240.dp) // Restricting the height of the list
                 ) {
-                  items(filteredStores) { store ->
-                       RestaurantCard(
-                          store = store,
-                          onBookClick = {
-                              navController.navigate(Screen.Stores.withArgs(store.name, selectedDay, selectedPersons))
-                          }
-                      )
-                  }
+                    items(filteredStores) { store ->
+                        RestaurantCard(
+                            store = store,
+                            onBookClick = {
+                                navController.navigate(Screen.Stores.withArgs(store.name, selectedDay, selectedPersons))
+                            }
+                        )
+                    }
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
@@ -399,34 +386,34 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
         foodItem.name.contains("Pizza", ignoreCase = true) -> R.drawable.pizzaphoto
         foodItem.name.contains("Burger", ignoreCase = true) -> R.drawable.burgerphoto
         foodItem.name.contains("Pasta", ignoreCase = true) -> R.drawable.pastaphoto
-        else -> R.drawable.burgerphoto // Προεπιλεγμένη εικόνα
+        else -> R.drawable.burgerphoto // Default image
     }
 
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White // Καθορίζει το φόντο της κάρτας
+            containerColor = Color.White // Sets the card background color
         ),
         modifier = Modifier
             .width(200.dp)
             .padding(end = 16.dp)
-            .clickable { onCardClick()}
+            .clickable { onCardClick() }
     ) {
         Column {
             Image(
                 painter = painterResource(id = foodImage),
-              contentDescription = "Food Item",
-               modifier = Modifier
-                   .fillMaxWidth()
-                   .height(120.dp),
-              contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                contentDescription = "Food Item",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp),
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop
             )
             Column(
                 modifier = Modifier
-                    .padding(8.dp), // Απόσταση γύρω από το κείμενο
-                verticalArrangement = Arrangement.spacedBy(6.dp), // Απόσταση μεταξύ των στοιχείων
-                horizontalAlignment = Alignment.Start // Ευθυγράμμιση στην αριστερή πλευρά
+                    .padding(8.dp), // Padding around the text
+                verticalArrangement = Arrangement.spacedBy(6.dp), // Spacing between elements
+                horizontalAlignment = Alignment.Start // Aligns content to the left
             ) {
                 Text(
                     text = foodItem.name,
@@ -434,11 +421,11 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
-                Spacer(modifier = Modifier.height(1.dp)) // Κενό ανάμεσα στο όνομα και την τιμή/τοποθεσία
+                Spacer(modifier = Modifier.height(1.dp)) // Space between name and price/location
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp) // Μικρότερη απόσταση μεταξύ τιμής και τοποθεσίας
+                    verticalArrangement = Arrangement.spacedBy(4.dp) // Smaller spacing between price and location
                 ) {
-                    // Προβολή του ονόματος του μαγαζιού
+                    // Displays the store name
                     Text(
                         text = "Book at $storeName",
                         fontSize = 18.sp,
@@ -447,21 +434,21 @@ fun FoodCard(foodItem: Offer, storeName: String, onCardClick: () -> Unit) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = foodItem.orgPrice.toString(),//**************************
+                            text = foodItem.orgPrice.toString(), // Original price
                             style = TextStyle(
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Light,
                                 color = Color.Gray,
-                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough // Διαγράμμιση αρχικής τιμής
+                                textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough // Strikethrough original price
                             ),
                             modifier = Modifier.padding(end = 4.dp)
                         )
                         Text(
-                            text = foodItem.discountPrice.toString(),//*****************
+                            text = foodItem.discountPrice.toString(), // Discounted price
                             style = TextStyle(
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFFFA726) // Πορτοκαλί χρώμα
+                                color = Color(0xFFFFA726) // Orange color
                             )
                         )
                     }
@@ -490,13 +477,13 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Δυναμική φόρτωση εικόνας βάσει του id του Store
+            // Dynamically loads an image based on the Store's ID
             val imageRes = when (store.storeId) {
                 1 -> R.drawable.rest1photo
                 2 -> R.drawable.rest2photo
                 3 -> R.drawable.rest3photo
                 4 -> R.drawable.rest4photo
-                else -> R.drawable.rest1photo // Εικόνα προεπιλογής
+                else -> R.drawable.rest1photo // Default image
             }
 
             Image(
@@ -508,7 +495,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop
             )
 
-            // Στήλη για Όνομα και Τοποθεσία
+            // Column for Name and Location
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -531,7 +518,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
                 )
             }
 
-            // Κουμπί "Book"
+            // "Book" button
             Button(
                 onClick = onBookClick,
                 modifier = Modifier
@@ -541,7 +528,7 @@ fun RestaurantCard(store: Store, onBookClick: () -> Unit) {
                     contentColor = Color.White
                 )
             ) {
-                Text(text = "Book")
+                Text(text = "Book", fontSize = 16.sp)
             }
         }
     }
@@ -597,8 +584,8 @@ fun PersonsSelector(selectedPersons: String, onPersonsSelected: (String) -> Unit
     Box(
         modifier = modifier
             .clickable { expanded = true }
-            .padding(horizontal = 4.dp, vertical = 4.dp) // Μικρότερο padding
-            .width(80.dp) // Μειωμένο πλάτος
+            .padding(horizontal = 4.dp, vertical = 4.dp) // Smaller padding
+            .width(80.dp) // Reduced width
             .drawBehind {
                 drawLine(
                     color = Color(0xFFFFA726),
@@ -626,7 +613,6 @@ fun PersonsSelector(selectedPersons: String, onPersonsSelected: (String) -> Unit
             }
         }
     }
-
 }
 
 @Composable
@@ -670,8 +656,3 @@ fun BottomNavBar(
         }
     }
 }
-
-
-
-
-
