@@ -1,4 +1,4 @@
-package com.example.room_setup_composables
+package com.example.room_setup_composables.com.example.room_setup_composables.ui.theme
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,7 +26,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,12 +47,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.room_database_setup.R
-import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
+import com.example.room_setup_composables.Booking
+import com.example.room_setup_composables.BookingViewModel
+import com.example.room_setup_composables.BottomNavBar
+import com.example.room_setup_composables.HomePageNavigation
+import ProfileNavigation
+import com.example.room_setup_composables.ReviewViewModel
+import com.example.room_setup_composables.SlotViewModel
+import com.example.room_setup_composables.StoreViewModel
+import com.example.room_setup_composables.UserViewModel
 import com.example.room_setup_composables.ui.theme.Screen
-import kotlinx.coroutines.delay
 
 @Composable
-fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel, hour: String, filterday: String, filtername: String, persons: Int, storeId: String, reviewViewModel: ReviewViewModel, storeViewModel: StoreViewModel, slotViewModel: SlotViewModel) {
+fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel, hour: String, filterDay: String, filterName: String, persons: Int, storeId: String, reviewViewModel: ReviewViewModel, storeViewModel: StoreViewModel, slotViewModel: SlotViewModel) {
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.Bookings.route) {
@@ -77,8 +83,8 @@ fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewMode
                     nullable = true
                 }
             )
-        ) { entry ->
-            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, filtername = filtername, filterday, persons, slotViewModel)
+        ) { _ ->
+            StoreNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, filterName = filterName, filterDay, persons, slotViewModel)
         }
 
         // Navigation to HomePage
@@ -105,7 +111,14 @@ fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewMode
                 }
             )
         ) { _ ->
-            ProfileNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+            ProfileNavigation(
+                userId,
+                userViewModel,
+                storeViewModel,
+                bookingViewModel,
+                reviewViewModel,
+                slotViewModel
+            )
         }
     }
 }

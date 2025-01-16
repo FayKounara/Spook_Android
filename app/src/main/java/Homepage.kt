@@ -1,5 +1,6 @@
 package com.example.room_setup_composables
 
+import ProfileNavigation
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
@@ -122,7 +123,14 @@ fun HomePageNavigation(
                 }
             )
         ) { _ ->
-            ProfileNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+            ProfileNavigation(
+                userId,
+                userViewModel,
+                storeViewModel,
+                bookingViewModel,
+                reviewViewModel,
+                slotViewModel
+            )
         }
     }
 }
@@ -160,6 +168,7 @@ fun Homepage(
         filteredStores.clear()
 
         stores.forEach { store ->
+
             // Fetch the slots for each store directly using the new function
             val storeSlots = slotViewModel.fetchSlotsForStore(store.storeId)
 

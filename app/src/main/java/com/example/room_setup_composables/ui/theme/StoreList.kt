@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,8 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
@@ -42,15 +39,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.room_database_setup.R
-import com.example.room_setup_composables.BookingNavigation
 import com.example.room_setup_composables.BookingViewModel
-import com.example.room_setup_composables.BookingsScreen
 import com.example.room_setup_composables.BottomNavBar
 import com.example.room_setup_composables.HomePageNavigation
-import com.example.room_setup_composables.ProfileNavigation
+import ProfileNavigation
 import com.example.room_setup_composables.Review
 import com.example.room_setup_composables.ReviewNavigation
-import com.example.room_setup_composables.ReviewScreen
 import com.example.room_setup_composables.ReviewViewModel
 import com.example.room_setup_composables.Slot
 import com.example.room_setup_composables.SlotViewModel
@@ -69,13 +63,13 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 
 @Composable
-fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, filtername: String, filterday: String, persons: Int, slotViewModel: SlotViewModel) {
+fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, filterName: String, filterDay: String, persons: Int, slotViewModel: SlotViewModel) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Stores.route) {
 
         composable(route = Screen.Stores.route) {
-            StoreList(navController, storeViewModel, reviewViewModel, slotViewModel, filtername, filterday)
+            StoreList(navController, storeViewModel, reviewViewModel, slotViewModel, filterName, filterDay)
             BottomNavBar(
                 onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
                 onProfileClick = { navController.navigate(Screen.ProfileScreen.withArgs(userId.toString())) }
@@ -97,7 +91,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
         ) { entry ->
             val hour = entry.arguments?.getString("hour") ?: "0"
             val storeId = entry.arguments?.getString("storeId") ?: "1"
-            BookingNavigation(userId, userViewModel, bookingViewModel, hour, filterday, filtername, persons, storeId, reviewViewModel, storeViewModel, slotViewModel)
+            BookingNavigation(userId, userViewModel, bookingViewModel, hour, filterDay, filterName, persons, storeId, reviewViewModel, storeViewModel, slotViewModel)
         }
 
         composable(
@@ -123,7 +117,7 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
                     nullable = true
                 }
             )
-        ) { entry ->
+        ) { _ ->
             HomePageNavigation(userId = userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
         }
 
@@ -137,8 +131,15 @@ fun StoreNavigation(userId: Int, userViewModel: UserViewModel, storeViewModel: S
                     nullable = false
                 }
             )
-        ) { entry ->
-            ProfileNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+        ) { _ ->
+             ProfileNavigation(
+                 userId,
+                 userViewModel,
+                 storeViewModel,
+                 bookingViewModel,
+                 reviewViewModel,
+                 slotViewModel
+             )
         }
     }
 }
@@ -149,12 +150,12 @@ fun StoreList(
     viewModel: StoreViewModel,
     reviewViewModel: ReviewViewModel,
     slotViewModel: SlotViewModel,
-    filtername: String,
-    filterday: String
+    filterName: String,
+    filterDay: String
 ) {
     val allReviews by reviewViewModel.allReviews.collectAsState(initial = emptyList())
     val stores by viewModel.allStores.collectAsState(initial = emptyList())
-    val filteredStores = stores.filter { it.name == filtername }
+    val filteredStores = stores.filter { it.name == filterName }
     val slots by slotViewModel.slots.collectAsState(initial = emptyList())
 
     if (filteredStores.isNotEmpty()) {
@@ -163,7 +164,7 @@ fun StoreList(
 
         slotViewModel.fetchSlotsForStore1(store.storeId)
 
-        val slotsForSelectedDay = slots.filter { it.storeId == store.storeId && it.day == filterday }
+        val slotsForSelectedDay = slots.filter { it.storeId == store.storeId && it.day == filterDay }
         if (slotsForSelectedDay.isNotEmpty()) {
             StoreCard(
                 navController = navController,
@@ -378,7 +379,7 @@ fun HourSelection(navController: NavController, store: Store, availableSlots: Li
     var selectedHour by remember { mutableStateOf<Int?>(null) }
 
 
-    val availableHours = availableSlots.map { it.hour.toInt() }
+    val availableHours = availableSlots.map { it.hour }
 
     Column {
 

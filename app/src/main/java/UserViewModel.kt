@@ -22,8 +22,8 @@ class UserViewModel(private val userDao: UserDao) : ViewModel() {
         }
     }
 
-    private val _userDetails = MutableStateFlow<String>("")
-    private val _email   = MutableStateFlow<String>("")
+    private val _userDetails = MutableStateFlow("")
+    private val _email   = MutableStateFlow("")
     val userDetails: StateFlow<String> = _userDetails
     val email: StateFlow<String> = _email
     //get user's username

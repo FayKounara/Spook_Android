@@ -1,5 +1,3 @@
-package com.example.room_setup_composables
-
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -35,11 +33,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.room_setup_composables.BookingViewModel
+import com.example.room_setup_composables.HomePageNavigation
+import com.example.room_setup_composables.LoginNavigation
+import com.example.room_setup_composables.ReviewViewModel
+import com.example.room_setup_composables.SlotViewModel
+import com.example.room_setup_composables.StoreViewModel
+import com.example.room_setup_composables.User
+import com.example.room_setup_composables.UserViewModel
 import com.example.room_setup_composables.ui.theme.Screen
 import java.util.Random
 
 @Composable
-fun RegisterNavigation(userViewModel:UserViewModel ,storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel,slotViewModel: SlotViewModel) {
+fun RegisterNavigation(userViewModel: UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, slotViewModel: SlotViewModel) {
 
     val navController = rememberNavController()
 

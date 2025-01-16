@@ -1,9 +1,7 @@
 package com.example.room_setup_composables
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-
 
 @Dao
 interface BookingDao {

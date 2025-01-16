@@ -1,6 +1,6 @@
 package com.example.room_setup_composables
 
-
+import ProfileNavigation
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -86,7 +86,14 @@ fun ReviewNavigation(userId: Int, userViewModel:UserViewModel, reviewViewModel: 
                 }
             )
         ) { _ ->
-            ProfileNavigation(userId, userViewModel, storeViewModel, bookingViewModel, reviewViewModel, slotViewModel)
+            ProfileNavigation(
+                userId,
+                userViewModel,
+                storeViewModel,
+                bookingViewModel,
+                reviewViewModel,
+                slotViewModel
+            )
         }
     }
 }
@@ -98,9 +105,6 @@ fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserVi
     val reviews by viewModel.allReviews.collectAsState(initial = emptyList())
     val specificStoreReviews = reviews.filter { it.storeId == storeId }
     val users by userViewModel.allUsers.collectAsState(initial = emptyList())
-
-    val currentUser = users.firstOrNull { it.userId == userId }
-    val username = currentUser?.username ?: "Guest"
 
     BottomNavBar(
         onHomeClick = { navController.navigate(Screen.HomePage.withArgs(userId.toString())) },
@@ -166,9 +170,10 @@ fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserVi
                 } else {
                     items(specificStoreReviews) { review ->
                         ReviewCard(
+                            users = users,
                             reviewText = review.revText,
                             reviewStars = review.stars.toString(),
-                            reviewerName = username
+                            reviewerId = review.userId.toString()
                         )
                     }
                 }
@@ -180,11 +185,11 @@ fun ReviewScreen(navController: NavController, userId: Int, userViewModel:UserVi
 @Composable
 fun ReviewHeader(storeId: Int, storeViewModel: StoreViewModel) {
 
-    var storename by remember { mutableStateOf("") }
+    var storeName by remember { mutableStateOf("") }
 
     val stores by storeViewModel.allStores.collectAsState(initial = emptyList())
     val currentStore = stores.firstOrNull { it.storeId == storeId }
-    storename = (currentStore?.name ?: "This store")
+    storeName = (currentStore?.name ?: "This store")
 
     Row(
         modifier = Modifier
@@ -193,7 +198,7 @@ fun ReviewHeader(storeId: Int, storeViewModel: StoreViewModel) {
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = storename, //"Coffee Cafe NYC",
+            text = storeName,
             style = TextStyle(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -204,7 +209,11 @@ fun ReviewHeader(storeId: Int, storeViewModel: StoreViewModel) {
 }
 
 @Composable
-fun ReviewCard(reviewText: String, reviewStars: String, reviewerName: String) {
+fun ReviewCard(users: List<User>, reviewText: String, reviewStars: String, reviewerId: String) {
+
+    val currentUser = users.firstOrNull { it.userId == reviewerId.toInt() }
+    val reviewerName = currentUser?.username ?: "Guest"
+
     Column(
         modifier = Modifier
             .fillMaxWidth()

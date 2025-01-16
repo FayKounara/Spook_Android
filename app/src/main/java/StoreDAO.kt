@@ -17,7 +17,7 @@ interface StoreDao {
     suspend fun deleteAllStores()
 
     @Query("SELECT name FROM store_table WHERE storeId = :storeId")
-    suspend fun getStoreNameById(storeId: kotlin.String): String?
+    suspend fun getStoreNameById(storeId: String): String?
 
     @Query("SELECT location FROM store_table WHERE storeId = :storeId")
     suspend fun getLocationById(storeId: Int): String?

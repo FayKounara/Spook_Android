@@ -1,5 +1,6 @@
 package com.example.room_setup_composables
 
+import RegisterNavigation
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material.icons.Icons
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.*
 import kotlinx.coroutines.delay
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -31,14 +31,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.room_setup_composables.ui.theme.Screen
-
 
 @Composable
 fun LoginNavigation(userViewModel:UserViewModel, storeViewModel: StoreViewModel, bookingViewModel: BookingViewModel, reviewViewModel: ReviewViewModel, slotViewModel: SlotViewModel) {
@@ -50,8 +48,8 @@ fun LoginNavigation(userViewModel:UserViewModel, storeViewModel: StoreViewModel,
         composable(route = Screen.LoginPage.route) {
             val context = LocalContext.current
             LoginScreen(
-                navController,
                 onLoginClick = { username, password ->
+
                     // Check if user exists
                     val userId = users
                         .filter { it.username == username && it.password == password }
@@ -73,7 +71,13 @@ fun LoginNavigation(userViewModel:UserViewModel, storeViewModel: StoreViewModel,
         composable(
             route = Screen.RegisterPage.route,
         ) { _ ->
-            RegisterNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel,slotViewModel)
+            RegisterNavigation(
+                userViewModel,
+                storeViewModel,
+                bookingViewModel,
+                reviewViewModel,
+                slotViewModel
+            )
         }
 
         composable(
@@ -94,7 +98,6 @@ fun LoginNavigation(userViewModel:UserViewModel, storeViewModel: StoreViewModel,
 
 @Composable
 fun LoginScreen(
-    navController: NavController,
     onLoginClick: (username: String, password: String) -> Unit,
     onSignUpClick: () -> Unit
 ) {
@@ -194,20 +197,6 @@ fun LoginScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-//        // Testing Button
-//        Button(
-//            onClick = {
-//                // Navigate to Profile screen with userId as argument
-//                navController.navigate(Screen.HomePage.withArgs("1"))
-//            },
-//            modifier = Modifier
-//                .width(200.dp)
-//                .padding(vertical = 16.dp),
-//            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))        ) {
-//            Text(text = "For testing: Go to HomePage", color = Color.White)
-//        }
-
 
     }
 }
