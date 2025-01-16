@@ -242,7 +242,7 @@ fun BookingHistory(
                     .fillMaxSize()
                     .padding(16.dp)
                     .background(
-                        color = Color.White,
+                        color = Color(0xFFF1F3F4),
                         shape = RoundedCornerShape(12.dp)
                     )
                     .padding(16.dp),
