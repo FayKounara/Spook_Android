@@ -205,6 +205,7 @@ fun Homepage(
                 color = Color.White,
                 shadowElevation = 20.dp // Adding shadow
             ) {
+
                 Column(
                     modifier = Modifier.padding(16.dp) // Adding internal padding
                 ) {

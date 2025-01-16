@@ -182,9 +182,11 @@ fun StoreCard(navController: NavController, store: Store, storeReviews: List<Rev
     val sumOfReviews = storeReviews.size
     val sumOfStars = storeReviews.sumOf { it.stars }
     val rating = if (sumOfReviews > 0) {
-        (sumOfStars.toFloat() / sumOfReviews).let { String.format("%.1f", it).toFloat() }
+        (sumOfStars.toFloat() / sumOfReviews).let {
+            String.format(Locale.US, "%.1f", it).toFloat()
+        }
     } else {
-        0
+        0f
     }
 
     Card(
