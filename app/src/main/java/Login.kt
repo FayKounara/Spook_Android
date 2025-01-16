@@ -70,14 +70,12 @@ fun LoginNavigation(userViewModel:UserViewModel, storeViewModel: StoreViewModel,
             )
         }
 
-        // Navigation to RegisterPage, no need to dynamically pass parameters
         composable(
             route = Screen.RegisterPage.route,
         ) { _ ->
             RegisterNavigation(userViewModel, storeViewModel, bookingViewModel, reviewViewModel,slotViewModel)
         }
 
-        // Navigation to HomePage
         composable(
             route = Screen.HomePage.route + "/{id}",
             arguments = listOf(
@@ -107,13 +105,12 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF1F3F4)) // Light background color
+            .background(Color(0xFFF1F3F4))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(40.dp))
 
-        // Title
         Text(
             text = "Welcome Back!",
             style = androidx.compose.material3.MaterialTheme.typography.headlineMedium,
@@ -123,7 +120,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Username TextField
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -180,7 +176,7 @@ fun LoginScreen(
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
             )
             LaunchedEffect(Unit) {
-                delay(3000) // Delay for 2 seconds before hiding error message
+                delay(3000)
                 showError = false
             }
         }
@@ -212,7 +208,6 @@ fun LoginScreen(
 //            Text(text = "For testing: Go to HomePage", color = Color.White)
 //        }
 
-        // Error Message
 
     }
 }

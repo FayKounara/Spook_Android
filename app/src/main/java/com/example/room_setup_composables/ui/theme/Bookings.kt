@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ import androidx.navigation.navArgument
 import com.example.room_database_setup.R
 import com.example.room_setup_composables.com.example.room_setup_composables.ui.theme.StoreNavigation
 import com.example.room_setup_composables.ui.theme.Screen
+import kotlinx.coroutines.delay
 
 @Composable
 fun BookingNavigation(userId: Int, userViewModel: UserViewModel, bookingViewModel: BookingViewModel, hour: String, filterday: String, filtername: String, persons: Int, storeId: String, reviewViewModel: ReviewViewModel, storeViewModel: StoreViewModel, slotViewModel: SlotViewModel) {
@@ -188,6 +190,7 @@ fun BookingsScreen(
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
@@ -198,6 +201,7 @@ fun BookingsScreen(
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = phoneNumber,
