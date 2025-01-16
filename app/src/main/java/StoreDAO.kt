@@ -21,7 +21,4 @@ interface StoreDao {
 
     @Query("SELECT location FROM store_table WHERE storeId = :storeId")
     suspend fun getLocationById(storeId: Int): String?
-
-
-
 }
