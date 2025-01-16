@@ -123,7 +123,7 @@ fun ProfileScreen(navController: NavController, userId: Int, userViewModel: User
             storeViewModel = storeViewModel
         )
 
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         LogoutButton(navController, onLogoutClick = {
             navController.navigate(Screen.LoginPage.withArgs())
@@ -145,9 +145,9 @@ fun BookingHeader() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Your bookings history \uD83D\uDCD6",
+            text = "Your bookings history",
             color = Color.White,
-            fontSize = 20.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
         )
     }
@@ -222,7 +222,10 @@ fun BookingHistory(
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(420.dp)
+                .padding(bottom = 60.dp)
         ) {
             items(bookingsHistory) { booking ->
                 Box(
@@ -280,23 +283,19 @@ fun BookingItem(
                 Text(
                     //text = booking.storeName,
                     text="\uD83D\uDCCD $storeName",
-                    fontSize = 16.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                    //text = booking.location,
                     text= " Address: $location",
-                    fontSize = 14.sp,
+                    fontSize = 18.sp,
                     color = Color.Gray
                 )
-//                Text(
-//                    text = "Date: ${booking.date}",
-//                    fontSize = 14.sp,
-//                    color = Color.Gray
-//                )
+
                 Text(
-                    text = "\uD83D\uDC65 ${booking.persons}",
-                    fontSize = 14.sp,
+                    text = " Pax: ${booking.persons}",
+                    fontSize = 18.sp,
                     color = Color.Gray
                 )
             }
@@ -304,7 +303,7 @@ fun BookingItem(
                 onClick = { onCheckClick(booking.storeId) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
             ) {
-                Text(text = "Review", color = Color.White, fontSize = 16.sp)
+                Text(text = "Review", color = Color.White,fontSize = 16.sp)
             }
         }
     }
@@ -319,14 +318,14 @@ fun LogoutButton(navController: NavController, onLogoutClick: () -> Unit) {
         Button(
             onClick = { onLogoutClick() },
             modifier = Modifier
-                .width(200.dp)
-                .padding(vertical = 16.dp),
+                .width(150.dp)
+                .padding(vertical = 8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA726))
         ) {
             Text(
                 text = "Logout",
                 color = Color.White,
-                fontSize = 16.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
         }
